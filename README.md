@@ -1,2 +1,3 @@
-# Bioinformatics_Overview
-Bioinformatics: Overview course
+# Bioinformatics: Overview
+
+Delivered in Semester 1
