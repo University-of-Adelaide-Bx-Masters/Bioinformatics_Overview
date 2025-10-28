@@ -7,68 +7,52 @@
 * TOC
 {:toc}
 
-## Lactose intolerance 
-
-Lactose intolerance affects around 70% of adults.
-Generally, a healthy newborn baby can digest about 60-70g of lactose per day (~1 liter of breast milk) due to the presence of the enzyme lactase in the small intestine. 
-However, at weaning, the expression of lactase begins to decline, eventually resulting in lactose intolerance in adulthood. This is known as lactase non-persistence (LNP) and is the ancestral state.
-However, with the advent of animal domestication and dairying practices, milk became a common and reliable food source and so there was a strong selective pressure for genetic variants that allowed adults to digest lactose. 
-Multiple variants conferring this ability have been identified and 
-
-
-This selective pressur combind with geographic separation of populations meant that different populations acquired distinct alleles 
-As a result, different variants conferring lactase persistence arose in geographically separated populations. A number of variants that for the continued expression of lactase into adulthood, called lactase persistence (LP). 
-Variants conferring lactase persistence quickly became more common in populations that relied heavily on dairying. Interestingly, different variants arose in different populations to confer the same phenotype. 
-
-
-
- were different in geographically separate populations. 
-
-
- geographically separate populations acquired distinct variantsconferring lactase persistence were population specific. 
-
-different populations acquired. 
-Interestingly, different populations acquired different variants conferring lactose tolerance in different populations varied. 
-Different genomic variants arose in 
-in a process called a selective sweep (alleles that confer a strong advantage rise so rapidly in frequency that nearby DNA regions “hitchhike” with them, reducing local genetic diversity and leaving a distinct genomic signature). 
-These selective sweeps occurred multiple populations independently but producing the same result. 
-
-
-During a selective sweep, alleles that confer a strong advantage rise so rapidly in frequency that nearby DNA regions “hitchhike” with them, reducing local genetic diversity and leaving a distinct genomic signature.
-
-The ancestral human state was lactase non-persistence, meaning lactase enzyme production declined after weaning and adults could not easily digest milk. With the rise of dairying practices during the Neolithic, milk became a valuable and reliable food source, creating strong selective pressure for genetic variants that allowed continued lactase production into adulthood. These lactase persistence alleles rapidly increased in frequency through selective sweeps in populations that practiced dairying, particularly in Europe and parts of Africa.
-
-Lactase persistence (LP) is the ability to digest lactose into adulthood due to the continued production of lactase and is one of the strongest examples of selective sweep in modern humans. Following the advent of animal domestication and dairying in human populations, SNPs
-
- has undergone recent, rapid positive selection since the advent of animal domestication and dairying in some human populations. 
-
-strongest example of selective sweep in modern humans, basically, selective sweeps occur infrequenclyt and in modern humans, this is the clearest annd widespread example of selec sweep is spread of lactase persistence . Occurred in multiple populations independently but producing the same result. 
+## Background - Lactose Intolerance
  
-In humans, 
+Lactose intolerance affects around 70% of adults worldwide. 
+Generally, a healthy newborn baby can digest about 60–70 g of lactose per day (roughly one litre of breast milk) due to the presence of the enzyme lactase in the small intestine. 
+However, after weaning, lactase expression typically declines, leading to lactose intolerance in adulthood. 
+This is known as lactase non-persistence (LNP) and is the ancestral state for humans.
+
+The lactase gene (LCT) is located on chromosome 2 and is regulated by the MCM6 locus (minichromosome maintenance complex component 6), which lies about 14 kbp upstream. 
+Several single nucleotide polymorphisms (SNPs) within the MCM6 locus influence the expression of LCT. 
+Certain variants create additional binding sites for transcriptional repressors, reducing the transcription of MCM6 and ultimately lowering lactase production, leading to lactose intolerance. 
+Conversely, other SNPs within this region disrupt these repressor sites, allowing lactase expression to persist into adulthood.
+This is known as lactase persistence (LP).
+
+With the advent of animal domestication and dairying practices, milk became a reliable and nutrient-rich food source for many populations. 
+This shift created strong selective pressure for genetic variants that allowed adults to continue producing lactase and digesting lactose — lactase persistence. 
+Because this selection occurred independently in different regions and distinct genetic variants arose in separate populations. 
+The distribution of the five most common variants are shown in the figure below. 
+Note that all of these variants are located within intron 13 of the MCM6 gene. 
+
+![SNPs associated with lactose persistence in different populations](images/lp_snp_frequencies_by_pop.jpg)
+ 
+We will be focusing on the Eurasian lactase persistence SNP, [rs4988235](https://asia.ensembl.org/Homo_sapiens/Phenotype/Locations?db=core;name=LACTASE%20PERSISTENCE;ph=3083;r=2:135850576-135851576;v=rs4988235;vdb=variation;vf=89657404), sometimes referred to as 13910C>T as in the figure above.
+The A allele enhances activator binding which increases lactase gene expression into adulthood. 
+
+![SNPs conferring lactase persistence](images/lp_snps_in_mcm6.jpg)
+
+Image from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
+
+The figure above shows a schematic of MCM6 intron 13 lactase persistence enhancer region. 
+The light grey represents the genomic sequence in the human reference genome GRCh38 chr2:135,850,966-135,851,196.
+The coloured boxes represent transcription factor binding sites and the red lines identify the five SNPs in this region conferring lactase persistence. 
 
 
-Around 70% of humans are lactose intolerant as adults. 
+### Practical focus
 
-![SNPs associated with lactose persistence in different populations](https://onlinelibrary.wiley.com/cms/asset/5e47b278-ef44-478b-a5c4-79137a66bb6c/ahg12575-fig-0002-m.jpg) 
-
-## Lactase persistence vs Lactase non-persistence background
-
-Lactose intolerance (specifically lactase non-persistence) is very common, affecting about 70% of the population and is clinically defined as lactose malabsorption with accompanying gastrointestinal symptoms. 
-Generally, a healthy newborn baby can digest about 60-70g of lactose per day (~1 liter of breast milk) due to the presence of the enzyme lactase in the small intestine. 
-However, at weaning, the expression of lactase begins to decline in a large portion of the population resulting in lactose intolerance.
-
-The lactase gene (LCT) is located on chromosome 2 and is regulated by the MCM6 locus (minichromosome maintenance complex component 6) which is located about 14kbp upstream. 
-There are a number of lactose-intolerance causing SNPs (single nucleotide polymorphisms) within the MCM6 locus. These SNPs create additional binding sites for transcriptional repressors which reduce the transcription of MCM6 and hence, reduce the production of lactase, resulting in lactose intolerance. 
-
-## The basic workflow
-
-In this practical (and the next three) we will use a simple read alignment and variant calling workflow to determine the genotype of three samples at the site of a SNP associated with lactose intolerance in Eurasians.  
+In this practical (and the next three) we will use a simple read alignment and variant calling workflow to determine the genotype of three samples at the site of the rs4988235 SNP.
+We will then consider how this relates to the phenotype of lactose tolerance. 
+ 
 The main steps in this workflow are shown in the figure below along with the file types produced by each step. 
 
 [![Variant calling workflow](https://sbc.shef.ac.uk/wrangling-genomics/img/variant_calling_workflow.png)](https://sbc.shef.ac.uk/wrangling-genomics/04-variant_calling/index.html)
 
 Our reads are Illumina paired-end reads from three Iberian individuals sequenced as part of the [1000 Genomes project](https://www.coriell.org/1/NHGRI/Collections/1000-Genomes-Project-Collection/1000-Genomes-Project?gad_source=1&gad_campaignid=10942056189&gbraid=0AAAAACRxwMsdRVvA7OauKN189ncoe-14z&gclid=Cj0KCQjwsPzHBhDCARIsALlWNG2QLO7P-lzVqNwqHFEiqk7yXlSRMsX5fLr86aNfAq15Xk-_8Iv5caMaAgmBEALw_wcB)  and the reference genome is a 7Mbp segment (7 million basepairs) from Chromosome 2 in the human reference genome [GRCh38.p14](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/). 
+
 The first step in a bioinformatics analysis/workflow is _always_ quality control (QC) and that is what we will focus on today. 
+
 ## Learning Outcomes
 
 1. Gain familiarity with high throughput sequencing data files (FASTQ reads)
