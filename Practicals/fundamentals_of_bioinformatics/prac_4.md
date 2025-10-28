@@ -1,0 +1,434 @@
+# Next Generation Sequencing (NGS) Quality Control
+
+#### By Chelsea Matthews
+
+{:.no_toc}
+
+* TOC
+{:toc}
+
+## Lactose intolerance 
+
+Lactose intolerance affects around 70% of adults.
+Generally, a healthy newborn baby can digest about 60-70g of lactose per day (~1 liter of breast milk) due to the presence of the enzyme lactase in the small intestine. 
+However, at weaning, the expression of lactase begins to decline, eventually resulting in lactose intolerance in adulthood. This is known as lactase non-persistence (LNP) and is the ancestral state.
+However, with the advent of animal domestication and dairying practices, milk became a common and reliable food source and so there was a strong selective pressure for genetic variants that allowed adults to digest lactose. 
+Multiple variants conferring this ability have been identified and 
+
+
+This selective pressur combind with geographic separation of populations meant that different populations acquired distinct alleles 
+As a result, different variants conferring lactase persistence arose in geographically separated populations. A number of variants that for the continued expression of lactase into adulthood, called lactase persistence (LP). 
+Variants conferring lactase persistence quickly became more common in populations that relied heavily on dairying. Interestingly, different variants arose in different populations to confer the same phenotype. 
+
+
+
+ were different in geographically separate populations. 
+
+
+ geographically separate populations acquired distinct variantsconferring lactase persistence were population specific. 
+
+different populations acquired. 
+Interestingly, different populations acquired different variants conferring lactose tolerance in different populations varied. 
+Different genomic variants arose in 
+in a process called a selective sweep (alleles that confer a strong advantage rise so rapidly in frequency that nearby DNA regions “hitchhike” with them, reducing local genetic diversity and leaving a distinct genomic signature). 
+These selective sweeps occurred multiple populations independently but producing the same result. 
+
+
+During a selective sweep, alleles that confer a strong advantage rise so rapidly in frequency that nearby DNA regions “hitchhike” with them, reducing local genetic diversity and leaving a distinct genomic signature.
+
+The ancestral human state was lactase non-persistence, meaning lactase enzyme production declined after weaning and adults could not easily digest milk. With the rise of dairying practices during the Neolithic, milk became a valuable and reliable food source, creating strong selective pressure for genetic variants that allowed continued lactase production into adulthood. These lactase persistence alleles rapidly increased in frequency through selective sweeps in populations that practiced dairying, particularly in Europe and parts of Africa.
+
+Lactase persistence (LP) is the ability to digest lactose into adulthood due to the continued production of lactase and is one of the strongest examples of selective sweep in modern humans. Following the advent of animal domestication and dairying in human populations, SNPs
+
+ has undergone recent, rapid positive selection since the advent of animal domestication and dairying in some human populations. 
+
+strongest example of selective sweep in modern humans, basically, selective sweeps occur infrequenclyt and in modern humans, this is the clearest annd widespread example of selec sweep is spread of lactase persistence . Occurred in multiple populations independently but producing the same result. 
+ 
+In humans, 
+
+
+Around 70% of humans are lactose intolerant as adults. 
+
+![SNPs associated with lactose persistence in different populations](https://onlinelibrary.wiley.com/cms/asset/5e47b278-ef44-478b-a5c4-79137a66bb6c/ahg12575-fig-0002-m.jpg) 
+
+## Lactase persistence vs Lactase non-persistence background
+
+Lactose intolerance (specifically lactase non-persistence) is very common, affecting about 70% of the population and is clinically defined as lactose malabsorption with accompanying gastrointestinal symptoms. 
+Generally, a healthy newborn baby can digest about 60-70g of lactose per day (~1 liter of breast milk) due to the presence of the enzyme lactase in the small intestine. 
+However, at weaning, the expression of lactase begins to decline in a large portion of the population resulting in lactose intolerance.
+
+The lactase gene (LCT) is located on chromosome 2 and is regulated by the MCM6 locus (minichromosome maintenance complex component 6) which is located about 14kbp upstream. 
+There are a number of lactose-intolerance causing SNPs (single nucleotide polymorphisms) within the MCM6 locus. These SNPs create additional binding sites for transcriptional repressors which reduce the transcription of MCM6 and hence, reduce the production of lactase, resulting in lactose intolerance. 
+
+## The basic workflow
+
+In this practical (and the next three) we will use a simple read alignment and variant calling workflow to determine the genotype of three samples at the site of a SNP associated with lactose intolerance in Eurasians.  
+The main steps in this workflow are shown in the figure below along with the file types produced by each step. 
+
+[![Variant calling workflow](https://sbc.shef.ac.uk/wrangling-genomics/img/variant_calling_workflow.png)](https://sbc.shef.ac.uk/wrangling-genomics/04-variant_calling/index.html)
+
+Our reads are Illumina paired-end reads from three Iberian individuals sequenced as part of the [1000 Genomes project](https://www.coriell.org/1/NHGRI/Collections/1000-Genomes-Project-Collection/1000-Genomes-Project?gad_source=1&gad_campaignid=10942056189&gbraid=0AAAAACRxwMsdRVvA7OauKN189ncoe-14z&gclid=Cj0KCQjwsPzHBhDCARIsALlWNG2QLO7P-lzVqNwqHFEiqk7yXlSRMsX5fLr86aNfAq15Xk-_8Iv5caMaAgmBEALw_wcB)  and the reference genome is a 7Mbp segment (7 million basepairs) from Chromosome 2 in the human reference genome [GRCh38.p14](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/). 
+The first step in a bioinformatics analysis/workflow is _always_ quality control (QC) and that is what we will focus on today. 
+## Learning Outcomes
+
+1. Gain familiarity with high throughput sequencing data files (FASTQ reads)
+2. Learn how to assess the quality of FASTQ reads
+3. Learn how to perform adapter and quality trimming
+
+## Setup
+
+This practical will again be using RStudio to interact with our VM's. 
+See [the first practical](../Bash_Practicals/1_IntroBash.md#rstudio) to remind yourself how to connect. 
+
+Also, all of the code/commands in this practical should be run in the terminal pane. 
+### Activate software 
+
+The practicals use an anaconda (`conda`) software environment to provide access to the software you'll need. This is very common practice in bioinformatics. We have set up these environments already so you just need to activate them. 
+
+For today's practical, you will need to activate the `bioinf` conda environment:
+
+```bash
+source activate bioinf
+```
+
+If this command works properly, it should produce no output. 
+**If this command fails and gives you an error message** do the following:
+
+```bash
+echo -e "envs_dirs:\n- /apps/conda3/singularity/envs" > ~/.condarc
+
+source activate bioinf
+```
+
+Everyones prompt should now have changed to look something like below:
+
+```bash
+(bioinf) a1234567@ip-10-255-0-115:/shared/a1234567$
+```
+
+The `(bioinf)` prefix lets you know you are in the `bioinf` conda environment, with access to the packages/tools installed in that environment. 
+It gives us access to both of the tools (`fastqc` and `fastp`) we need for todays practical. 
+
+### Create directories and get data
+
+Next, we'll create a directory for todays practical. 
+
+```bash
+mkdir --parents ~/Practical_alignment/{0_raw,ref}
+```
+
+Let's check the directory structure we just  created. 
+
+```bash
+tree Practical_alignment
+```
+
+It should look something like below: 
+
+```
+Practical_alignment/
+├── 0_raw
+└── ref
+```
+
+* *In the `mkdir` command, what did the argument `--parents` do?*
+* *In the same command, what was the effect of placing `0_raw` and `ref`  inside the curly braces?*
+
+Now copy the raw data (reads and reference genome) into our new directories. 
+
+```bash
+# copy reads
+cp ~/data/intro_ngs/*.fq.gz ~/Practical_alignment/0_raw/.
+
+# copy reference genome
+cp ~/data/intro_ngs/chr2_sub.fa ~/Practical_alignment/ref/.
+
+cd ~/Practical_alignment
+
+# and check the directory structure again
+tree .
+```
+
+The directory structure should now be as below. 
+
+```
+.
+├── 0_raw
+│   ├── ERR3241917_1.fq.gz
+│   ├── ERR3241917_2.fq.gz
+│   ├── ERR3241921_1.fq.gz
+│   ├── ERR3241921_2.fq.gz
+│   ├── ERR3241927_1.fq.gz
+│   └── ERR3241927_2.fq.gz
+└── ref
+    └── chr2_sub.fa
+```
+
+## Illumina Sequencing
+
+In order to analyse our data, it is helpful to understand how it was generated. While there are numerous genomic sequencing platforms available, today we will be using data from Illumina which is the most commonly used short-read sequencing platform. Illumina uses the Sequencing by Synthesis method which is explained in the following 5-minute video:
+
+[![Illumina Sequencing by Synthesis](https://img.youtube.com/vi/fCd6B5HRaZ8/0.jpg)](https://youtu.be/fCd6B5HRaZ8)
+
+Further information about Illumina sequencing is provided in the course materials as well as on the Illumina website [here](https://sapac.illumina.com/systems/sequencing-platforms.html). 
+
+The above video picks up after the process of fragmentation, as most strategies require fragments of a certain size range. This step may vary depending on your experiment, but the important concept to note during sample preparation is that the DNA insert has multiple oligonucleotide sequences ligated to either end, which together constitute the "sequencing template". 
+These include **adapters**, **indexes**, and **flow-cell binding oligos** which are shown in the figure below. 
+ 
+![Sequencing Template](images/seq-template-pe.jpg)
+
+### Sin.gle-end (SE) and Paired-end (PE)
+
+Illumina sequencing can return either a single read for each fragment or a pair of reads (one from either end) for each fragment. Single-end (SE) reads are often expressed with the length of the read as  "1 x 100 bp" for example while Paired-end (PE) reads would be expressed as '2 x 100 bp'. 
+The first read in a pair is often referred to as the "R1" and the second read as "R2".
+
+Paired-end reads provide:
+* More bases from the insert compared to a single-end read - up to 2x as many!
+* The expected distance between the reads of a pair provide additional constraints around where the read pair can/should align to a genome - the reads from a pair must align within the length of the insert which ranges from ~200-500 bp, though larger insert lengths are used for some applications
+* The reads must align to the genome with the correct relative orientation. For paired-end reads this is often referred to as: forward-reverse (fr), innies or simply <span>&#8594;</span><span>&#8592;</span>
+
+### 3' Quality Drop-Off
+
+In general, Illumina sequencing produces highly accurate reads but read quality does tend to diminish towards the 3' end. 
+During the bridge-amplification stage, millions of clusters are created on the flowcell. Each cluster comprises of 1,000-2,000 identical copies of the same template. During the process of sequencing, the polymerases attached each of the thousands of copies in a cluster "advance" one base at a time. At the start (5' end) all the polymerases are in perfect sync; generating a bright, clean, consistant light signal for detecting which base was incorporated. However, as time/number of cycles progresses, some polymerases fall behind while some race in front. The polymerases gradually get further and further out of phase with each other. This leads to dimmer and less clear signals for detection, and thus lower quality base-calls.
+
+
+### PolyG artifact
+Illumina uses only two fluorescent colours in its chemistry to represent the four bases. 
+- C  = red
+- T  = green
+- A = red and green together
+- G = no signal
+
+One limitation of this system is that if the signal from a cluster becomes too weak to detect, the instrument interprets the lack of signal as a string of high confidence **G’s**, even if the real bases are different.
+This tends to happen more often near the 3' end of reads. 
+
+## FASTQ file format
+
+Illumina reads are stored in FASTQ files with the extension `.fq` or `.fastq`. 
+These files are plain-text but are often very large so are commonly compressed using `gzip`. The `.gz` extension is added to signify this. Each read in a FASTQ file occupies 4 lines. 
+
+Let's take a look at the first 4 lines in one of our FASTQ files
+
+```bash
+zcat 0_raw/ERR3241917_1.fq.gz | head -n 4
+```
+<details>
+<summary>Code Explanation</summary>
+<ul><li>'zcat' unzips the file and sends it to stdout (standard output). </li>
+<li>The `|` takes standard output from `zcat` and sends it to `head`. </li>
+<li>`head -n 4` takes the first 4 lines and sends them to stdout. Because there is nothing after the `head` command to send the output anywhere else, the output is printed to the terminal. </li></ul>
+</details>
+
+You should see something like below: 
+
+```
+@ERR3241917.10210 10210 length=150
+GCAAATCAAAACCACTATGAGATATCTCACACCAGTTAGAATGGCAATCATTAAAAAGTCAGGAAACAACAGGTGCTGGAGAGGATGTGGAGAAATAGGAACACTTTTACACTGTTGGTGGGACTGTAAACTAGTTCAACCATTGTGGAA
++
+?????????????????????????????????????????????????????????????????????????????????????????????+????????????????????????????????????????????????????????
+```
+
+The four lines are: 
+ 1. Read identifier, starting with the `@` symbol
+ 2. Sequence string
+ 3. A `+` symbol. The read identifier may also immediately follow but this is uncommon.
+ 4. Quality string
+
+The quality string has a character for each base in the sequence string. Therefore, the length of the sequence string and the quality string should match. Quality values are numbers from `0` to `93` and are often referred to as "Phred" quality scores. To encode the quality scores as a single character, the scores are mapped to the ASCII table:
+
+Standard ASII Chart - Hex to Decimal code conversion
+![Standard ASII Chart - Hex to Decimal code conversion](https://cdn.shopify.com/s/files/1/1014/5789/files/Standard-ASCII-Table_large.jpg?10669400161723642407) 
+From https://www.commfront.com/pages/ascii-chart 
+
+You will see that the first 33 characters (decimal values of 0-32) are all non-printable or white-space (think space, tab, backspace, bell etc). The first printable character is `!` and this has the decimal value of `33`. This character is used to represent a quality value of `0` while `"` has a decimal value of `34` and represents a quality value of `1` (`34-33`). As such these quality scores are said to be Phred+33 encoded and the quality score is simply obtained by substracting 33 from the decimal value of the character in the quality string.
+
+If you go digging into old Illumina files, you may find quality values which are Phred+64. That is, a quality value of `0` is represented by `@` which has a decimal value of `64`. However, Phred+33 encoding is the current standard and is often referred to as Illumina 1.9. 
+### Phred score interpretation
+
+Phred quality scores give a measure of the confidence the caller has that the sequence base is correct.
+To do this, the quality scores are related to the probability of calling an incorrect base through the formula
+
+*Q =* −10log₁₀*P*
+
+where *P* is the probability of calling the incorrect base.
+This is more easily seen in the following table:
+
+| Phred Score | Phred+33 Encoded Character | Probability of Incorrect Base Call | Accuracy of Base Call |
+|:----------- |:---------------------------|:---------------------------------- |:----------------------|
+| 0           | `!`                        | 1                                  | 0%                    |
+| 10          | `+`                        | 10<sup>-1</sup>                    | 90%                   |
+| 20          | `5`                        | 10<sup>-2</sup>                    | 99%                   |
+| 30          | `?`                        | 10<sup>-3</sup>                    | 99.9%                 |
+| 40          | `I`                        | 10<sup>-4</sup>                    | 99.99%                |
+
+* *In the read we looked at, above there were only two different characters in the quality string. Using the ascii table, what  phred scores (a number between 0 and 40) do these characters represent? Hint: These reads are Phred+33 encoded. 
+* *What is the corresponding accuracy of  basecalls  with each of these phred scores?
+
+### FastQ file compression
+
+FASTQ files can be easily compressed to ~20% of their uncompressed size. Since most modern bioinformatics tools are capable of reading `gzip` compressed files, there are very few reasons to store the uncompressed FASTQ files on disk! Using compressed files saves a HUGE amount of disk space and also makes it faster to read the smaller amount of data off the disk!
+
+If you find yourself uncompressing FASTQ files, you are likely doing something wrong; or you found one of the few tools that requires them to be uncompressed. 
+
+## Assess short-read quality with FastQC
+FastQC is a very commonly used tool for assessing the quality of  reads in .fastq files. 
+Let's look at the help file to see how it works.
+
+```bash
+fastqc -h | less
+```
+
+- What does the '-o' option do?
+- What does the `-t` option do?
+
+Type `q` to exit when you're finished. 
+
+FastQC can be run from the command line or from a graphic user interface (GUI). We will be running it from the command line. 
+
+Let's run FastQC on our reads. 
+
+```bash
+# create a directory for FastQC output files
+mkdir ~/Practical_alignment/0_raw/FastQC
+
+# Make sure you're in the right directory
+cd ~/Practical_alignment
+
+# Run fastqc on one sample
+fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
+``` 
+
+The above command:
+
+1. Gave both read1 and read2 for a single sample to fastqc using the wildcard `*` in the place of the value 1 or 2.
+2. Specified where to write the output (`-o ~/Practical_alignment/0_raw/FastQC`) and
+3. Requested two threads (`-t 2`).
+
+What is a thread??
+
+FastQC creates an .html report (and a zip file but we don't need that) for each file provided which can be opened from any web browser. 
+
+Let's see what it created. 
+
+```bash
+ls -lh ~/Practical_alignment/0_raw/FastQC
+```
+
+To view the reports, use the `Files` pane to navigate to `~/Practical_alignment/0_raw/FastQC` and click on one of the html files you find (**If you don't see any html files there call a tutor**). Choose `View in Web Browser` and the file will open in your browser.
+
+### Inspecting FastQC reports
+
+The left hand menu contains a series of clickable links to navigate through the report, with a quick guideline about each section given as a tick, cross or exclamation mark.
+
+Looking at the very top of the report:
+
+1. **How many sequences are there in both files?**
+2. **How long are the sequences in these files?**
+
+Now let's look at some other parts of the report. 
+
+#### Per Base Sequence Quality
+
+Click on the `Per base sequence quality` hyper-link on the left of the page & you will see a boxplot of the QC score distributions for every position in the read.
+These are the Phred scores we discussed earlier, and this plot is usually the first one that bioinformaticians will look at for making informed decisions about the overall quality of the data and settings for later stages of the analysis.
+
+* *What do you notice about the quality scores as you move from the 5' to the 3' end of the reads?*
+* *Do you think we might need to trim reads with poor quality 3' ends?*
+
+#### Per Base Sequence Content
+
+During the preparation of the sequencing library, the genome is randomly fragmented.
+As such we would expect to observe relatively flat horizontal lines across this plot.
+Demonstrating that we have indeed sampled fragments at random across the genome.
+Depending on the GC content of the species, we might see the A and T lines tracking together but separately from the G and C lines.
+It is also relatively common to see a drift towards G towards the end of a read.
+This is because most modern Illumina sequencing is performed on a "2-colour" system and G is the absence of both colours.
+
+### Overrepresented Sequences
+
+Here we can see any sequence which are more abundant than would be expected.
+Sometimes you will see sequences here that match the adapters used in the library prep. 
+
+### Adapter Content
+
+For whole genome shotgut sequencing library preps we expect to see little adapter content in the reads.
+If there is a significant up-turn in adapter content towards the 3' end, this may indicate the genomic DNA was over-fragmented during libarary prep.
+If this is significant enough, it is worth asking the sequencing service provider to redo the library prep and sequencing.
+
+* *Do you think it will be necessary to look for and remove adapter sequences from the reads?*
+
+## Adapter and quality trimming
+
+If we do not trim adapters or low quality regions from reads we might not be able to align reads to a genome.
+Adapter-containing reads will fail to align as the adapter does not match anything in the genome.
+Low quality stretches of reads might contain too many sequencing errors and stop the read aligning to the correct location in the genome.
+
+If we have a large volume of data, the fact that a small proportion of reads contain some adapter or have low quality regions doesn't have a significant effect when aligning reads to a genome.
+Those reads will just not align, but we have plenty more where they came from!
+If you find yourself performing excessive quality or adapter trimming, the data is probably poor and you should have it resequenced or you have insufficient coverage and are trying to scrape-the-barrel to save every last read.
+However, if you are planning to perform de novo genome assembly from the reads, then it is important to remove such regions as they can dramatically increase computational requirements.
+
+There are many tools for performing quality and adapter trimming.
+We are going to be using `fastp` in this practical. The tool `trimmomatic` would be a good alternative. 
+
+### Fastp
+
+Important aspects of cleaning your data:
+- Removing adapters
+- Removing low quality bases from the end of the reads 
+- Removing other sequencing artifacts where possible (polyG artifacts)
+
+![Read trimming process](https://carpentries-lab.github.io/metagenomics-analysis/fig/03-03-01.png)
+(https://carpentries-lab.github.io/metagenomics-analysis/03-trimming-filtering/index.html)
+
+When we trim reads, we usually specify a minimum length. If a trimmed read is shorter than this length, it is discarded entirely. Therefore, trimming a set of paired-end reads requires to input files (Read 1 and Read 2) and generates four output files. 
+
+- Read 1 paired reads
+- Read 2 paired reads
+- Read 1 orphan reads 
+- Read 2 orphan reads
+
+
+Let's have a look at the help documentation. 
+
+```bash
+fastp -h
+```
+
+
+```bash
+mkdir -p ~/Practical_alignment/1_trim/reports
+
+time fastp \
+  --thread 2 \
+  -i 0_raw/ERR1949188_1.fastq.gz -I 0_raw/ERR1949188_2.fastq.gz \
+  -o 1_trim/ERR1949188_1.fastq.gz \
+  -O 1_trim/ERR1949188_2.fastq.gz \
+  --unpaired1 1_trim/ERR1949188_1.orphans.fastq.gz \
+  --unpaired2 1_trim/ERR1949188_2.orphans.fastq.gz \
+  --cut_right --cut_window_size 4 --cut_mean_quality 20 \
+  --length_required 75
+```
+
+### Post-trimming FastQC
+
+To assess how the trimming has performed, run FastQC across the paired reads output by trimmomatic and fastp.
+
+```bash
+mkdir -p ~/Practical_alignment/1_trim/FastQC
+
+fastqc --threads 2 \
+  1_trim/FastQC/ERR1949188_?.fastq.gz
+```
+
+Take a look at the various FastQC HTML report files and compare pre and post trimming plots for:
+
+* Per base sequence quality
+* Overrepresented sequences
+* Adapter Content
+
+## Writing a simple script
+
+
+
