@@ -26,15 +26,16 @@ Because this selection occurred independently in different regions and distinct 
 The distribution of the five most common variants are shown in the figure below. 
 Note that all of these variants are located within intron 13 of the MCM6 gene. 
 
-![SNPs associated with lactose persistence in different populations|400](images/lp_snp_frequencies_by_pop.jpg)
+![SNPs associated with lactose persistence in different populations](images/lp_snp_frequencies_by_pop.jpg | width=200)
+**SNPs associated with lactose persistence in different populations**
 Image from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
  
 We will be focusing on the Eurasian lactase persistence SNP, [rs4988235](https://asia.ensembl.org/Homo_sapiens/Phenotype/Locations?db=core;name=LACTASE%20PERSISTENCE;ph=3083;r=2:135850576-135851576;v=rs4988235;vdb=variation;vf=89657404), sometimes referred to as 13910C>T as in the figure above.
 The A allele enhances activator binding which increases lactase gene expression into adulthood. 
 
 ![SNPs conferring lactase persistence](images/lp_snps_in_mcm6.jpg)
-
-The figure above shows a schematic of MCM6 intron 13 lactase persistence enhancer region. 
+**SNPs conferring lactase persistence**
+This figure shows a schematic of MCM6 intron 13 lactase persistence enhancer region. 
 The light grey represents the genomic sequence in the human reference genome GRCh38 chr2:135,850,966-135,851,196.
 The coloured boxes represent transcription factor binding sites and the red lines identify the five SNPs in this region conferring lactase persistence. 
 Image from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
