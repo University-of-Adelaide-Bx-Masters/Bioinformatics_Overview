@@ -26,7 +26,7 @@ Because this selection occurred independently in different regions and distinct 
 The distribution of the five most common variants are shown in the figure below. 
 Note that all of these variants are located within intron 13 of the MCM6 gene. 
 
-![SNPs associated with lactose persistence in different populations](images/lp_snp_frequencies_by_pop.jpg | width=200)
+![SNPs associated with lactose persistence in different populations](images/lp_snp_frequencies_by_pop.jpg)
 **SNPs associated with lactose persistence in different populations**
 Image from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
  
