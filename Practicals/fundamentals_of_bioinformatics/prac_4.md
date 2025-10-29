@@ -1,10 +1,7 @@
-# FASTQ files and Quality Control
+# Practical 4 - FASTQ files and Quality Control
 
 #### By Chelsea Matthews
 
-
-
-* TOC
 {:toc}
 
 ## Background - Lactose Intolerance
