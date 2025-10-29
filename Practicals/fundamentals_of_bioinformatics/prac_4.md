@@ -1,8 +1,8 @@
-# Next Generation Sequencing (NGS) Quality Control
+# FASTQ files and Quality Control
 
 #### By Chelsea Matthews
 
-{:.no_toc}
+
 
 * TOC
 {:toc}
