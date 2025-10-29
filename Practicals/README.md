@@ -1,4 +1,4 @@
-# README
+# Practical naming convention
 
 This course contains three modules:
 
@@ -6,9 +6,7 @@ This course contains three modules:
 - Pathogens and Metagenomics
 - Reproducible Bioinformatics
 
-Please place all of your practical materials within the associated module. 
-
-### Practical naming convention
+All practical materials should be placed within the associated module. 
 
 Please format practical filenames as `prac_number_descriptor.md`
 For example, the second bash practical would be called `prac_2_bash.md`.
