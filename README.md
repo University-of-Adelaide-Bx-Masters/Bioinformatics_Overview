@@ -1,10 +1,9 @@
 
-## COURSE CODE HERE
+## >>COURSE CODE GOES HERE<<
 
 Delivered in Semester 1
 
-
-### Fundamentals of Bioinformatics
+## Fundamentals of Bioinformatics
 
 **Introduction to BASH**
 
@@ -13,7 +12,6 @@ Delivered in Semester 1
 - Practical 3
 
 **Read Alignment and Variant Calling**
-
 - Practical 4 - [Read QC](Practicals/fundamentals_of_bioinformatics/prac_4_readqc.md)
 - Practical 5
 - Practical 6 - [Read Alignment](Practicals/fundamentals_of_bioinformatics/prac_6_alignment.md)
