@@ -1,7 +1,7 @@
 # Practical 4 - FASTQ files and Quality Control
 
 #### By Chelsea Matthews
-
+* TOC
 {:toc}
 
 ## Background - Lactose Intolerance
@@ -22,6 +22,8 @@ This shift created strong selective pressure for genetic variants that allowed a
 Because this selection occurred independently in different regions and distinct genetic variants arose in separate populations. 
 The distribution of the five most common variants are shown in the figure below. 
 Note that all of these variants are located within intron 13 of the MCM6 gene. 
+
+<img src="images/lp_snp_frequencies_by_pop.jpg" alt="SNPs associated with lactose persistence across different populations" height="200">
 
 ![SNPs associated with lactose persistence in different populations](images/lp_snp_frequencies_by_pop.jpg)
 **SNPs associated with lactose persistence in different populations**
