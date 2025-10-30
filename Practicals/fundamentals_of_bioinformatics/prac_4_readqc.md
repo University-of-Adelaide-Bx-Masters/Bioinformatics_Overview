@@ -1,10 +1,15 @@
 # Practical 4 - FASTQ files and Quality Control
+{:.no_toc}
 
 #### By Chelsea Matthews
+{:.no_toc}
+
 * TOC
 {:toc}
 
-## Background - Lactose Intolerance
+# Introduction/Background
+
+## Lactose Intolerance 
  
 Lactose intolerance affects around 70% of adults worldwide. 
 Generally, a healthy newborn baby can digest about 60–70 g of lactose per day (roughly one litre of breast milk) due to the presence of the enzyme lactase in the small intestine. 
@@ -23,11 +28,9 @@ Because this selection occurred independently in different regions and distinct 
 The distribution of the five most common variants are shown in the figure below. 
 Note that all of these variants are located within intron 13 of the MCM6 gene. 
 
-<img src="images/lp_snp_frequencies_by_pop.jpg" alt="SNPs associated with lactose persistence across different populations" height="200">
+<img src="images/lp_snp_frequencies_by_pop.jpg" alt="SNPs associated with lactose persistence across different populations" height="400">
 
-![SNPs associated with lactose persistence in different populations](images/lp_snp_frequencies_by_pop.jpg)
-**SNPs associated with lactose persistence in different populations**
-Image from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
+**SNPs associated with lactose persistence in different populations** from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
  
 We will be focusing on the Eurasian lactase persistence SNP, [rs4988235](https://asia.ensembl.org/Homo_sapiens/Phenotype/Locations?db=core;name=LACTASE%20PERSISTENCE;ph=3083;r=2:135850576-135851576;v=rs4988235;vdb=variation;vf=89657404), sometimes referred to as 13910C>T as in the figure above.
 The A allele enhances activator binding which increases lactase gene expression into adulthood. 
@@ -40,7 +43,7 @@ The coloured boxes represent transcription factor binding sites and the red line
 Image from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
 
 
-## Practical focus
+## Practical Overview
 
 In this practical (and the next three) we will use a simple read alignment and variant calling workflow to determine the genotype of three samples at the site of the rs4988235 SNP.
 We will then consider how this relates to the phenotype of lactose tolerance. 
@@ -58,14 +61,16 @@ The first step in a bioinformatics analysis/workflow is _always_ quality control
 1. Gain familiarity with high throughput sequencing data files (FASTQ reads)
 2. Learn how to assess the quality of FASTQ reads
 3. Learn how to perform adapter and quality trimming
+4. Learn simple strategies to reduce memory (RAM) requirements 
 
-## Setup
+# Setup
 
 This practical will again be using RStudio to interact with our VM's. 
 See [the first practical](../Bash_Practicals/1_IntroBash.md#rstudio) to remind yourself how to connect. 
 
 Also, all of the code/commands in this practical should be run in the terminal pane. 
-### Activate software 
+
+## Activate software 
 
 The practicals use an anaconda (`conda`) software environment to provide access to the software you'll need. This is very common practice in bioinformatics. We have set up these environments already so you just need to activate them. 
 
@@ -93,17 +98,12 @@ Everyones prompt should now have changed to look something like below:
 The `(bioinf)` prefix lets you know you are in the `bioinf` conda environment, with access to the packages/tools installed in that environment. 
 It gives us access to both of the tools (`fastqc` and `fastp`) we need for todays practical. 
 
-### Create directories and get data
+## Create directory structure 
 
-Next, we'll create a directory for todays practical. 
-
-```bash
-mkdir --parents ~/Practical_alignment/{0_raw,ref}
-```
-
-Let's check the directory structure we just  created. 
+Next, we'll create a directory for todays practical and take a look at the directory structure using `tree`. 
 
 ```bash
+mkdir --parents ~/Practical_alignment/{ref,0_raw,1_trim,2_align,3_variants}
 tree Practical_alignment
 ```
 
@@ -112,56 +112,86 @@ It should look something like below:
 ```
 Practical_alignment/
 ├── 0_raw
+├── 1_trim
+├── 2_align
+├── 3_variants
 └── ref
 ```
 
 * *In the `mkdir` command, what did the argument `--parents` do?*
-* *In the same command, what was the effect of placing `0_raw` and `ref`  inside the curly braces?*
+* *In the same command, what was the effect of placing `ref`, `0_raw`, `1_trim` etc.  inside the curly braces?*
 
-Now copy the raw data (reads and reference genome) into our new directories. 
+### Create symlinks to access raw data
+
+The data we use and create in bioinformatics is often very large and takes up a lot of storage spaces. 
+Because data storage is usually limited and is surprisingly expensive, we need to manage our data carefully.
+One way we can do that is by using symlinks. 
+
+A symlink (or 'symbolic link') is a shortcut that points to another file or folder. 
+It lets you access the original file from a different location without duplicating it, saving disk space and keeping workflows flexible.
+
+We will create symlinks to the .fastq files for our analysis and will copy over the reference sequence. Note that symlinks don't have to have the same name as the file they are pointing to but we will keep them the same here.  
+
 
 ```bash
-# copy reads
-cp ~/data/intro_ngs/*.fq.gz ~/Practical_alignment/0_raw/.
+cd Practical_alignment
 
-# copy reference genome
-cp ~/data/intro_ngs/chr2_sub.fa ~/Practical_alignment/ref/.
+## copy reference genome
+cp  ~/data/intro_ngs/chr2_sub.fa ref/
 
-cd ~/Practical_alignment
+## make symlinks for all .fq.gz files at once
+ln -s ~/data/intro_ngs/*.fq.gz 0_raw/
 
-# and check the directory structure again
 tree .
 ```
 
 The directory structure should now be as below. 
+Notice how the reference sequence is simply listed by its name while the symlinks show the symlink n
+ame, an arrow, and then the full path to the file they are pointing to.
+Symlinks are also coloured differently in the Terminal.
 
-```
+
+```bash
 .
 ├── 0_raw
-│   ├── ERR3241917_1.fq.gz
-│   ├── ERR3241917_2.fq.gz
-│   ├── ERR3241921_1.fq.gz
-│   ├── ERR3241921_2.fq.gz
-│   ├── ERR3241927_1.fq.gz
-│   └── ERR3241927_2.fq.gz
+│   ├── ERR3241917_1.fq.gz -> /shared//a1761942/data/intro_ngs/ERR3241917_1.fq.gz
+│   ├── ERR3241917_2.fq.gz -> /shared//a1761942/data/intro_ngs/ERR3241917_2.fq.gz
+│   ├── ERR3241921_1.fq.gz -> /shared//a1761942/data/intro_ngs/ERR3241921_1.fq.gz
+│   ├── ERR3241921_2.fq.gz -> /shared//a1761942/data/intro_ngs/ERR3241921_2.fq.gz
+│   ├── ERR3241927_1.fq.gz -> /shared//a1761942/data/intro_ngs/ERR3241927_1.fq.gz
+│   └── ERR3241927_2.fq.gz -> /shared//a1761942/data/intro_ngs/ERR3241927_2.fq.gz
+├── 1_trim
+├── 2_align
+├── 3_variants
 └── ref
     └── chr2_sub.fa
+
 ```
 
-## Illumina Sequencing
 
-In order to analyse our data, it is helpful to understand how it was generated. While there are numerous genomic sequencing platforms available, today we will be using data from Illumina which is the most commonly used short-read sequencing platform. Illumina uses the Sequencing by Synthesis method which is explained in the following 5-minute video:
+# Illumina and FASTQ files
 
-[![Illumina Sequencing by Synthesis](https://img.youtube.com/vi/fCd6B5HRaZ8/0.jpg)](https://youtu.be/fCd6B5HRaZ8)
+In order to analyse our data, we need to understand how it was generated. 
+We will be analysing paired-end reads from Illumina, the most commonly used short-read sequencing platform. 
+Illumina uses the [Sequencing by Synthesis](https://youtu.be/fCd6B5HRaZ8) method which you will have learned about in the course materials.
+More information on Illumina sequencing is available on [their website](https://sapac.illumina.com/systems/sequencing-platforms.html).
 
-Further information about Illumina sequencing is provided in the course materials as well as on the Illumina website [here](https://sapac.illumina.com/systems/sequencing-platforms.html). 
+<details>
+<summary>Sequencing By Synthesis Summary</summary>
+<ul>Illumina sequencing uses a sequencing-by-synthesis (SBS) approach, where fluorescently labelled nucleotides are incorporated one base at a time as DNA is copied. First, DNA fragments with special adapters are attached to a flow cell surface and amplified into clusters by bridge amplification, so each cluster represents many copies of the same DNA fragment. During sequencing, DNA polymerase adds one fluorescently labelled nucleotide to each growing strand per cycle. Each base emits a characteristic colour that is imaged by a high-resolution camera, identifying the incorporated base. The fluorescent label and blocking group are then chemically removed so the next base can be added. </ul>
+
+<ul>This process repeats for hundreds of cycles, producing a series of colour images that are computationally converted into a sequence of bases for each cluster. The result is millions to billions of short reads that can then be aligned to a reference genome or assembled de novo for downstream analysis. Sequencing can be performed as single-end (SE), where only one end of each fragment is read, or as paired-end (PE), where both ends are sequenced, providing more information for accurate alignment and detection of structural variation.</ul>
+</details>
+
+## Indexes and things...??
+
 
 The above video picks up after the process of fragmentation, as most strategies require fragments of a certain size range. This step may vary depending on your experiment, but the important concept to note during sample preparation is that the DNA insert has multiple oligonucleotide sequences ligated to either end, which together constitute the "sequencing template". 
 These include **adapters**, **indexes**, and **flow-cell binding oligos** which are shown in the figure below. 
  
 ![Sequencing Template](images/seq-template-pe.jpg)
 
-### Sin.gle-end (SE) and Paired-end (PE)
+## Single-end (SE) and Paired-end (PE)
 
 Illumina sequencing can return either a single read for each fragment or a pair of reads (one from either end) for each fragment. Single-end (SE) reads are often expressed with the length of the read as  "1 x 100 bp" for example while Paired-end (PE) reads would be expressed as '2 x 100 bp'. 
 The first read in a pair is often referred to as the "R1" and the second read as "R2".
@@ -170,6 +200,8 @@ Paired-end reads provide:
 * More bases from the insert compared to a single-end read - up to 2x as many!
 * The expected distance between the reads of a pair provide additional constraints around where the read pair can/should align to a genome - the reads from a pair must align within the length of the insert which ranges from ~200-500 bp, though larger insert lengths are used for some applications
 * The reads must align to the genome with the correct relative orientation. For paired-end reads this is often referred to as: forward-reverse (fr), innies or simply <span>&#8594;</span><span>&#8592;</span>
+
+
 
 ### 3' Quality Drop-Off
 
@@ -187,10 +219,11 @@ Illumina uses only two fluorescent colours in its chemistry to represent the fou
 One limitation of this system is that if the signal from a cluster becomes too weak to detect, the instrument interprets the lack of signal as a string of high confidence **G’s**, even if the real bases are different.
 This tends to happen more often near the 3' end of reads. 
 
-## FASTQ file format
+# FASTQ file format
 
 Illumina reads are stored in FASTQ files with the extension `.fq` or `.fastq`. 
-These files are plain-text but are often very large so are commonly compressed using `gzip`. The `.gz` extension is added to signify this. Each read in a FASTQ file occupies 4 lines. 
+These files are plain-text but are often very large so are commonly compressed using `gzip`. The `.gz` extension is added to signify this.
+Most modern bioinformatics tools can read `gzip` compressed files you should keep them compressed unless you are using a tool that specifically requires them to be decompresed. 
 
 Let's take a look at the first 4 lines in one of our FASTQ files
 
@@ -228,7 +261,8 @@ From https://www.commfront.com/pages/ascii-chart
 You will see that the first 33 characters (decimal values of 0-32) are all non-printable or white-space (think space, tab, backspace, bell etc). The first printable character is `!` and this has the decimal value of `33`. This character is used to represent a quality value of `0` while `"` has a decimal value of `34` and represents a quality value of `1` (`34-33`). As such these quality scores are said to be Phred+33 encoded and the quality score is simply obtained by substracting 33 from the decimal value of the character in the quality string.
 
 If you go digging into old Illumina files, you may find quality values which are Phred+64. That is, a quality value of `0` is represented by `@` which has a decimal value of `64`. However, Phred+33 encoding is the current standard and is often referred to as Illumina 1.9. 
-### Phred score interpretation
+
+## Phred scores
 
 Phred quality scores give a measure of the confidence the caller has that the sequence base is correct.
 To do this, the quality scores are related to the probability of calling an incorrect base through the formula
@@ -249,14 +283,9 @@ This is more easily seen in the following table:
 * *In the read we looked at, above there were only two different characters in the quality string. Using the ascii table, what  phred scores (a number between 0 and 40) do these characters represent? Hint: These reads are Phred+33 encoded. 
 * *What is the corresponding accuracy of  basecalls  with each of these phred scores?
 
-### FastQ file compression
+# Quality control for Illumina - FastQC
 
-FASTQ files can be easily compressed to ~20% of their uncompressed size. Since most modern bioinformatics tools are capable of reading `gzip` compressed files, there are very few reasons to store the uncompressed FASTQ files on disk! Using compressed files saves a HUGE amount of disk space and also makes it faster to read the smaller amount of data off the disk!
-
-If you find yourself uncompressing FASTQ files, you are likely doing something wrong; or you found one of the few tools that requires them to be uncompressed. 
-
-## Assess short-read quality with FastQC
-FastQC is a very commonly used tool for assessing the quality of  reads in .fastq files. 
+FastQC is a very commonly used tool for assessing the quality of Illumina reads.
 Let's look at the help file to see how it works.
 
 ```bash
@@ -301,7 +330,7 @@ ls -lh ~/Practical_alignment/0_raw/FastQC
 
 To view the reports, use the `Files` pane to navigate to `~/Practical_alignment/0_raw/FastQC` and click on one of the html files you find (**If you don't see any html files there call a tutor**). Choose `View in Web Browser` and the file will open in your browser.
 
-### Inspecting FastQC reports
+## Inspecting FastQC reports
 
 The left hand menu contains a series of clickable links to navigate through the report, with a quick guideline about each section given as a tick, cross or exclamation mark.
 
@@ -342,7 +371,7 @@ If this is significant enough, it is worth asking the sequencing service provide
 
 * *Do you think it will be necessary to look for and remove adapter sequences from the reads?*
 
-## Adapter and quality trimming
+# Adapter and quality trimming
 
 If we do not trim adapters or low quality regions from reads we might not be able to align reads to a genome.
 Adapter-containing reads will fail to align as the adapter does not match anything in the genome.
@@ -356,7 +385,7 @@ However, if you are planning to perform de novo genome assembly from the reads, 
 There are many tools for performing quality and adapter trimming.
 We are going to be using `fastp` in this practical. The tool `trimmomatic` would be a good alternative. 
 
-### Fastp
+## Fastp
 
 Important aspects of cleaning your data:
 - Removing adapters
