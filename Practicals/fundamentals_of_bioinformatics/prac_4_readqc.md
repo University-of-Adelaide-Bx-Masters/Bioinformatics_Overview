@@ -36,6 +36,7 @@ We will be focusing on the Eurasian lactase persistence SNP, [rs4988235](https:/
 The A allele enhances activator binding which increases lactase gene expression into adulthood. 
 
 ![SNPs conferring lactase persistence](images/lp_snps_in_mcm6.jpg)
+
 **SNPs conferring lactase persistence**
 This figure shows a schematic of MCM6 intron 13 lactase persistence enhancer region. 
 The light grey represents the genomic sequence in the human reference genome GRCh38 chr2:135,850,966-135,851,196.
@@ -55,8 +56,9 @@ The main steps in this workflow are shown in the figure below along with the fil
 Our reads are Illumina paired-end reads from three Iberian individuals sequenced as part of the [1000 Genomes project](https://www.coriell.org/1/NHGRI/Collections/1000-Genomes-Project-Collection/1000-Genomes-Project?gad_source=1&gad_campaignid=10942056189&gbraid=0AAAAACRxwMsdRVvA7OauKN189ncoe-14z&gclid=Cj0KCQjwsPzHBhDCARIsALlWNG2QLO7P-lzVqNwqHFEiqk7yXlSRMsX5fLr86aNfAq15Xk-_8Iv5caMaAgmBEALw_wcB)  and the reference genome is a 7Mbp segment (7 million basepairs) from Chromosome 2 in the human reference genome [GRCh38.p14](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/). 
 
 The first step in a bioinformatics analysis/workflow is _always_ quality control (QC) and that is what we will focus on today. 
+This includes checking the quality of raw data, trimming our raw data, and then re-checking quality.
 
-## Learning Outcomes
+## **Learning Outcomes**
 
 1. Gain familiarity with high throughput sequencing data files (FASTQ reads)
 2. Learn how to assess the quality of FASTQ reads
