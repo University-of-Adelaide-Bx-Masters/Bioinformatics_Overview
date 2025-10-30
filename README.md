@@ -1,11 +1,6 @@
-* TOC
-{:toc}
+# Bioinformatics: Overview
 
-## Bioinformatics: Overview
-{:.no_toc}
-
-### COURSE CODE HERE
-{:.no_toc}
+## COURSE CODE HERE
 
 This course is delivered in Semester 1
 
@@ -14,15 +9,12 @@ This course is delivered in Semester 1
 ### Fundamentals of Bioinformatics
 
 Practical 1 
-
 Practical 2
 
 Practical 3
 
 Practical 4 - [Read QC]
-
 Practical 5 - [Read Alignment]
-
 Practical 6
 
 
