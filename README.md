@@ -3,7 +3,7 @@
 
 Delivered in Semester 1
 
-## Fundamentals of Bioinformatics
+## Module 1: Fundamentals of Bioinformatics
 
 **Introduction to BASH**
 
@@ -18,11 +18,11 @@ Delivered in Semester 1
 - Practical 6 - [Read Alignment](Practicals/fundamentals_of_bioinformatics/prac_6_alignment.md)
 - Practical 7
 
-## Pathogens and Metagenomics
+## Module 2: Pathogens and Metagenomics
 
 
 
-## Reproducible Bioinformatics
+## Module 3: Reproducible Bioinformatics
 
 
 

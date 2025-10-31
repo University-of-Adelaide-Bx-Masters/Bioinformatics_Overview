@@ -7,9 +7,9 @@
 * TOC
 {:toc}
 
-# Introduction/Background
+# **Introduction/Background**
 
-## Lactose Intolerance 
+## Biological and genetic basis for lactose intolerance 
  
 Lactose intolerance affects around 70% of adults worldwide. 
 Generally, a healthy newborn baby can digest about 60–70 g of lactose per day (roughly one litre of breast milk) due to the presence of the enzyme lactase in the small intestine. 
@@ -53,19 +53,19 @@ The main steps in this workflow are shown in the figure below along with the fil
 
 [![Variant calling workflow](https://sbc.shef.ac.uk/wrangling-genomics/img/variant_calling_workflow.png)](https://sbc.shef.ac.uk/wrangling-genomics/04-variant_calling/index.html)
 
-Our reads are Illumina paired-end reads from three Iberian individuals sequenced as part of the [1000 Genomes project](https://www.coriell.org/1/NHGRI/Collections/1000-Genomes-Project-Collection/1000-Genomes-Project?gad_source=1&gad_campaignid=10942056189&gbraid=0AAAAACRxwMsdRVvA7OauKN189ncoe-14z&gclid=Cj0KCQjwsPzHBhDCARIsALlWNG2QLO7P-lzVqNwqHFEiqk7yXlSRMsX5fLr86aNfAq15Xk-_8Iv5caMaAgmBEALw_wcB)  and the reference genome is a 7Mbp segment (7 million basepairs) from Chromosome 2 in the human reference genome [GRCh38.p14](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/). 
+The data we will analyse with this workflow is Illumina paired-end reads from three Iberian individuals sequenced as part of the [1000 Genomes project](https://www.coriell.org/1/NHGRI/Collections/1000-Genomes-Project-Collection/1000-Genomes-Project?gad_source=1&gad_campaignid=10942056189&gbraid=0AAAAACRxwMsdRVvA7OauKN189ncoe-14z&gclid=Cj0KCQjwsPzHBhDCARIsALlWNG2QLO7P-lzVqNwqHFEiqk7yXlSRMsX5fLr86aNfAq15Xk-_8Iv5caMaAgmBEALw_wcB)  and the reference genome is a 7Mbp segment (7 million basepairs) from Chromosome 2 in the human reference genome [GRCh38.p14](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/). 
 
-The first step in a bioinformatics analysis/workflow is _always_ quality control (QC) and that is what we will focus on today. 
+The first step in a bioinformatics analysis/workflow is _always_ quality control (QC) and that will be the focus for today. 
 This includes checking the quality of raw data, trimming our raw data, and then re-checking quality.
 
-## **Learning Outcomes**
+## Learning Outcomes
 
 1. Gain familiarity with high throughput sequencing data files (FASTQ reads)
 2. Learn how to assess the quality of FASTQ reads
 3. Learn how to perform adapter and quality trimming
-4. Learn simple strategies to reduce memory (RAM) requirements 
+4. Learn simple strategies to reduce memory/storage requirements 
 
-# Setup
+# **Setup**
 
 This practical will again be using RStudio to interact with our VM's. 
 See [the first practical](../Bash_Practicals/1_IntroBash.md#rstudio) to remind yourself how to connect. 
@@ -109,7 +109,7 @@ mkdir --parents ~/Practical_alignment/{ref,0_raw,1_trim,2_align,3_variants}
 tree Practical_alignment
 ```
 
-It should look something like below: 
+It should look something like below and reflects the main steps shown in the workflow above. 
 
 ```
 Practical_alignment/
@@ -123,17 +123,18 @@ Practical_alignment/
 * *In the `mkdir` command, what did the argument `--parents` do?*
 * *In the same command, what was the effect of placing `ref`, `0_raw`, `1_trim` etc.  inside the curly braces?*
 
-### Create symlinks to access raw data
+## Get data (with symlinks!)
 
 The data we use and create in bioinformatics is often very large and takes up a lot of storage spaces. 
 Because data storage is usually limited and is surprisingly expensive, we need to manage our data carefully.
 One way we can do that is by using symlinks. 
 
 A symlink (or 'symbolic link') is a shortcut that points to another file or folder. 
-It lets you access the original file from a different location without duplicating it, saving disk space and keeping workflows flexible.
+It lets you access the original file from a different location without duplicating it and thereby saves disk space.
 
-We will create symlinks to the .fastq files for our analysis and will copy over the reference sequence. Note that symlinks don't have to have the same name as the file they are pointing to but we will keep them the same here.  
+We will create symlinks to the .fastq files for our analysis and will copy over the reference sequence. 
 
+**Note:** Symlinks don't have to have the same name as the file they are pointing to but we will keep them the same here.  
 
 ```bash
 cd Practical_alignment
@@ -171,7 +172,7 @@ Symlinks are also coloured differently in the Terminal.
 ```
 
 
-# Illumina and FASTQ files
+# **Illumina Sequencing**
 
 In order to analyse our data, we need to understand how it was generated. 
 We will be analysing paired-end reads from Illumina, the most commonly used short-read sequencing platform. 
@@ -221,11 +222,12 @@ Illumina uses only two fluorescent colours in its chemistry to represent the fou
 One limitation of this system is that if the signal from a cluster becomes too weak to detect, the instrument interprets the lack of signal as a string of high confidence **G’s**, even if the real bases are different.
 This tends to happen more often near the 3' end of reads. 
 
-# FASTQ file format
+# **FASTQ files**
 
 Illumina reads are stored in FASTQ files with the extension `.fq` or `.fastq`. 
 These files are plain-text but are often very large so are commonly compressed using `gzip`. The `.gz` extension is added to signify this.
 Most modern bioinformatics tools can read `gzip` compressed files you should keep them compressed unless you are using a tool that specifically requires them to be decompresed. 
+
 
 Let's take a look at the first 4 lines in one of our FASTQ files
 
@@ -256,8 +258,8 @@ The four lines are:
 
 The quality string has a character for each base in the sequence string. Therefore, the length of the sequence string and the quality string should match. Quality values are numbers from `0` to `93` and are often referred to as "Phred" quality scores. To encode the quality scores as a single character, the scores are mapped to the ASCII table:
 
-Standard ASII Chart - Hex to Decimal code conversion
-![Standard ASII Chart - Hex to Decimal code conversion](https://cdn.shopify.com/s/files/1/1014/5789/files/Standard-ASCII-Table_large.jpg?10669400161723642407) 
+Standard ASCII Chart - Hex to Decimal code conversion
+![Standard ASCII Chart - Hex to Decimal code conversion](https://cdn.shopify.com/s/files/1/1014/5789/files/Standard-ASCII-Table_large.jpg?10669400161723642407) 
 From https://www.commfront.com/pages/ascii-chart 
 
 You will see that the first 33 characters (decimal values of 0-32) are all non-printable or white-space (think space, tab, backspace, bell etc). The first printable character is `!` and this has the decimal value of `33`. This character is used to represent a quality value of `0` while `"` has a decimal value of `34` and represents a quality value of `1` (`34-33`). As such these quality scores are said to be Phred+33 encoded and the quality score is simply obtained by substracting 33 from the decimal value of the character in the quality string.
@@ -285,7 +287,7 @@ This is more easily seen in the following table:
 * *In the read we looked at, above there were only two different characters in the quality string. Using the ascii table, what  phred scores (a number between 0 and 40) do these characters represent? Hint: These reads are Phred+33 encoded. 
 * *What is the corresponding accuracy of  basecalls  with each of these phred scores?
 
-# Quality control for Illumina - FastQC
+# Quality Control with FastQC
 
 FastQC is a very commonly used tool for assessing the quality of Illumina reads.
 Let's look at the help file to see how it works.
@@ -371,28 +373,22 @@ For whole genome shotgut sequencing library preps we expect to see little adapte
 If there is a significant up-turn in adapter content towards the 3' end, this may indicate the genomic DNA was over-fragmented during libarary prep.
 If this is significant enough, it is worth asking the sequencing service provider to redo the library prep and sequencing.
 
-* *Do you think it will be necessary to look for and remove adapter sequences from the reads?*
+* *Do you think it will be necessary to look for and remove adapter sequences from these reads?*
+
 
 # Adapter and quality trimming
 
-If we do not trim adapters or low quality regions from reads we might not be able to align reads to a genome.
-Adapter-containing reads will fail to align as the adapter does not match anything in the genome.
-Low quality stretches of reads might contain too many sequencing errors and stop the read aligning to the correct location in the genome.
-
-If we have a large volume of data, the fact that a small proportion of reads contain some adapter or have low quality regions doesn't have a significant effect when aligning reads to a genome.
-Those reads will just not align, but we have plenty more where they came from!
-If you find yourself performing excessive quality or adapter trimming, the data is probably poor and you should have it resequenced or you have insufficient coverage and are trying to scrape-the-barrel to save every last read.
-However, if you are planning to perform de novo genome assembly from the reads, then it is important to remove such regions as they can dramatically increase computational requirements.
+The second step in quality control is trimming. 
+We need to remove adapters because they don't match any part of the sequenced genome and this will make read alignment more challenging, and low quality stretches of sequence are removed as they are more likely to contain sequencing errors and therefore, may not accurately represent the sequenced genome.
+Trimming can also remove some sequencing artifacts, like polyG artifacts.  
+Even if the report from FastQC showed that you have good quality data with ticks for all sections, it is still best-practice to trim.
 
 There are many tools for performing quality and adapter trimming.
-We are going to be using `fastp` in this practical. The tool `trimmomatic` would be a good alternative. 
+We are going to be using `fastp` in this practical. The tool `trimmomatic` ([see here](https://github.com/usadellab/Trimmomatic)) would be a good alternative. 
 
 ## Fastp
 
-Important aspects of cleaning your data:
-- Removing adapters
-- Removing low quality bases from the end of the reads 
-- Removing other sequencing artifacts where possible (polyG artifacts)
+
 
 ![Read trimming process](https://carpentries-lab.github.io/metagenomics-analysis/fig/03-03-01.png)
 (https://carpentries-lab.github.io/metagenomics-analysis/03-trimming-filtering/index.html)
@@ -426,7 +422,7 @@ time fastp \
   --length_required 75
 ```
 
-### Post-trimming FastQC
+## Quality Control post-trimming 
 
 To assess how the trimming has performed, run FastQC across the paired reads output by trimmomatic and fastp.
 
@@ -443,7 +439,14 @@ Take a look at the various FastQC HTML report files and compare pre and post tri
 * Overrepresented sequences
 * Adapter Content
 
-## Writing a simple script
+# 
 
+
+
+# **Building a script**
+
+
+
+Write a script that trims and runs fastqc on the two remaining samples. 
 
 
