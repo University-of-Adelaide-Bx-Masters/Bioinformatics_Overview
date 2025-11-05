@@ -67,6 +67,8 @@ Each individual read in a FASTQ file spans four lines.
 2. The sequence of the read itself
 3. An alternate line for the identifier but is commonly just a + symbol acting as a placeholder
 4. The quality scores for each position along the read as a series of ASCII text characters. 
+
+
 #### Read Identifier
 
 This line begins with an @ symbol and although there is some variability between different sequencing platforms and software versions, reads from Illumina will traditionally have several components.
@@ -221,11 +223,22 @@ Columns 10 and 11 may
 ### File Extensions
 VCF files use the `.vcf` extension. 
 
-### Format
-VCF files begin with a header. All header lines begin with a `#`.
-The header includes:
 
-In the main body of the VCF, there are 8 mandatory columns. The  
+Meta-information lines 
+File meta-information lines start with “##” and must appear first in the VCF file, before the header line (section 1.5) and data record lines (section 1.6). They may be either unstructured or structured. An unstructured meta-information line consists of a key (denoting the type of meta-information recorded) and a value (which may not be empty and must not start with a ‘<’ character), separated by an ‘=’ character: ##key=value Several unstructured meta-information lines are defined in this specification, notably ##fileformat. Others not defined by this specification, e.g. ##fileDate and ##source, are commonly found in VCF files. These typically have meanings that are obvious, or they are immaterial for processing the file, or both. 
+
+A structured meta-information line is similar, but the value is itself a comma-separated list of key=value pairs, enclosed within ‘<’ and ‘>’ characters: ##key= All structured lines require an ID which must be unique within their type, i.e., within all the meta-information lines with the same “##key=” prefix. For all of the structured lines (##INFO, ##FORMAT, ##FILTER, etc.) described in this specification, extra fields can be included after the default fields. For example:
+### Format
+
+VCF files begin with meta-information lines (lines starting with `##`) followed by a header containing the column names (starts with `#`), and finally the main body of the file. 
+
+Meta-information may be unstructured or structured. 
+Unstructured meta-information has the format `##key=value`. In the example below, `##fileformat=VCFv4.2` and `##fileDate=20090805` are of this type, as well as a number of other lines. 
+
+In the structured meta-information lines, the format is similar except that the value consists of a comma-separated list of key=value pairs and the entire list is enclosed within '<' and '>'. 
+See the Example section for an example of how to interpret structured meta-information. 
+
+In the main body of the VCF, there are 8 mandatory columns. 
 
 | Column | Name    | Description                                                                                                                                                                                                      |
 | ------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -241,16 +254,67 @@ In the main body of the VCF, there are 8 mandatory columns. The
 | +      | SAMPLEs | For each (optional) sample described in the file, values are given for the fields listed in FORMAT                                                                                                               |
  
 ### Example
+
+
+
 ```
 ##fileformat=VCFv4.2 
 ##fileDate=20090805 
 ##source=myImputationProgramV3.1 ##reference=file:///seq/references/1000GenomesPilot-NCBI36.fasta 
 ##contig=<ID=20,length=62435964,assembly=B36,md5=f126cdf8a6e0c7f379d618ff66beb2da,species="Homo sapiens",taxonomy=x>
 ##phasing=partial 
-
-
+##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of Samples With Data">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency">
+##INFO=<ID=AA,Number=1,Type=String,Description="Ancestral Allele">
+##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP membership, build 129">
+##INFO=<ID=H2,Number=0,Type=Flag,Description="HapMap2 membership">
+##FILTER=<ID=q10,Description="Quality below 10">
+##FILTER=<ID=s50,Description="Less than 50% of samples have data">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
+##FORMAT=<ID=HQ,Number=2,Type=Integer,Description="Haplotype Quality">
 #CHROM POS ID REF ALT QUAL FILTER INFO FORMAT NA00001 NA00002 NA00003 
-20 14370 rs6054257 G A 29 PASS NS=3;DP=14;AF=0.5;DB;H2 GT:GQ:DP:HQ 0|0:48:1:51,51 1|0:48:8:51,51 1/1:43:5:.,. 20 17330 . T A 3 q10 NS=3;DP=11;AF=0.017 GT:GQ:DP:HQ 0|0:49:3:58,50 0|1:3:5:65,3 0/0:41:3 
-20 1110696 rs6040355 A G,T 67 PASS NS=2;DP=10;AF=0.333,0.667;AA=T;DB GT:GQ:DP:HQ 1|2:21:6:23,27 2|1:2:0:18,2 2/2:35:4 20 1230237 . T . 47 PASS NS=3;DP=13;AA=T GT:GQ:DP:HQ 0|0:54:7:56,60 0|0:48:4:51,51 0/0:61:2 
-20 1234567 microsat1 GTC G,GTCT 50 PASS NS=3;DP=9;AA=G GT:GQ:DP 0/1:35:4 0/2:17:2 1/1:40:3
+20	14370	rs6054257	G	A	29	PASS	NS=3;DP=14;AF=0.5;DB;H2	GT:GQ:DP:HQ	0|0:48:1:51,51 1|0:48:8:51,51 1/1:43:5:.,.	
+20	17330	.	T	A	3	q10	NS=3;DP=11;AF=0.017 GT:GQ:DP:HQ	0|0:49:3:58,50 0|1:3:5:65,3 0/0:41:3 
+20	1110696	rs6040355	A	G,T	67	PASS	NS=2;DP=10;AF=0.333,0.667;AA=T;DB	GT:GQ:DP:HQ	1|2:21:6:23,27	2|1:2:0:18,2	2/2:35:4	
+20	1230237	.	T	.	47	PASS	NS=3;DP=13;AA=T	GT:GQ:DP:HQ	0|0:54:7:56,60	0|0:48:4:51,51	0/0:61:2 
+20	1234567	microsat1	GTC	G,GTCT	50	PASS	NS=3;DP=9;AA=G	GT:GQ:DP	0/1:35:4	0/2:17:2	1/1:40:3
+
 ```
+
+#### Interpreting structured meta-information
+
+Let's go interpret the meta-information entry below: 
+
+```
+##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of Samples With Data">
+```
+
+This indicates:
+- `##INFO` <- this information is relevant to the the INFO column (column 8)
+- `Number=1` <- the ??????
+- `ID=NS` <- The identifier for this item in this field is ``NS
+- `Type=Integer` <- the type of data we are expecting in this field (a whole number in this case)
+- `Description="Number of Samples with Data` <- a description of the field 
+
+If we look at column 8 in the example, we see `NS=3` in the first entry indicating that three samples have data relevant to this variant. The third entry has `NS=2`, meaning only two samples have information relating to this variant. 
+
+
+#### Interpreting sample columns
+Looking at the header line in the example above, (the line starting `# CHROM POS ID ....`), we see that this file contains three samples (NA00001, NA00002, and NA00003). 
+The `FORMAT` column contains information on how the sample column values are formatted. The `FORMAT` column contains the information below. 
+```
+GT:GQ:DP:HQ
+```
+To find out what they mean, we look through the header for lines beginning with `##FORMAT=` and then match up the IDs. We find that:
+
+- `GT` = genotype 
+- `GQ` = genotype quality 
+- `DP` = Read depth
+- `HQ` = Haplotype quality
+
+Therefore, the sample columns will list the genotype of the sample, the genotype quality, the read depth, and haplotype quality separated by colons. 
+If we look at the first sample (NA00001), we see that this sample was homozygous for the referece allele (`0|0`), 
+that the genotype quality was 48, the read depth was 1 and the haplotype quality was 51,51 (51 for both haplotypes). 
