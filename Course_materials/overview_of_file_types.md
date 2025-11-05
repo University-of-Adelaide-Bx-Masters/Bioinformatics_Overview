@@ -114,8 +114,73 @@ GGCACTATCACCGGCGTCTCACGCTTTATGCGCGAACAATCCAAACCGGTGACCATTGTCGGCCTGCAACCGGAAGAGGG
 FHHHHHJJJJJJJIJJJJIJJJJIJIIIJIJIJJJGHFDEFEEDEDDDDDDDCDDDDDEEB;BDDDDCDDDDBBBDABBDDBDDDDDBDCDEC<
 ```
 
-# GFF/GFF3/GTF
-[Official Documentation]
+# GFF/GTF
+
+[GFF3 Documentation](https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md) 
+
+GFF stands for General Feature Format. 
+The GFF filetype has been around in some form since 1997 but has morphed into a multitude of different flavours since then (see the [AGAT documentation](https://agat.readthedocs.io/en/latest/gxf.html) for some history). 
+
+The most common are GTF (also called GFF2) and GFF3.  
+These file types are all tab delimited with at least 9 columns and describe genomic features. 
+
+GTF files were developed from the original GFF format to better describe complex gene structures, and GFF3 was developed in an effort to standardise the GFF class in a way that was both backwards compatible and flexible. 
+
+### File Extensions
+Extensions you might encounter include `.gff`, `.gtf`, `.gff2`, and `.gff3`. 
+### Format
+The version of your GFF file (or GTF) will hopefully be located in the first line of the file. 
+
+All GFF-type files are tab delimited and contain 9 fields. 
+Most of these fields are the same, regardless of which type of file you have. 
+Below are the column names according to the GFF3 specification. 
+
+| Column | Name      | Description                                                                                                                                                                                                                                                                                                 |
+| ------ | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1      | seqid     | The name of the sequence where the feature is located.                                                                                                                                                                                                                                                      |
+| 2      | source    | The algorithm or procedure that generated the feature. This is typically the name of a software or database.                                                                                                                                                                                                |
+| 3      | type      | The feature type. For example, `gene` or `exon`, etc.                                                                                                                                                                                                                                                       |
+| 4      | start     | Genomic start of the feature with a 1-base offset.                                                                                                                                                                                                                                                          |
+| 5      | end       | Genomic end of the feature with a 1-base offset.                                                                                                                                                                                                                                                            |
+| 6      | score     | Numeric value that generally indicates the confidence of the source in the annotated feature. A value of "." (a dot) is used to define a null value.                                                                                                                                                        |
+| 7      | strand    | Single character that indicates the [strand](https://en.wikipedia.org/wiki/Sense_\(molecular_biology\)#DNA_sense "Sense (molecular biology)") of the feature. This can be "+" (positive, or 5'->3'), "-", (negative, or 3'->5'), "." (undetermined), or "?" for features with relevant but unknown strands. |
+| 8      | phase     | Phase of CDS features; it can be either one of 0, 1, 2 (for CDS features) or "." (for everything else).                                                                                                                                                                                                     |
+| 9      | attribute | A list of feature atributes in the format `tag=value`. Multiple `tag=value` pairs are separated by semicolons. Some tags with pre-defined meanings are defined in the GFF3 documentation.                                                                                                                   |
+
+The main differences between GFF and GTF files are in column 3 and column 9. 
+In column 3, GTF files are constrained to less than 10 possible feature types while GFF files are constrained to 2278 possible feature types. 
+In column 9, the structure differs slightly. 
+### Example
+
+ A `.gff3` file describing a gene called 'EDEN' with multiple transcripts. Note how the 9th column contains an ID for each feature and also details its parent feature (ie. the parent feature of mRNA00001 is gene00001). This is how individual features are linked together.  
+
+```gff3
+##gff-version 3.1.26
+##sequence-region ctg123 1 1497228
+ctg123 . gene            1000  9000  .  +  .  ID=gene00001;Name=EDEN
+ctg123 . TF_binding_site 1000  1012  .  +  .  ID=tfbs00001;Parent=gene00001
+ctg123 . mRNA            1050  9000  .  +  .  ID=mRNA00001;Parent=gene00001;Name=EDEN.1
+ctg123 . mRNA            1050  9000  .  +  .  ID=mRNA00002;Parent=gene00001;Name=EDEN.2
+ctg123 . mRNA            1300  9000  .  +  .  ID=mRNA00003;Parent=gene00001;Name=EDEN.3
+ctg123 . exon            1300  1500  .  +  .  ID=exon00001;Parent=mRNA00003
+ctg123 . exon            1050  1500  .  +  .  ID=exon00002;Parent=mRNA00001,mRNA00002
+ctg123 . exon            3000  3902  .  +  .  ID=exon00003;Parent=mRNA00001,mRNA00003
+ctg123 . exon            5000  5500  .  +  .  ID=exon00004;Parent=mRNA00001,mRNA00002,mRNA00003
+ctg123 . exon            7000  9000  .  +  .  ID=exon00005;Parent=mRNA00001,mRNA00002,mRNA00003
+ctg123 . CDS             1201  1500  .  +  0  ID=cds00001;Parent=mRNA00001;Name=edenprotein.1
+ctg123 . CDS             3000  3902  .  +  0  ID=cds00001;Parent=mRNA00001;Name=edenprotein.1
+ctg123 . CDS             5000  5500  .  +  0  ID=cds00001;Parent=mRNA00001;Name=edenprotein.1
+ctg123 . CDS             7000  7600  .  +  0  ID=cds00001;Parent=mRNA00001;Name=edenprotein.1
+ctg123 . CDS             1201  1500  .  +  0  ID=cds00002;Parent=mRNA00002;Name=edenprotein.2
+ctg123 . CDS             5000  5500  .  +  0  ID=cds00002;Parent=mRNA00002;Name=edenprotein.2
+ctg123 . CDS             7000  7600  .  +  0  ID=cds00002;Parent=mRNA00002;Name=edenprotein.2
+ctg123 . CDS             3301  3902  .  +  0  ID=cds00003;Parent=mRNA00003;Name=edenprotein.3
+ctg123 . CDS             5000  5500  .  +  1  ID=cds00003;Parent=mRNA00003;Name=edenprotein.3
+ctg123 . CDS             7000  7600  .  +  1  ID=cds00003;Parent=mRNA00003;Name=edenprotein.3
+ctg123 . CDS             3391  3902  .  +  0  ID=cds00004;Parent=mRNA00003;Name=edenprotein.4
+ctg123 . CDS             5000  5500  .  +  1  ID=cds00004;Parent=mRNA00003;Name=edenprotein.4
+ctg123 . CDS             7000  7600  .  +  1  ID=cds00004;Parent=mRNA00003;Name=edenprotein.4
+```
 
 # SAM/BAM
 [SAM Official Documentation](https://samtools.github.io/hts-specs/SAMv1.pdf) 
