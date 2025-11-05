@@ -1,20 +1,27 @@
 # Read Alignment Practical
+{:.no_toc}
 
 #### By Chelsea Matthews
+{:.no_toc}
 
+* TOC
+{:toc}
 
-## Background
+# **Introduction**
 
-In the last two practicals we learnt about quality control. We assessed the quality of our raw reads, trimmed them, and then re-assessed their quality to make sure we were happy with the trimming process. 
-Now that our reads are clean, we move onto the next step: aligning our reads to the reference genome.
-As a reminder, we will be aligning reads from three Iberian individuals to a small section of Chromosome 2. 
+In the last two practicals we learnt about quality control. 
+We assessed the quality of our raw reads, trimmed them, and then re-assessed their quality to make sure we were happy with the trimming process. 
+Now that QC is complete, we move onto the next step: aligning reads to the reference genome.
+As a reminder, we will be aligning reads from three Iberian individuals to a small section of human Chromosome 2 to determine the genotype of these individuals at the site of the SNP rs4988235 which predicts lactose tolerance.
 
 [![Variant calling workflow](https://sbc.shef.ac.uk/wrangling-genomics/img/variant_calling_workflow.png)](https://sbc.shef.ac.uk/wrangling-genomics/04-variant_calling/index.html)
 
-A very common approach in bioinformatics is to sequence the genome of an organism (or many organisms) and compare the reads with an existing reference sequence.
-The reference sequence is an accepted representation of an organisms genome that is used by all researchers looking at that particular organism and this gives us a standard coordinate system that allows us to document genomic differences in an organised way that is easy to record and communicate.
-In order to make this comparison we must "align" our reads. 
-In a process called alignment, we use software to find the place in the reference that best matches each read (see the figure below). 
+## **Overview of today**
+A very common approach in bioinformatics is to sequence the genome of an organism (or many organisms) and compare the reads with an existing reference genome.
+A reference genome is an accepted representation of an organisms genome that is used by all researchers looking at that particular organism. 
+This gives us a shared coordinate system that allows us to document genomic differences in an organised way that is easy to record and communicate. 
+In order to make this comparison we must "align" or "map" our reads. 
+In read alignment/read mapping, we use software to find the place in the reference that best matches each read (see the figure below). 
 
 ![Basic process of aligning reads to a reference genome](https://training.galaxyproject.org/training-material/topics/sequence-analysis/images/mapping/mapping.png)
 **Basic process of aligning reads to a reference genome** from [Galaxy mapping training](https://training.galaxyproject.org/training-material/topics/sequence-analysis/tutorials/mapping/tutorial.html)
@@ -22,15 +29,15 @@ In a process called alignment, we use software to find the place in the referenc
 This information is documented in a specially formatted text file called a **SAM** file which has the `.sam` extension.
 These files tend to be VERY large and so we compress them into **BAM** files which have a `.bam` extension. 
 We then filter these alignments in a way that hopefully keeps as many real/true alignments as possible and discards erroneous alignments.
-
 ## Learning Outcomes
 
-1. Learn what an alignment file is (SAM and BAM) and understand the contents
-2. Run commands to view and produce statistics on the quality of alignment files
-3. How to filter alignments
-4. Visualise alignment coverage
+1. Learn what indexes are for
+2. Learn what an alignment file is (SAM and BAM) and understand the contents
+3. Run commands to summarise and view mapping statistics from SAM/BAM files
+4. How to filter alignments
+5. Visualise alignment coverage
 
-## Setup
+## Setup and catchup
 
 Let's activate our `bioinf` conda environment again.
 
@@ -43,14 +50,94 @@ We are working in the `~/Practical_alignment` directory again today and will be 
 If you didn't complete the last practical, you may not have all of the required files.
 Running the script below will make sure that you are up to date. 
 
+To run the script:
+1. Type `nano catchup.sh` to make a new bash script.
+2. Paste the entire script below into it and save it by:
+	1. Hold down `Ctrl` and type `x` 
+	2. Type `y` when you see the message `Save modified buffer?` at the bottom of the screen (this is just asking if you want to save the file)
+	3. Press enter when you see `File Name to Write: catchup.sh` at the bottom of the screen. This just means that you are saving the file as `catchup.sh`
+3. Run the script with `bash catchup.sh`
+
 ```bash
-Write a catch up script here
+#!/bin/bash
+
+# Sample Variables
+SAMPLES=(ERR3241917 ERR3241921 ERR3241927)
+
+# load software
+source activate bioinf
+
+# create all directories and move into project directory
+mkdir --parents ~/Practical_alignment/{ref,0_raw,1_trim,2_align,3_variants}
+mkdir -p ~/Practical_alignment/0_raw/FastQC
+mkdir -p ~/Practical_alignment/1_trim/{fastp,FastQC}
+
+cd ~/Practical_alignment
+
+# Get data
+## make symlinks
+ln -s ~/data/intro_ngs/*.fq.gz 0_raw/
+# get reference
+cp  ~/data/intro_ngs/chr2_sub.fa ref/
+
+for SAM in "${SAMPLES[@]}";
+do
+	# Assess raw read quality with fastqc
+	fastqc -o 0_raw/FastQC -t 2 0_raw/${SAM}_*.fq.gz
+
+	# Trim with fastp
+	fastp --thread 2 \
+	-i 0_raw/${SAM}_1.fq.gz \
+	-I 0_raw/${SAM}_2.fq.gz \
+	-o 1_trim/${SAM}_1.fq.gz \
+	-O 1_trim/${SAM}_2.fq.gz \
+	--unpaired1 1_trim/${SAM}_1_orphan.fq.gz \
+	--unpaired2 1_trim/${SAM}_2_orphan.fq.gz \
+	--cut_right \
+	--cut_window_size 4 \
+	--cut_mean_quality 20 \
+	--length_required 75 \
+	--html 1_trim/fastp/${SAM}_fastp.html
+
+	# Assess read quality after trimming with fastqc
+	fastqc -o 1_trim/FastQC --threads 2 \
+	1_trim/${SAM}_{1,2}.fq.gz
+
+done
 ```
 
-## Indexing the reference genome
+
+## The reference genome
+
+We will be aligning our reads to a 7Mb portion of the human reference genome GRCh38.p14.  
+Let's take a look at the NCBI page for GRCh38.p14 [here](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/) and answer some questions. 
+Note that this page includes information on both a RefSeq version and a GenBank version of GRCh38.p14. 
+GenBank is a database of all publicly submitted sequences while RefSeq (which stands for 'Reference Sequence') is a subset of GenBank. 
+RefSeq provides a single reference genome for each species/strain, often with improved annotations. We are using a portion of the RefSeq reference genome.  
+
+- How long is the human reference genome?
+- What is the GC content?
+- What is Chromosome 2 called in the RefSeq reference genome?
+- How long is Chromosome 2?
+
+The coordinates that describe the portion of GRCh38.p14 that we are analysing are `NC_000002.12:133000000-140000000`.
+- NC_000002.12 is the chromosome
+- 133000000 is the start position
+- 140000000 is the end position
+
+It is called `chr2_sub.fa` and you copied it to your `ref` directory in the first quality control practical. 
+Let's take a look. 
+
+```bash
+cd ~/Practical_alignment
+ls ref/
+```
 
 Aligning reads to a reference genome is computationally expensive which means that it takes a long time and a lot of computational resources (CPU and RAM) and this process would be much longer again if we didn't first index the reference genome. 
-This index works much the same as an index in a recipe book. 
+
+The first step in aligning reads to a reference genome is to index the reference genome for use by BWA. Indexing allows the aligner to quickly find potential alignment sites for query sequences in a genome, which saves time during alignment. Indexing the reference only has to be run once. The only reason you would want to create a new index is if you are working with a different reference genome or you are using a different tool for alignment
+
+An index for a reference genome works much the same as an index in a recipe book. 
 If you wanted to find all of the recipes that have chocolate in them, you could page through the book and look at every single recipe or you could go to the index, look up chocolate, and get the page numbers for all of the chocolate recipes at once.  
 In the case of the reference index, the read alignment tool uses it to look up potential match locations much faster than if it had to start at the beginning of the reference sequence for every read. 
 
@@ -64,44 +151,44 @@ This will have created a number of files.
 
 ```bash
 ls ref/
-
 ```
 
 It is not necessary to look through these files as they are specific to the aligner and some of them aren't even human readable. 
-
 ## Read alignment
+Now that we have trimmed our reads and created an index for our reference, we are ready to start read alignment. 
+Let's make a directory for our alignment output files.
+```bash
+mkdir -p 2_align/{bam,log}
+```
 
-The command we'll run is quite long, so please read on a little before executing this, so you understand what every section does.
+The command for read alignment is quite long so we'll talk through it and then run it after. 
 This will help you figure out what is going wrong if you get some error messages.
-First up here's the command 
+
+First up here's the command. 
 
 ```bash
 bwa mem \
   -t 2 \
-  genome/Celegans_chrI \
-  1_trimmedData/fastq/SRR2003569_subset_1.fastq.gz \
-  1_trimmedData/fastq/SRR2003569_subset_2.fastq.gz | \
+  ref/chr2_sub.fa \
+  1_trim/ERR3241917_1.fq.gz \
+  1_trim/ERR3241917_2.fq.gz | \
   samtools view -bhS -F4 - > \
-  2_alignedData/bam/SRR2003569_chI.bam
+  2_align/bam/ERR3241917_aligned.bam
 ```
 
-Let’s break down this main command a little. 
-The first part of the command:
+In the first part of the command shown below we use bwa mem to align our trimmed reads to our reference genome. 
 
 ```bash
 bwa mem \
   -t 2 \
-  genome/Celegans_chrI \
-  1_trimmedData/fastq/SRR2003569_subset_1.fastq.gz \
-  1_trimmedData/fastq/SRR2003569_subset_2.fastq.gz
+  ref/chr2_sub.fa \
+  1_trim/ERR3241917_1.fq.gz \
+  1_trim/ERR3241917_2.fq.gz 
 ```
 
-aligns our compressed sequenced reads to the Celegans_chrI `bwa` index that we made, using two threads (`-t 2`).
-This will write all alignments to `stdout` **NOT** a file, which is a unique behaviour of `bwa`.
-Usually, you would stream this plain text output to a SAM file (see next section) to store all the alignment data.  
-However, SAM files are plain text files which can take up a significant amount of disk space, so its much more efficient to pipe it to the `samtools` command which converts between binary and plain text versions of the format, to create a compressed binary SAM file (called BAM). 
-To do this, we pipe `stdout` to the program `samtools`:
-
+The default behaviour of bwa mem is to write alignment data to `stdout`, **NOT** to a file. 
+You could stream this output to a text file with the ".sam" extension (known as a a SAM file) but SAM files are often very large and so we need a way to compress them.  
+To do this, we pipe the alignment data generated by bwa mem to the `samtools` command which converts the plain text SAM format to a binary version, creating a compressed binary SAM file called a BAM file.  
 
 ```bash
 samtools view -bhS -F4 - 
@@ -110,41 +197,43 @@ samtools view -bhS -F4 -
 In this context, `samtools` view is the general command that allows the conversion of the SAM to BAM. 
 The *globbed* arguments are 1) `-b` [output in binary format]; and 2) `-h` include the file header, followed by the option `-F4` which only include reads with the flag bit `4` set.
 (We'll discuss flags in the next section).
-The binary output is then written to the file `2_alignedData/bam/SRR2003569_chI.bam` using the `>` symbol.
+The binary output is then written to the file `2_align/bam/ERR3241917_aln.bam` using the `>` symbol.
 
 Here is the command for you to cut and paste:
 
 ```bash
-bwa mem -t 2 genome/Celegans_chrI 1_trimmedData/fastq/SRR2003569_subset_1.fastq.gz 1_trimmedData/fastq/SRR2003569_subset_2.fastq.gz | samtools view -bhS -F4 - > 2_alignedData/bam/SRR2003569_chI.bam
-
+bwa mem -t 2 ref/chr2_sub.fa 1_trim/ERR3241917_1.fq.gz 1_trim/ERR3241917_2.fq.gz | samtools view -bhS -F4 - > 2_align/bam/ERR3241917_aln.bam
 ```
+This will take about a minute. 
+The output sent to the terminal is normal! 
 
-Once your alignments have finished, you can find out information about your alignments using `samtools stats`:
+When it finishes, we can find out information about the alignments using `samtools stats`:
 
 ```bash
-samtools stats 2_alignedData/bam/SRR2003569_chI.bam > \
-  2_alignedData/log/SRR2003569_chI.stats
+samtools stats 2_align/bam/ERR3241917_aln.bam > 2_align/log/ERR3241917.stats
 ```
 
-This is basically the same as another command `samtools flagstat`, but it gives additional information which may be informative
 
+This is basically the same as the `samtools flagstat` command , but gives additional information.
+Take a look at the new file.
+```bash
+less 2_align/log/ERR3241917.stats
+```
 ### Questions
 {:.no_toc}
 
 1. How many reads aligned to our genome?
 2. How many reads aligned as a pair?
 3. How many aligned as a "proper" pair? ..what is a proper pair??
+4. What do you think `inward oriented pairs` and `outward oriented pairs` means?
+
+## SAM (and BAM and CRAM) files
 
 
-
-## SAM (and BAM and SAM) files
-
-## CRAM, BAM and SAM
-
-SAM, BAM and CRAM are all different forms of the original SAM format that was defined for holding aligned (or more properly, mapped) high-throughput sequencing data.
+SAM, BAM and CRAM are all different forms of the original SAM format that was defined for holding aligned (or "mapped") high-throughput sequencing data.
 SAM stands for Sequence Alignment Map, as described in the [standard specification](http://samtools.github.io/hts-specs/SAMv1.pdf), and was designed to scale to large numbers of reads sequenced at a given time.
 
-The basic structure of the SAM format is depicted in the figure below:
+The basic structure of each line in the SAM format is depicted in the figure below: 
 
 ![](https://us.v-cdn.net/5019796/uploads/editor/f4/uuzmf2cbau1y.png)
 
@@ -464,7 +553,6 @@ Running the following command will create an associated `bai` file which is the 
 ```bash
 samtools index sorted_bam/SRR2003569_chI.bam
 ```
-
 
 ## Deduplication
 
