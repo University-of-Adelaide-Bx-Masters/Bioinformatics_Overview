@@ -5,12 +5,14 @@
 This document contains brief descriptions and examples of commonly encountered file types in bioinformatics. 
 There are also links to the official standards/documentation for each file type. 
 
+All files described here are plain-text files when not compressed.
+
 * TOC
 {:toc}
 
 # FASTA
 
-[FASTA Official Documentation](https://blast.ncbi.nlm.nih.gov/doc/blast-topics/)  
+- [FASTA Official Documentation](https://blast.ncbi.nlm.nih.gov/doc/blast-topics/)  
 
 FASTA format is the simplest format for reporting genomic sequences.
 They can store DNA sequences, RNA sequences, or protein sequences of any number and any length.  
@@ -40,6 +42,7 @@ Each sequence in a FASTA file consists of at least two lines.
 ### Example
 
 Example of a .fa file containing 3 sequences of different lengths. Sequences longer than 80 bp are wrapped over multiple lines
+
 ```fa
 >seq1 optional_sequence_description
 CCCTAAACCCTAAACCCTAAACCCTAAACCTCTGAATCCTTAATCCCTA
@@ -54,10 +57,10 @@ CATTTGGGAATGTGAGTCTCTTATTGG
 ```
 
 # FASTQ
-[FASTQ Official Documentation](https://maq.sourceforge.net/fastq.shtml)
+- [FASTQ Official Documentation](https://maq.sourceforge.net/fastq.shtml)
 
 FASTQ files store genomic reads and the associated quality scores for each base in the read. When you receive reads from a sequence provider, they will generally be in this form. 
-### Extensions
+
 FASTQ files usually have the extension `.fastq`  or `.fq`.
 They are commonly compressed with `gzip` and so would have an additional `.gz` extension appended to the end.
 
@@ -118,7 +121,7 @@ FHHHHHJJJJJJJIJJJJIJJJJIJIIIJIJIJJJGHFDEFEEDEDDDDDDDCDDDDDEEB;BDDDDCDDDDBBBDABBD
 
 # GFF/GTF
 
-[GFF3 Documentation](https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md) 
+- [GFF3 Documentation](https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md) 
 
 GFF stands for General Feature Format. 
 The GFF filetype has been around in some form since 1997 but has morphed into a multitude of different flavours since then (see the [AGAT documentation](https://agat.readthedocs.io/en/latest/gxf.html) for some history). 
@@ -128,7 +131,6 @@ These file types are all tab delimited with at least 9 columns and describe geno
 
 GTF files were developed from the original GFF format to better describe complex gene structures, and GFF3 was developed in an effort to standardise the GFF class in a way that was both backwards compatible and flexible. 
 
-### File Extensions
 Extensions you might encounter include `.gff`, `.gtf`, `.gff2`, and `.gff3`. 
 ### Format
 The version of your GFF file (or GTF) will hopefully be located in the first line of the file. 
@@ -185,43 +187,108 @@ ctg123 . CDS             7000  7600  .  +  1  ID=cds00004;Parent=mRNA00003;Name=
 ```
 
 # SAM/BAM
-[SAM Official Documentation](https://samtools.github.io/hts-specs/SAMv1.pdf) 
+
+- [SAM Official Documentation](https://samtools.github.io/hts-specs/SAMv1.pdf) 
+- [SAM Flag decoder](https://broadinstitute.github.io/picard/explain-flags.html) 
 
 SAM stands for Sequence Alignment/Map and SAM files store information that describes how reads map/align to a reference sequence. 
 Each line in the file describes the mapping of one read to one location in the reference. 
 If a read maps to more than one location, each additional mapping is detailed on a separate line. 
-### File Extensions
-SAM files will have the `.sam` extension. However, because SAM files tend to be very large, they are often stored as a compressed binary  file - a BAM file - with the extension `.bam`. 
 
+SAM files will have the `.sam` extension. 
+SAM files are very large and are usually stored as a compressed binary file - a BAM file - with the extension `.bam`. 
+They may also be further compressed as a CRAM with the extension `.cram`. 
 ### Format
-SAM files begin with a header and header lines start with a `#`. 
-The main contents of the file are tab delimited and have at least 9 columns as shown below. 
+
+SAM files begin with a header and all header lines start with `@`. 
+The main contents of the file are tab delimited and have at least 11 columns as shown below. 
 Columns 10 and 11 may 
 
-| Field | Name  | Description                                                                                     |
-| ----- | ----- | ----------------------------------------------------------------------------------------------- |
-| 1     | QNAME | Query template/pair NAME. This is essentially the first element of the original read identifier |
-| 2     | FLAG  | bitwise FLAG                                                                                    |
-| 3     | RNAME | Reference sequence NAME                                                                         |
-| 4     | POS   | 1-based leftmost POSition/coordinate of clipped sequence                                        |
-| 5     | MAPQ  | mapping Quality (Phred-scaled)                                                                  |
-| 6     | CIGAR | extended CIGAR string                                                                           |
-| 7     | MRNM  | Mate Reference sequence NaMe ( if same as RNAME)                                                |
-| 8     | MPOS  | 1-based Mate POSition                                                                           |
-| 9     | TLEN  | inferred Template LENgth (insert size)                                                          |
-| 10    | SEQ   | query SEQuence on the same strand as the reference (the sequence we aligned)                    |
-| 11    | QUAL  | query QUALity (The PHRED scores from the fastq file)                                            |
-| 12    | OPT   | variable optional fields in the format TAG:VTYPE:VALUE                                          |
+| Field | Name  | Description                                                                                                     |
+| ----- | ----- | --------------------------------------------------------------------------------------------------------------- |
+| 1     | QNAME | Query template/pair NAME. This is essentially the first element of the original read identifier                 |
+| 2     | FLAG  | bitwise FLAG                                                                                                    |
+| 3     | RNAME | Reference sequence chromosome or contig NAME                                                                    |
+| 4     | POS   | 1-based leftmost POSition/coordinate of clipped sequence                                                        |
+| 5     | MAPQ  | MAPping Quality (Phred-scaled)                                                                                  |
+| 6     | CIGAR | extended CIGAR string                                                                                           |
+| 7     | MRNM  | Mate Reference sequence NaMe ( if same as RNAME)                                                                |
+| 8     | MPOS  | 1-based Mate POSition                                                                                           |
+| 9     | TLEN  | inferred Template LENgth (insert size)                                                                          |
+| 10    | SEQ   | query SEQuence on the same strand as the reference (the sequence we aligned). A `*` if the sequence  not stored |
+| 11    | QUAL  | query QUALity (The PHRED scores from the fastq file). If SEQ is `*`, QUAL must also be `*`                      |
+| 12    | OPT   | variable optional fields in the format `TAG:TYPE:VALUE`                                                         |
 
+#### Field 2 - SAM Flags
 
+Summary of SAM flags. 
+
+| #   | Decimal | Description of read                       |
+| --- | ------- | ----------------------------------------- |
+| 1   | 1       | Read paired                               |
+| 2   | 2       | Read mapped in proper pair                |
+| 3   | 4       | Read unmapped                             |
+| 4   | 8       | Mate unmapped                             |
+| 5   | 16      | Read reverse strand                       |
+| 6   | 32      | Mate reverse strand                       |
+| 7   | 64      | First in pair                             |
+| 8   | 128     | Second in pair                            |
+| 9   | 256     | Not primary alignment                     |
+| 10  | 512     | Read fails platform/vendor quality checks |
+| 11  | 1024    | Read is PCR or optical duplicate          |
+| 12  | 2048    | Supplementary alignment                   |
+
+Example: 
+Let's interpret the FLAG value 163. 
+
+This is the sum of 1, 2, 32, and 128. 
+
+In the table above, these values therefore indicate that:
+- This read is paired 
+- It mapped in a proper pair
+- It's mate is on the reverse strand
+- This is the second read in the pair.
+
+You don't need to remember these codes or to work out which values add up to a specific FLAG value. 
+Use the  [SAM Flag decoder](https://broadinstitute.github.io/picard/explain-flags.html). 
+
+#### Field 6 - CIGAR Strings 
+CIGAR strings describe how the read aligned to the reference. 
+
+- `M` - alignment match (can be either a sequence match or mismatch)
+-  = - Sequence match 
+- `X`- Sequence mismatch
+- `I` - Insertion to the reference
+- `D` - Deletion from the reference
+- `S` - Soft clipping
+
+For example, the CIGAR `8M2I4M1D3M` indicates:
+- 8 alignment matches
+- 2 insertions
+- 4 alignment matches
+- 1 deletion from the reference
+- 3 alignment matches
 ### Example
 
+```
+@HD VN:1.6 SO:coordinate
+@SQ SN:ref LN:45
+r001	99	ref	7	30	8M2I4M1D3M	=	37	39	TTAGATAAAGGATACTG	*
+r002	0	ref	9	30	3S6M1P1I4M	*	0	0	AAAAGATAAGGATA	*
+r003	0	ref	9	30	5S6M	*	0	0	GCCTAAGCTAA	*	SA:Z:ref,29,-,6H5M,17,0;
+r004	0	ref	16	30	6M14N5M	*	0	0	ATAGCTTCAGC	*
+r003	2064	ref	29	17	6H5M	*	0	0	TAGGC	*	SA:Z:ref,9,+,5S6M,30,1;
+r001	147	ref	37	30	9M	=	7	-39	CAGCGGCAT	*	NM:i:1
+```
 
 # VCF
-[VCF Official Documentation](https://samtools.github.io/hts-specs/VCFv4.2.pdf) 
 
-### File Extensions
-VCF files use the `.vcf` extension. 
+- [VCF Official Documentation](https://samtools.github.io/hts-specs/VCFv4.5.pdf) 
+- [Simple explanation of VCF from NYU](https://learn.gencore.bio.nyu.edu/ngs-file-formats/vcf-format/)
+
+VCF stands for Variant Calling Format. VCF files describe variants including single nucleotide polymorphisms (SNPs), insertions and deletions (indels), and structural variants (variants bigger than 50bps). They may additionally contain genotype information for multiple samples for each variant. 
+
+VCF files have the `.vcf` extension. 
 
 
 Meta-information lines 
@@ -231,7 +298,7 @@ A structured meta-information line is similar, but the value is itself a comma-s
 ### Format
 
 VCF files begin with meta-information lines (lines starting with `##`) followed by a header containing the column names (starts with `#`), and finally the main body of the file. 
-
+#### Meta-information
 Meta-information may be unstructured or structured. 
 Unstructured meta-information has the format `##key=value`. In the example below, `##fileformat=VCFv4.2` and `##fileDate=20090805` are of this type, as well as a number of other lines. 
 
@@ -255,38 +322,41 @@ In the main body of the VCF, there are 8 mandatory columns.
  
 ### Example
 
-
+The VCF below contains five different types of variants with genotype information for three samples (NA00001, NA00002 and NA00003). 
 
 ```
-##fileformat=VCFv4.2 
-##fileDate=20090805 
-##source=myImputationProgramV3.1 ##reference=file:///seq/references/1000GenomesPilot-NCBI36.fasta 
+##fileformat=VCFv4.5
+##fileDate=20090805
+##source=myImputationProgramV3.1
+##reference=file:///seq/references/1000GenomesPilot-NCBI36.fasta
 ##contig=<ID=20,length=62435964,assembly=B36,md5=f126cdf8a6e0c7f379d618ff66beb2da,species="Homo sapiens",taxonomy=x>
-##phasing=partial 
-##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of Samples With Data">
-##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
-##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency">
-##INFO=<ID=AA,Number=1,Type=String,Description="Ancestral Allele">
-##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP membership, build 129">
-##INFO=<ID=H2,Number=0,Type=Flag,Description="HapMap2 membership">
-##FILTER=<ID=q10,Description="Quality below 10">
-##FILTER=<ID=s50,Description="Less than 50% of samples have data">
+##phasing=partial
+##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of      Samples With    Data">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total  Depth">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele   Frequency">
+##INFO=<ID=AA,Number=1,Type=String,Description="Ancestral       Allele">
+##INFO=<ID=DB,Number=0,Type=Flag,Description="dbSNP     membership,     build   129">
+##INFO=<ID=H2,Number=0,Type=Flag,Description="HapMap2   membership">
+##FILTER=<ID=q10,Description="Quality   below   10">
+##FILTER=<ID=s50,Description="Less      than    50%     of      samples have    data">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
-##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype     Quality">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
-##FORMAT=<ID=HQ,Number=2,Type=Integer,Description="Haplotype Quality">
-#CHROM POS ID REF ALT QUAL FILTER INFO FORMAT NA00001 NA00002 NA00003 
-20	14370	rs6054257	G	A	29	PASS	NS=3;DP=14;AF=0.5;DB;H2	GT:GQ:DP:HQ	0|0:48:1:51,51 1|0:48:8:51,51 1/1:43:5:.,.	
-20	17330	.	T	A	3	q10	NS=3;DP=11;AF=0.017 GT:GQ:DP:HQ	0|0:49:3:58,50 0|1:3:5:65,3 0/0:41:3 
-20	1110696	rs6040355	A	G,T	67	PASS	NS=2;DP=10;AF=0.333,0.667;AA=T;DB	GT:GQ:DP:HQ	1|2:21:6:23,27	2|1:2:0:18,2	2/2:35:4	
-20	1230237	.	T	.	47	PASS	NS=3;DP=13;AA=T	GT:GQ:DP:HQ	0|0:54:7:56,60	0|0:48:4:51,51	0/0:61:2 
-20	1234567	microsat1	GTC	G,GTCT	50	PASS	NS=3;DP=9;AA=G	GT:GQ:DP	0/1:35:4	0/2:17:2	1/1:40:3
-
+##FORMAT=<ID=HQ,Number=2,Type=Integer,Description="Haplotype    Quality">
+#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT  NA00001 NA00002 NA00003
+20      14370   rs6054257       G       A       29      PASS    NS=3;DP=14;AF=0.5;DB;H2 GT:GQ:DP:HQ     0|0:48:1:51,51  1|0:48:8:51,51  1/1:43:5:.,.
+20      17330   .       T       A       3       q10     NS=3;DP=11;AF=0.017     GT:GQ:DP:HQ     0|0:49:3:58,50  0|1:3:5:65,3    0/0:41:3
+20      1110696 rs6040355       A       G,T     67      PASS    NS=2;DP=10;AF=0.333,0.667;AA=T;DB       GT:GQ:DP:HQ     1|2:21:6:23,27  2|1:2:0:18,2    2/2:35:4
+20      1230237 .       T       .       47      PASS    NS=3;DP=13;AA=T GT:GQ:DP:HQ     0|0:54:7:56,60  0|0:48:4:51,51  0/0:61:2
+20      1234567 microsat1       GTC     G,GTCT  50      PASS    NS=3;DP=9;AA=G  GT:GQ:DP        0/1:35:4        0/2:17:2        1/1:40:3
 ```
+
+#### Interpreting IDs
+The `INFO`and `FORMAT` columns use an ID system to store information. The meaning of each ID is stored in the meta-information at the beginning of the VCF.  IDs referenced in the `INFO` column have meta-information lines beginning with `##INFO=` while IDs referenced in the `FORMAT` column begin with `##FORMAT=`. These are both examples of structured meta-information. 
 
 #### Interpreting structured meta-information
 
-Let's go interpret the meta-information entry below: 
+Let's interpret the meta-information entry below: 
 
 ```
 ##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of Samples With Data">
@@ -301,14 +371,14 @@ This indicates:
 
 If we look at column 8 in the example, we see `NS=3` in the first entry indicating that three samples have data relevant to this variant. The third entry has `NS=2`, meaning only two samples have information relating to this variant. 
 
+#### Interpreting sample genotype information
+This example contains genotype information for three samples - NA00001, NA00002, and NA00003. We can see the sample names in the header line (the line starting `# CHROM POS ID ....`) in columns 10, 11, and 12.
 
-#### Interpreting sample columns
-Looking at the header line in the example above, (the line starting `# CHROM POS ID ....`), we see that this file contains three samples (NA00001, NA00002, and NA00003). 
-The `FORMAT` column contains information on how the sample column values are formatted. The `FORMAT` column contains the information below. 
+The `FORMAT` column contains information on how the sample columns are formatted. In this case, the `FORMAT` column contains: 
 ```
 GT:GQ:DP:HQ
 ```
-To find out what they mean, we look through the header for lines beginning with `##FORMAT=` and then match up the IDs. We find that:
+To find out what these IDs mean, we look through the header for lines beginning with `##FORMAT=` and then match up the IDs. We find that:
 
 - `GT` = genotype 
 - `GQ` = genotype quality 
@@ -316,5 +386,9 @@ To find out what they mean, we look through the header for lines beginning with 
 - `HQ` = Haplotype quality
 
 Therefore, the sample columns will list the genotype of the sample, the genotype quality, the read depth, and haplotype quality separated by colons. 
-If we look at the first sample (NA00001), we see that this sample was homozygous for the referece allele (`0|0`), 
-that the genotype quality was 48, the read depth was 1 and the haplotype quality was 51,51 (51 for both haplotypes). 
+The first sample (NA00001) has the following genotype information:   `0|0:48:1:51,51`
+This means:
+- `0|0` - homozygous for the reference allele
+- `48` - Genotype quality 48
+- `1`  - read depth 1
+- `51,51` - haplotype quality was 51 for both haplotypes

@@ -189,17 +189,19 @@ There are a limited number of standard Illumina adapter sequences ([detailed her
 This is the fragment of DNA that we want to sequence. If we are using barcodes, the barcode is ligated directly to the DNA fragment and is included in the read. 
 ### Indexes and Barcodes
 
-Indexes and barcodes are similar in that they allow multiple samples to be pooled together in a single sequencing run and later separated by their unique sequence tags. This is called multiplexing. Separating reads by their indexe or barcode into individual samples is called _de-multiplexing_. 
+Indexes and barcodes are both used to 
+
+similar in that they allow multiple samples to be pooled together in a single sequencing run and later separated by their unique sequence tags. This is called multiplexing. Separating reads by their indexe or barcode into individual samples is called _de-multiplexing_. 
 Indexes are not included in either the forward or reverse read and are commonly used in RNA-seq libraries. Indexed samples are generally de-multiplexed by the sequence provider. 
 
 Barcode sequences are included in the read and we have to de-multiplex samples ourselves. Barcodes and indexes can be combined to further multiplex samples onto one sequencing run. 
 
-### Illumina 3' Quality Drop-Off
+## 3' Quality Drop-Off
 
 In general, Illumina sequencing produces highly accurate reads but read quality does tend to diminish towards the 3' end. 
 During the bridge-amplification stage, millions of clusters are created on the flowcell. Each cluster comprises of 1,000-2,000 identical copies of the same template. During the process of sequencing, the polymerases attached each of the thousands of copies in a cluster "advance" one base at a time. At the start (5' end) all the polymerases are in perfect sync; generating a bright, clean, consistant light signal for detecting which base was incorporated. However, as time/number of cycles progresses, some polymerases fall behind while some race in front. The polymerases gradually get further and further out of phase with each other. This leads to dimmer and less clear signals for detection, and thus lower quality base-calls.
 
-### Illumina PolyG artifact
+## PolyG artifact
 Illumina uses only two fluorescent colours in its chemistry to represent the four bases. 
 - C  = red
 - T  = green
@@ -398,7 +400,7 @@ fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
 ```bash
 
 ```
-# Adapter and quality trimming
+# **Adapter and quality trimming**
 
 The second step in quality control is adapter removal and quality trimming. 
 We need to remove adapters because they don't match any part of the sequenced genome and this will make read alignment more challenging, and low quality stretches of sequence are removed as they are more likely to contain sequencing errors and therefore, may not accurately represent the sequenced genome.
@@ -440,7 +442,7 @@ Quality trimming is often done using a sliding window.
 This works by moving a small “window” along each read and checking the average quality score of the bases inside that window. In this case, the window is 4 bp wide (`--cut_window_size`) and bases are trimmed if the average quality in the window is less than 20 (`--cut_mean_quality`). 
 The `--cut_right` option means that the window starts at the 3' end of the read  and `--length_required 75` indicates that if a read is less than 75bp long after trimming and removing adapters, it should be discarded. 
 If a read is discarded but its pair is not, its pair will be sent to the orphan read file. 
-## Quality Control post-trimming 
+## Quality control post-trimming 
 
 To assess how the trimming has performed, run FastQC across the PAIRED reads output by fastp. 
 
@@ -457,8 +459,13 @@ Take a look at the various FastQC HTML report files and compare pre and post tri
 * Overrepresented sequences
 * Adapter Content
 # **Building a script**
-While we are only analysing three samples in this practical, bioinformaticians often have to analyse many samples at once. 
+
+Bioinformaticians often analyse many samples at once. 
 Instead of manually writing and running a command for each sample, we can build a script to automate it. 
+
+Why?
+- Saves us time
+
 
 Let's build a script to trim and run fastqc on all three of our human samples.
 

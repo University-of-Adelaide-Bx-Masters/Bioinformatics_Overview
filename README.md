@@ -25,5 +25,7 @@ Delivered in Semester 1
 ## Module 3: Reproducible Bioinformatics
 
 
+## Other Course Materials
 
+- [Overview of file types](Course_materials/overview_of_file_types.md)
 
