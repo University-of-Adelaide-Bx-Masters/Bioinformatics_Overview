@@ -9,20 +9,17 @@
 
 # **Introduction**
 This is the second part of our read alignment and variant calling workflow where we are trying to determine the genotype of three individuals at the SNP rs4988235 which predicts lactose tolerance. 
-Click  [here](prac_4_readqc.md) if you need to remind yourself of the background information. 
+Click  [here](prac_4_readqc.md) if you want to remind yourself of the background information. 
 
-In [the last practical](prac_4_readqc.md) we assessed the quality of Illumina reads using FastQC and talked about some of the errors or artifacts specific to Illumina sequencing. Today we will  trim our data to remove artifacts, adapters, and low quality base calls and run fastqc again to see what our data looks like after trimming. 
-We will then build a script to automate the quality control portion of our analysis. 
+In [the last practical](prac_4_readqc.md) we assessed the quality of Illumina reads using FastQC and talked about some of the errors or artifacts specific to Illumina sequencing. Today we'll cover the remainder of the Quality Control phase. We'll also look at a scripting example.
 
+[![Variant calling workflow](https://sbc.shef.ac.uk/wrangling-genomics/img/variant_calling_workflow.png)
 ## **Overview of today**
+Today we will  trim our data to remove artifacts, adapters, and low quality base calls and run FastQC again to see what our data looks like after trimming. 
 
-The second step in quality control is adapter removal and quality trimming. 
 We need to remove adapters because they don't match any part of the sequenced genome and this will make read alignment more challenging, and low quality stretches of sequence are removed as they are more likely to contain sequencing errors and therefore, may not accurately represent the sequenced genome.
 Trimming can also remove some sequencing artifacts, like polyG artifacts.  
-Even if the report from FastQC showed that you have good quality data, it is still best-practice to trim.
-
-There are many tools available for trimming.
-We are going to be using `fastp` in this practical. The tool `trimmomatic` ([see here](https://github.com/usadellab/Trimmomatic)) would be a good alternative. 
+Even if the report from FastQC shows that you have good quality data, it is still best-practice to trim.
 
 ## Learning Outcomes
 1. Learn how to perform adapter and quality trimming
@@ -38,6 +35,12 @@ source activate bioinf
 ```
 
 We are working in the `~/Practical_alignment` directory again today and will be using the same data as in the last practical. 
+
+If you didn't complete the last practical, running the code below will catch you up.
+
+```bash
+
+```
 
 If you didn't complete the last practical, you may not have all of the required files.
 Running the script below will make sure that you are up to date. 
@@ -74,15 +77,20 @@ fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
 ```
 
 ## Fastp
-We will use Fastp to trim our reads.  Let's run it on our first sample and then discuss the code. 
+
+There are many tools available for trimming.
+We are going to be using `fastp` in this practical. The tool `trimmomatic` ([see here](https://github.com/usadellab/Trimmomatic)) would be a good alternative. 
+
+Let's run it on our first sample and then discuss the code. 
+
 ```bash
 mkdir -p ~/Practical_alignment/1_trim/fastp
 
 fastp --thread 2 -i 0_raw/ERR3241917_1.fq.gz -I 0_raw/ERR3241917_2.fq.gz -o 1_trim/ERR3241917_1.fq.gz -O 1_trim/ERR3241917_2.fq.gz --unpaired1 1_trim/ERR3241917_1_orphans.fq.gz --unpaired2 1_trim/ERR3241917_2_orphans.fq.gz ---cut_right --cut_window_size 4 --cut_mean_quality 20 --length_required 75 --html 1_trim/fastp/ERR3241917_fastp.html
 ```
 
-The command will take a minute or two to run but it won't tell you that! 
-It looks like it's just hanging/doing nothing. 
+The command will take a minute or two to run but it doesn't provide any output while it does this so don't worry when it looks like it's doing nothing! 
+
 To make the  `fastp` command easier to understand, we have re-formatted it like we might find in a bash script (see below).
 ```bash
 fastp --thread 2 \

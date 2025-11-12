@@ -202,22 +202,21 @@ They may also be further compressed as a CRAM with the extension `.cram`.
 
 SAM files begin with a header and all header lines start with `@`. 
 The main contents of the file are tab delimited and have at least 11 columns as shown below. 
-Columns 10 and 11 may 
 
-| Field | Name  | Description                                                                                                     |
-| ----- | ----- | --------------------------------------------------------------------------------------------------------------- |
-| 1     | QNAME | Query template/pair NAME. This is essentially the first element of the original read identifier                 |
-| 2     | FLAG  | bitwise FLAG                                                                                                    |
-| 3     | RNAME | Reference sequence chromosome or contig NAME                                                                    |
-| 4     | POS   | 1-based leftmost POSition/coordinate of clipped sequence                                                        |
-| 5     | MAPQ  | MAPping Quality (Phred-scaled)                                                                                  |
-| 6     | CIGAR | extended CIGAR string                                                                                           |
-| 7     | MRNM  | Mate Reference sequence NaMe ( if same as RNAME)                                                                |
-| 8     | MPOS  | 1-based Mate POSition                                                                                           |
-| 9     | TLEN  | inferred Template LENgth (insert size)                                                                          |
-| 10    | SEQ   | query SEQuence on the same strand as the reference (the sequence we aligned). A `*` if the sequence  not stored |
-| 11    | QUAL  | query QUALity (The PHRED scores from the fastq file). If SEQ is `*`, QUAL must also be `*`                      |
-| 12    | OPT   | variable optional fields in the format `TAG:TYPE:VALUE`                                                         |
+| Field | Name          | Description                                                                                                     |
+| ----- | ------------- | --------------------------------------------------------------------------------------------------------------- |
+| 1     | QNAME         | Query template/pair NAME. This is essentially the first element of the original read identifier                 |
+| 2     | FLAG          | bitwise FLAG                                                                                                    |
+| 3     | RNAME         | Reference sequence chromosome or contig NAME                                                                    |
+| 4     | POS           | 1-based leftmost POSition/coordinate of clipped sequence                                                        |
+| 5     | MAPQ          | MAPping Quality (Phred-scaled)                                                                                  |
+| 6     | CIGAR         | extended CIGAR string                                                                                           |
+| 7     | MRNM or MNEXT | Mate Reference sequence NaMe ( if same as RNAME)                                                                |
+| 8     | MPOS or PNEXT | 1-based Mate POSition                                                                                           |
+| 9     | TLEN          | inferred Template LENgth (insert size)                                                                          |
+| 10    | SEQ           | query SEQuence on the same strand as the reference (the sequence we aligned). A `*` if the sequence  not stored |
+| 11    | QUAL          | query QUALity (The PHRED scores from the fastq file). If SEQ is `*`, QUAL must also be `*`                      |
+| 12    | OPT           | variable optional fields in the format `TAG:TYPE:VALUE`                                                         |
 
 #### Field 2 - SAM Flags
 
@@ -280,6 +279,10 @@ r004	0	ref	16	30	6M14N5M	*	0	0	ATAGCTTCAGC	*
 r003	2064	ref	29	17	6H5M	*	0	0	TAGGC	*	SA:Z:ref,9,+,5S6M,30,1;
 r001	147	ref	37	30	9M	=	7	-39	CAGCGGCAT	*	NM:i:1
 ```
+
+The figure below shows an example of some small read alignments in **A** and what the SAM file describing these alignments would look like in **B.** 
+
+![](https://zyxue.github.io/assets/sam_format_example.jpg) 
 
 # VCF
 

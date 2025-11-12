@@ -71,6 +71,7 @@ See [the first practical](../Bash_Practicals/1_IntroBash.md#rstudio) to remind y
 
 All of the code/commands in this practical should be run in the terminal pane. 
 
+**Please use the same filenames and paths as the practical.**
 ## Activate software 
 
 The practicals use an anaconda (`conda`) software environment to provide access to the software you'll need. This is very common practice in bioinformatics. We have set up these environments already so you just need to activate them. 
@@ -101,7 +102,8 @@ It gives us access to both of the tools (`fastqc` and `fastp`) we need for today
 
 ## Create directory structure 
 
-Let's create a new directory for todays practical and set up the directory structure for today and the next three practicals. The command `tree` shows the the structure of the `Practical_alignment` directory. 
+Let's create a new directory for todays practical and set up the directory structure for today and the next three practicals. 
+The command `tree` shows the the structure of the `Practical_alignment` directory. 
 
 ```bash
 mkdir --parents ~/Practical_alignment/{ref,0_raw,1_trim,2_align,3_variants}
@@ -153,8 +155,20 @@ The directory structure should now be as below.
 
 ![Directory structure](images/prac4_dir_structure.png)
 
-Notice how the reference sequence is listed just by its name in black while the symlinks are blue with an arrow and the full path to the file they are pointing to is in red.
+Notice how the reference sequence is listed just by its name in black while the symlinks are blue with an arrow pointing to the full path to the file in red.
 
+To list just the files in the `0_raw` directory we can use `ls`. Compare the output of the two `ls` commands below and answer the questions. 
+
+```bash
+ls 0_raw
+
+ls -lh 0_raw 
+```
+
+- What is the effect of `-l` and `-h`?
+- What information does the second option provide that could be useful for debugging? 
+
+In the `0_raw` directory you should have 8 files. These contain data for four samples. There are two files for each sample, containing Read 1 and Read 2 respectively. The samples starting with ERR are the Iberian samples we will be analysing with our variant calling workflow and the unknown sample is provided so that you get to see data of a different quality. 
 # **Illumina Sequencing**
 
 In order to analyse our data, we need to understand how it was generated. 
@@ -171,16 +185,10 @@ More information on Illumina sequencing is available on [their website](https://
 
 ## Sequencing Template Components
 
-The figure below shows three examples of Illumina templates.  
-
-![](images/illumina_templates.png)
-
-- What happens if the insert fragment is shorter than the read length? 
-
 The figure below shows the different parts of an Illumina sequencing template. 
 
 ![](images/seq-template-pe.jpg)
-
+- What happens if the insert fragment is shorter than the read length? 
 ### Adapters
 The adapters contain the sequencing primer binding sites (R1 and R2 Primers), index sequences, and the sites that allow library fragments to attach to the flow cell lawn (amplification elements).
 There are a limited number of standard Illumina adapter sequences ([detailed here](https://knowledge.illumina.com/library-preparation/general/library-preparation-general-reference_material-list/000001314)) and so tools are often able to determine which adapter was used automatically.  
@@ -188,12 +196,12 @@ There are a limited number of standard Illumina adapter sequences ([detailed her
 This is the fragment of DNA that we want to sequence. If we are using barcodes, the barcode is ligated directly to the DNA fragment and is included in the read. 
 ### Indexes and Barcodes
 
-Indexes and barcodes are both used to 
-
-similar in that they allow multiple samples to be pooled together in a single sequencing run and later separated by their unique sequence tags. This is called multiplexing. Separating reads by their indexe or barcode into individual samples is called _de-multiplexing_. 
-Indexes are not included in either the forward or reverse read and are commonly used in RNA-seq libraries. Indexed samples are generally de-multiplexed by the sequence provider. 
-
-Barcode sequences are included in the read and we have to de-multiplex samples ourselves. Barcodes and indexes can be combined to further multiplex samples onto one sequencing run. 
+Indexes and barcodes are both used to similar in that they allow multiple samples to be pooled together in a single sequencing run and later separated by their unique sequence tags. 
+This is called multiplexing. 
+Separating reads by their indexe or barcode into individual samples is called _de-multiplexing_. 
+Indexes are not included in either the forward or reverse read (indexes are shown in the figure above) and are commonly used in RNA-seq libraries. Indexed samples are generally de-multiplexed by the sequence provider. 
+If barcodes are used to further multiplex samples, they will be ligated directly to the DNA insert and will be included in the read. 
+De-multiplexing barcoded samples is not performed by the sequencing provider. Instead, a bioinformatician will de-multiplex using a tool like [sabre](https://github.com/najoshi/sabre). 
 
 ## 3' Quality Drop-Off
 
@@ -213,8 +221,9 @@ This tends to happen more often near the 3' end of reads.
 # **FASTQ file format**
 
 Illumina reads are stored in FASTQ files with the extension `.fq` or `.fastq`. 
-These files are plain-text but are often very large so are commonly compressed using `gzip`. The `.gz` extension is added to signify this.
-Most modern bioinformatics tools can read `gzip` compressed files you should keep them compressed unless you are using a tool that specifically requires them to be decompresed. 
+These files are plain-text but are often very large so are commonly compressed using `gzip`. 
+The `.gz` extension is added to signify this.
+Most modern bioinformatics tools can read `gzip` compressed files and so you should keep them compressed unless you are using a tool that specifically requires them to be decompresed. 
 
 Let's take a look at the first 4 lines in one of our FASTQ files.
 
@@ -249,7 +258,9 @@ Standard ASCII Chart - Hex to Decimal code conversion
 ![Standard ASCII Chart - Hex to Decimal code conversion](https://cdn.shopify.com/s/files/1/1014/5789/files/Standard-ASCII-Table_large.jpg?10669400161723642407) 
 From https://www.commfront.com/pages/ascii-chart 
 
-You will see that the first 33 characters (decimal values of 0-32) are all non-printable or white-space (think space, tab, backspace, bell etc). The first printable character is `!` and this has the decimal value of `33`. This character is used to represent a quality value of `0` while `"` has a decimal value of `34` and represents a quality value of `1` (`34-33`). As such these quality scores are said to be Phred+33 encoded and the quality score is simply obtained by substracting 33 from the decimal value of the character in the quality string. Quality score values usually range from 0 (!) to 40 (I) but some files go as high as 41 (J) or 42 (K). 
+You will see that the first 33 characters (decimal values of 0-32) are all non-printable or white-space (think space, tab, backspace, bell etc). The first printable character is `!` and this has the decimal value of `33`. This character is used to represent a quality value of `0` while `"` has a decimal value of `34` and represents a quality value of `1` (`34-33`). 
+As such these quality scores are said to be Phred+33 encoded and the quality score is simply obtained by substracting 33 from the decimal value of the character in the quality string. 
+Quality score values usually range from 0 (!) to 40 (I) but some files go as high as 41 (J) or 42 (K). 
 
 If you go digging into old Illumina files, you may find quality values which are Phred+64 encoded. That is, a quality value of `0` is represented by `@` which has a decimal value of `64`. However, Phred+33 encoding is the current standard and is often referred to as Illumina 1.9. 
 
@@ -270,28 +281,32 @@ This is more easily seen in the following table:
 | 20          | `5`                        | 10<sup>-2</sup>                    | 99%                   |
 | 30          | `?`                        | 10<sup>-3</sup>                    | 99.9%                 |
 | 40          | `I`                        | 10<sup>-4</sup>                    | 99.99%                |
-|             |                            |                                    |                       |
 
-* In the read we looked at above, the quality string included the characters `A`, `!`, and `J` (as well as some others). Use the ASCII table to determine what Phred score (a number between 0 and 41) these characters represent. Hint: These reads are Phred+33 encoded. 
+
+* In the read we looked at above, the quality string included the characters `A`, `!`, and `J` (as well as some others). Use the ASCII table to determine what Phred score (a number between 0 and 41) these characters represent. 
 
 # **Quality Control**
 
-Quality control generally consists of 3 steps:
+Now that we know what our data looks like, let's talk about Quality Control (QC). 
+
+QC generally consists of 3 steps:
 1. Check quality of raw data
 2. Trim and clean data
 3. Check quality of trimmed data
 
-We will be using FastQC to check the quality of our raw and trimmed data and 'fastp' to do the trimming. 
+We will be using FastQC to check the quality of our raw and trimmed data and `fastp` to do the trimming. 
 Both of these tools are very commonly used for quality control with Illumina reads.
 
-Let's look at the help file for FastQC to see how it works.
+Let's look at the help file for FastQC to see how it w*orks.
 
 ```bash
 fastqc -h | less
 ```
 
-- What does the '-o' option do?
+- What does the `-o` option do?
 - What does the `-t` option do?
+- Is there any difference between the `-o` and `--outdir` options?
+- Look at the SYNOPSIS section at the top of the help documentation. This tells us what `fastqc` is expecting our command structure to look like. Compare it with the `fastqc` command we are going to run below to see how it works.   
 
 Type `q` to exit when you're finished. 
 
@@ -310,19 +325,21 @@ fastqc -o 0_raw/FastQC/ -t 2 0_raw/unknown_R*.fq.gz
 
 The above command:
 
-1. Gave both read1 and read2 for a single sample to fastqc using the wildcard `*` in the place of the value 1 or 2.
+1. Gave both read1 and read2 for the "unknown" sample to fastqc using the wildcard `*` in the place of the value 1 or 2.
 2. Specified where to write the output (`-o ~/Practical_alignment/0_raw/FastQC`) and
 3. Requested two threads (`-t 2`).
 
 <details>
 <summary>What are threads?</summary>
-<ul>If you had to plant 100 trees and it took you a minute per tree, it would take you 100 minutes to plant all of the trees on your own.
-But if you and three friends were doing the job together, it would only take 25 minutes.
+<ul>Let's use an analogy. If you were asked to plant 100 trees and it took you a minute per tree, it would take you 100 minutes to plant all of the trees.
+But if you and three friends were doing the job together, it would only take 25 minutes because each person would plant 25 trees and you could all work at the same time.
 These examples are analogous to a single-threaded process and a multi-threaded process in computing.</ul>
 
-<ul>In a multi-threaded process, a big job is split into many smaller jobs that are then run at the same time (in parallel) which gets the job done a lot faster. 
-However, some jobs can't be split up in this way because the steps necessary to complete the task are sequential. 
-**Your VMs can run two parallel processes (2 threads)** but the University High Performance Computer (HPC) Phoenix can run over 70.
+<ul>In a multi-threaded process, a big job is split into many smaller jobs that are then run at the same time (in parallel) which gets the job done a lot faster.</ul> 
+
+<ul>While this is really useful, keep in mind that not all proceses can be split up in this way because the steps necessary to complete these processes are sequential.</ul>
+
+<ul>**Your VMs can run two parallel processes (2 threads)** but the University High Performance Computer (HPC) Phoenix can run over 70.
 You can tell if a tool can use multiple threads by looking at the documentatiion.</ul>
 
 </details>
@@ -341,11 +358,11 @@ Using the Basic Statistics information at the top of the fastqc report, answer t
 - How long are the reads?
 - What is the approximate GC content?
 - How many Mbp of sequence information is there across both files?
-- Coverage (x or fold) is a measure of how many times you would expect each base in the genome to be covered by an aligned base after aligning all the reads. It is the total number of bases in your reads divided by the genome size. If these reads are from a 7Mbp genome, how many fold coverage do we have?
+- Coverage (x or fold) is a measure of how many times you would expect each base in the genome to be covered by an aligned base after aligning all the reads. It is the total number of bases in your reads divided by the genome size. If these reads are from a 7Mbp genome (7 Million basepairs), how many fold coverage do we have?
 
 The left hand menu contains a series of clickable links to navigate through the report, with a quick guideline about each section given as a tick, cross or exclamation mark.
 
-Now let's look at some other parts of the report. 
+Let's look at some other parts of the report. 
 
 #### Per Base Sequence Quality
 
@@ -358,15 +375,14 @@ The red dashed line indicates the maximum quality score at that position in the 
 #### Per Base Sequence Content
 
 During the preparation of the sequencing library, the genome is randomly fragmented.
-As such we would expect to observe relatively flat horizontal lines across this plot.
-Demonstrating that we have indeed sampled fragments at random across the genome.
+As such we would expect to observe relatively flat horizontal lines across this plot, demonstrating that we have indeed sampled fragments at random across the genome.
 Depending on the GC content of the species, we might see the A and T lines tracking together but separately from the G and C lines.
 It is also relatively common to see a drift towards G towards the end of a read.
 This is because most modern Illumina sequencing is performed on a "2-colour" system and G is the absence of both colours.
 What 
 ### Overrepresented Sequences
 
-Here we can see any sequence which are more abundant than would be expected
+Here we can see any sequence which are more abundant than would be expected.
 
 A normal high-throughput library will contain a diverse set of sequences but sometimes we find that some sequences are more common than we would expect. 
 This can be for a range of reasons. 
@@ -379,18 +395,23 @@ In small RNA libraries where sequences are not randomly fragmented, the same seq
 For whole genome shotgun sequencing library preps we expect to see little adapter content in the reads.
 If there is a significant up-turn in adapter content towards the 3' end, this may indicate the genomic DNA was over-fragmented during library prep.
 
-#### Student Exercise
+# Student Exercise
 Run `fastqc` on the sample ERR3241917 and answer the following questions.
 
 ```bash
 fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
 ```
+
 - What is the maximum quality score shown in the 
 - What is the GC content of ERR3241917?
-- What might have caused the overrepresented sequence detected in read2 of sample ERR3241917? 
-- 
+- How does the GC content of ERR3241917 compare with the Unknown sample? Do you think that the Unknown sample is from a human?
+- What might have caused the over-represented sequence detected in read2 of sample ERR3241917? 
 
+Now run `fastqc` on your two other human samples and check out their reports. 
+- ERR3241921
+- ERR3241927
 
+You might want to look at:
 - Basic Statistics
 - Per base sequence quality
 - Per base sequence content

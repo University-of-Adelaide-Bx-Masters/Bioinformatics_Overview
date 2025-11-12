@@ -8,11 +8,13 @@
 {:toc}
 
 # Introduction
-
-
-## Overview of today
 In the last three practicals we performed quality control on Illumina reads and then aligned our reads to the reference genome. 
 We are now up to the final step in our analysis - variant calling. 
+
+
+[![Variant calling workflow](https://sbc.shef.ac.uk/wrangling-genomics/img/variant_calling_workflow.png)](https://sbc.shef.ac.uk/wrangling-genomics/04-variant_calling/index.html)
+
+## Overview of today
 
 While sequence alignment is potentially the most important aspect of most high-throughput sequencing pipelines, in whole genome sequencing (WGS) experiments, such as we are simulating here, it is crucial to not only identify where reads have mapped, but regions in which they differ. These regions are called "sequence variants", and can take many forms. Three major types of sequence variation include:
 
@@ -20,8 +22,7 @@ While sequence alignment is potentially the most important aspect of most high-t
 2. Insertion-Deletions (InDels): An insertion or deletion of a region of genomic DNA. e.g. AATA->A
 3. Structural Variants: These are large segments of the genome that have been inserted, deleted, rearranged or inverted within the genome.
 
-This is where we will finally find the answer to our question! 
-
+We are working with short reads and will be focusing on SNPs and InDels. 
 ## Learning Outcomes
 
 1. How to filter read alignments and why
@@ -35,6 +36,8 @@ Let's activate our software!
 ```bash
 source activate bioinf
 ```
+
+To ensure you have the correct 
 
 # Filtering and sorting read alignments
 
@@ -106,21 +109,17 @@ Additionally, the VCF file can be annotated to include information on the region
 Today we are going to use the haplotype-based caller `freebayes`, which is [a Bayesian genetic variant detector designed to find small polymorphisms, specifically SNPs (single-nucleotide polymorphisms), indels (insertions and deletions), MNPs (multi-nucleotide polymorphisms), and complex events (composite insertion and substitution events) smaller than the length of a short-read sequencing alignment](https://github.com/ekg/freebayes).
 
 Time to run the variant calling. 
-All we need is a reference genome sequence (fasta file), a index of the reference genome (we can do this using `samtools`), and our BAM alignment. 
+All we need is a reference genome sequence (fasta file), a index of the reference genome (which we did in the last practical), and our BAM alignment. 
 
 ```bash
 # Make sure you're in the project root
 cd ~/Practical_alignment
-mkdir 3_variants
 
-# Index the reference genome with samtools
-samtools faidx ref/chr2_sub.fa
-
-# Run freebayes to create VCF file
+# Run freebayes to create a VCF file. We will call variants for all three samples at once
 freebayes \
   -f ref/chr2_sub.fa \
-  2_alignedData/sorted_bam/SRR2003569_chI.bam > \
-  2_alignedData/vcf/SRR2003569_chI_1Mb.vcf
+  2_align/bam/ERR3241917_sorted.bam 2_align/bam/ERR3241921_sorted.bam 2_align/bam/ERR3241927_sorted.bam > \
+  3_variants/chr2_vars.vcf
 ```
 - What do you think the index is for? 
 
@@ -159,15 +158,11 @@ I       371     .       A       G       0.0040121       .       AB=0;ABP=0;AC=0;
 I       373     .       G       A       2.09043e-11     .       AB=0;ABP=0;AC=0;AF=0;AN=2;AO=2;CIGAR=1X;DP=20;DPB=20;DPRA=0;EPP=7.35324;EPPR=7.35324;GTI=0;LEN=1;MEANALT=1;MQM=4.5;MQMR=12.3889;NS=1;NUMALT=1;ODDS=26.1012;PAIRED=1;PAIREDR=0.666667;PAO=0;PQA=0;PQR=0;PRO=0;QA=81;QR=656;RO=18;RPL=0;RPP=7.35324;RPPR=42.0968;RPR=2;RUN=1;SAF=2;SAP=7.35324;SAR=0;SRF=12;SRP=7.35324;SRR=6;TYPE=snp        GT:DP:AD:RO:QR:AO:QA:GL 0/0:20:18,2:18:656:2:81:0,-5.16576,-17.2477
 
 ```
-
-
 ### Questions
 
 1. How many variants were called in region ChrI:1-1Mb?
 2. The VCF file above shows three variants from the called VCF. What types of variants are they, and are they homozygous or heterozygous?
 3. Which INFO field contains information about the variant allele-frequency?
-
-
 
 # **VCF filtering**
 Just because a variant is called, does not mean that it is a true positive! Each variant called within the file holds a variant quality score (found in the QUAL field). From the VCF format specifications:
@@ -199,7 +194,7 @@ bcftools filter -i 'QUAL>30 && GT="0/1"' SRR2003569_chI_1Mb.vcf.gz
 The bcftools view commands gives a lot of additional filtering options.
 
 Questions
-- Use the bcftools view or bcftools filter command to count the number of: a. SNPs b. homozygous variants
+- Use the bcftools view or bcftools filter command to count the number of SNPs and homozygous variants.
 
 Depth is also a common filtering characteristic that many people use to remove low confidence variants. If you have low coverage of a variant, it lowers your ability to accurately call a heterozygotic site (especially if you are confident that you sequenced the sample the an adequate depth!). Find the number of SNPs that have a depth that is equal to or greater than 30 and a quality that is greater than 30.
 

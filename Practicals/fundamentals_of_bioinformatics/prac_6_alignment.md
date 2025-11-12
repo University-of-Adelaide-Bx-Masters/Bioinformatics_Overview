@@ -8,6 +8,7 @@
 {:toc}
 
 # **Introduction**
+This is the third practical in a set of four where we are aligning reads from three Iberian individuals to a small section of human Chromosome 2 and calling variants to determine the genotype of these individuals at the site of the SNP rs4988235. This genotype predicts lactose tolerance/intolerance.
 
 In the last two practicals we learnt about quality control. 
 We assessed the quality of our raw reads, trimmed them, and then re-assessed their quality to make sure we were happy with the trimming process. 
@@ -15,7 +16,7 @@ Now that QC is complete, we move onto the next step: aligning reads to the refer
 
 [![Variant calling workflow](https://sbc.shef.ac.uk/wrangling-genomics/img/variant_calling_workflow.png)](https://sbc.shef.ac.uk/wrangling-genomics/04-variant_calling/index.html)
 
-As a reminder, we are aligning reads from three Iberian individuals to a small section of human Chromosome 2 to determine the genotype of these individuals at the site of the SNP rs4988235 which predicts lactose tolerance.
+
 ## **Overview of today**
 A very common approach in bioinformatics is to sequence the genome of an organism (or many organisms) and compare the reads with an existing reference genome.
 A reference genome is an accepted representation of an organisms genome that is used by all researchers looking at that particular organism. 
@@ -124,7 +125,7 @@ The coordinates that describe the portion of GRCh38.p14 that we are analysing ar
 - 133000000 is the start position
 - 140000000 is the end position
 
-It is called `chr2_sub.fa` and you copied it to your `ref` directory in the first quality control practical. 
+This 7Mb section of GRCh38.p14 is in a file called `chr2_sub.fa` (as in chromosome 2 subsequence) and ijs locasted in your `ref` directory. 
 Let's take a look. 
 
 ```bash
@@ -132,22 +133,19 @@ cd ~/Practical_alignment
 ls ref/
 ```
 
-Aligning reads to a reference genome is computationally expensive which means that it takes a long time and a lot of computational resources (CPU and RAM) and this process would be much longer again if we didn't first index the reference genome. 
+- What is the name of this sequence?
 
 The first step in aligning reads to a reference genome is to index the reference genome for use by BWA. 
-Indexing allows the aligner to quickly find potential alignment sites for query sequences in a genome, which saves time during alignment. Indexing the reference only has to be run once. The only reason you would want to create a new index is if you are working with a different reference genome or you are using a different tool for alignment
-
 An index for a reference genome works much the same as an index in a recipe book. 
-If you wanted to find all of the recipes that have chocolate in them, you could page through the book and look at every single recipe or you could go to the index, look up chocolate, and get the page numbers for all of the chocolate recipes at once.  
-In the case of the reference index, the read alignment tool uses it to look up potential match locations much faster than if it had to start at the beginning of the reference sequence for every read. 
+Indexing allows the alignment tool (`bwa` in this case) to quickly find potential alignment sites for query sequences (reads) in a genome, which saves time during alignment. 
 
-We are using the read alignment tool `bwa` and so we must use `bwa` to index our reference.
+As long as the reference sequence stays the same, we only have to build the index once. However, an index built by `bwa` won't be able to be used by a different read alignment tool. 
 
 ```bash
 bwa index ref/chr2_sub.fa 
 ```
 
-This will have created a number of files.
+This will have created a number of files which are the index.
 
 ```bash
 ls ref/
@@ -162,7 +160,7 @@ mkdir -p 2_align/{bam,log}
 ```
 
 Let's look at the `bwa` command for read alignment to see how it works. This will introduce the SAM and BAM file formats. 
-SAM files store read mapping/alignment information and BAM files are compressed binary versions of SAM files. We try to store read 
+SAM files store read mapping/alignment information and BAM files are compressed binary versions of SAM files. 
 
 The command is shown in the figure below with short example filenames. 
 
@@ -178,18 +176,16 @@ Here is the command for you to cut and paste with the appropriate paths:
 bwa mem -t 2 ref/chr2_sub.fa 1_trim/ERR3241917_1.fq.gz 1_trim/ERR3241917_2.fq.gz | samtools view -bh -F4 - > 2_align/bam/ERR3241917_aln.bam
 ```
 
-This will take about a minute to run. 
-The output sent to the terminal is normal! 
+This will take about a minute to run and the output sent to the terminal is normal! 
 
-The output file is a BAM file (a compressed SAM file) which isn't human-readable but is much smaller than an uncompressed SAM file. 
+## SAM file format
 
-We use SAMtools to translate the BAM file to SAM format so that we can read it and use `less` to page through it. Use  `q` to get out of `less` when you're ready. 
+The output file of the `bwa` command above is a BAM file (a compressed SAM file) which isn't human-readable but is much smaller than a SAM file. 
+To see the contents of a BAM file, we use SAMtools to translate the BAM file to SAM format and use `less` to page through it. Remember that `q` will let you exit when you're ready. 
 
 ```bash
 samtools view -h 2_align/bam/ERR3241917_aln.bam | less
 ```
-
-## SAM file format
 
 SAM stands for Sequence Alignment Map and SAM files describe how individual reads map to a genome. 
 
@@ -219,12 +215,12 @@ This just means that the columns in the file are separated by \<TAB> characters,
 **Note:** "Mate" is referring to a reads pair. ie. The mate of Read1 is Read 2. 
 
 The first read in your alignment file should look something like this: 
-
+❌
 ```
-hfh
+???
 ```
 
-Let's talk about the FLAG, MAPQ, and CIGAR columns in more detail so we can understand it. 
+Let's talk about the FLAG, MAPQ, and CIGAR columns in more detail. 
 ### SAM FLAGs
 
 The second column in a SAM file contains what appears to be a normal number but it is actually a _bitwise_ field that contains multiple pieces of information about how a read mapped to the reference. 
@@ -291,50 +287,10 @@ For example, the CIGAR `8M2I4M1D3M` is interpreted as:
 - `1D`  1 deletion
 - `3M`  3 alignment matches
 
-### Interpreting an alignment
-
-
-### Summarising alignments
-
-We can get a summary of how our reads aligned using `samtools stats`.
-
-```bash
-samtools stats 2_align/bam/ERR3241917_aln.bam > 2_align/log/ERR3241917.stats
-```
-
-You could alternatively use the `samtools flagstat` command but this gives slightly less information. 
-
-Have a look at the output using `less` and answer the questions below. 
-
-```bash
-less 2_align/log/ERR3241917.stats
-
-```
-
-Let's extract just the lines beginning with SN. 
-
-```bash
-samtools stats ./data/SRR3096662_Aligned.out.sort.bam | grep ^SN | cut -f 2
-```
-
-1. How many reads aligned to the genome?
-2. How many reads aligned as a pair?
-3. How many reads aligned as a "proper" pair? And what is a proper pair?? <- (this might be useful for the assignment)
-4. What do you think `inward oriented pairs` and `outward oriented pairs` means?
-
-### ??? 
-
-5. *Which reference sequence/chromosome did the first read `SRR3096662.22171880` align to and what position did it align to?*
-6. *The first two lines of the file contains reads with the same ID (i.e. the first field of the first two lines are `SRR3096662.22171880`). What is a possible reason for this?*
-7. *What is the read group ID for the sample?*
-8. *What alignment program did we originally use to align the FASTQ data to the reference genome?*
-9. *How many mapped reads are contained in our BAM file and what is the average fragment length?*
-
-
 ### SAM storage
 
 SAM files contain a lot of information and are often many Gb in size. 
-To reduce RAM usage, storage formats such as BAM and CRAM are often favoured over SAM as they represent the alignment information in a compressed form.
+To reduce storage requirements, storage formats such as BAM and CRAM are often favoured over SAM as they represent the alignment information in a compressed form.
 
 BAM (for Binary Alignment Map) is a lossless compression while CRAM can range from lossless to lossy depending on how much compression you want to achieve (up to very much indeed).
 Lossless means that we can completely recover all the data when converting between compression levels, while lossy removes a part of the data that cannot be recovered when converting back to its uncompressed state.
@@ -343,36 +299,96 @@ BAMs and CRAMs hold the same information as their SAM equivalent, structured in 
 Most analysis programs that deal with alignments will take SAM and BAM files as input and/or output, and the majority will strictly ask for BAMs as they are more compressed than SAMs.
 CRAM files are increasing in popularity and can generally be used with most major programs, with older versions containing more limited options for CRAM input.
 
+### Summarising alignments
+
+We can get a summary of how our reads aligned using `samtools stats`. It might take a minute to run. 
+
 ```bash
-samtools stats ./data/SRR3096662_Aligned.out.sort.bam | grep ^SN | cut -f 2-
+samtools stats 2_align/bam/ERR3241917_aln.bam > 2_align/log/ERR3241917.stats
+```
+
+You could alternatively use the `samtools flagstat` command which gives slightly less information. 
+Have a look at the output using `less`  (`q` to exit).
+
+```bash
+less 2_align/log/ERR3241917.stats
+```
+
+It tells us that all of the lines beginning with SN are summary information so let's extract just the lines beginning with SN. 
+Make sure you quit `less` first with `q`.
+
+```bash
+samtools stats 2_align/bam/ERR3241917_aln.bam | grep ^SN | cut -f 2
 ```
 
 This command will take a while to run, because it summarises all the reference sequences within the BAM file.
 When it finishes, you will see all the summarised information from the file, including aligned reads, how many sequences are found in the header etc...
 
+1. How many reads aligned to the genome and what % of reads does it say this is?
+2. Is this the same number of reads as were in your trimmed data according to FastQC? What do you think is going on? 
+3. How many reads aligned as a pair?
+4. How many reads aligned as a "proper" pair? And what is a proper pair?? <- (this might be useful for the assignment)
+5. What do you think `inward oriented pairs` and `outward oriented pairs` means?
+
+
 ## Sorting alignments
 
-Before we start calling variants we will need to **sort the alignments**.
+Before we call variants we will need to **sort the alignments**.
 The original file will contain alignments in the order they were found in the original fastq file, so sorting arranges them in *genomic order*.
+This helps the variant caller to run the calling algorithm efficiently and prevents additional time to be allocated to going back and forth along the genome. 
+This is standard for most NGS downstream programs.
 
 ```bash
-mkdir ~/Practical_7/2_alignedData/sorted_bam
-cd ~/Practical_7/2_alignedData
-samtools sort bam/SRR2003569_chI.bam -o sorted_bam/SRR2003569_chI.bam
+samtools sort 2_align/bam/ERR3241917_aln.bam -o 2_align/bam/ERR3241917_sorted.bam
 ```
-
-This helps the variant caller to run the calling algorithm efficiently and prevents additional time to be allocated to going back and forth along the genome. 
-This is standard for most NGS downstream programs, such as RNA gene quantification and ChIPseq peak calling.
 
 Once we've sorted our alignments, we usually *index* the file, which allows rapid searching of the file.
 Running the following command will create an associated `bai` file which is the index associated with our sorted alignments.
 
 ```bash
-samtools index sorted_bam/SRR2003569_chI.bam
+samtools index 2_align/bam/ERR3241917_sorted.bam
 ```
 
+We can also delete our unsorted BAM file.  Let's see how big our BAM files are and then delete the unsorted file to reduce storage requirements. 
 
+```bash
+ls -lh 2_align/bam/*
+rm 2_align/bam/ERR3241917_aln.bam
+```
 
+Before we continue, run the read alignment and sorting steps for the two other samples (ERR3241921 and ERR3241927). The code that we used for sample ERR3241917 is shown below. 
+
+```bash
+# Align reads
+bwa mem -t 2 ref/chr2_sub.fa 1_trim/ERR3241917_1.fq.gz 1_trim/ERR3241917_2.fq.gz | samtools view -bh -F4 - > 2_align/bam/ERR3241917_aln.bam
+
+# Sort
+samtools sort 2_align/bam/ERR3241917_aln.bam -o 2_align/bam/ERR3241917_sorted.bam
+
+# index 
+samtools index 2_align/bam/ERR3241917_sorted.bam
+rm 2_align/bam/ERR3241917_aln.bam
+```
 ## Visualise alignments
 
+We are now going to use IGV to visualise our genome (chr2_sub.fa) and our read alignments. 
+We have already sorted and indexed our BAM file (containing read alignments) but need to index the reference sequence as well. 
 
+```bash
+samtools faidx ref/chr2_sub.fa
+```
+Now download the following files to your local computer RStudio's File browser (you can choose a different sample if you want). 
+- `~/Practical_alignment/ref/chr2_sub.fa`
+- `~/Practical_alignment/ref/chr2_sub.fai`
+- `~/Practical_alignment/2_align/bam/ERR3241917_sorted.bam`
+- `~/Practical_alignment/2_align/bam/ERR3241917_sorted.bam.bai`
+
+Select 1 file at a time by checking the checkbox and click "More" >> "Export...". Click the "Download" button and save it somewhere obvious.
+
+Visit, [IGV-web](https://igv.org/app/) and load the genome from a `Local File ...` by selecting both the `chr2_sub.fa` and `chr2_sub.fa.fai` files. Once the reference genome is loaded, load a "Track" from a `Local File ...` by selecting both the `.bam` and `.bam.bai` files.
+
+Take some time to work out how to move around, zoom in and out, and then try to answer the questions below:
+
+- The stacked grey arrows represent the reads aligned to the reference genome. What do the coloured vertical bars within the reads indicate?
+- Do you see a position in the genome where a coloured vertical bar seems to occur quite frequently? What do you think this is?
+- Why does the read coverage drop towards zero at the ends of the reference genome?
