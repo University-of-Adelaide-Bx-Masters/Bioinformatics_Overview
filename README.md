@@ -1,5 +1,5 @@
 
-## >>COURSE CODE GOES HERE<<
+## PHAR5002
 
 Delivered in Semester 1
 
@@ -19,7 +19,6 @@ Delivered in Semester 1
 - Practical 7 - [Variant Calling](Practicals/fundamentals_of_bioinformatics/prac_7_variantcall.md)
 
 ## Module 2: Pathogens and Metagenomics
-
 
 
 ## Module 3: Reproducible Bioinformatics

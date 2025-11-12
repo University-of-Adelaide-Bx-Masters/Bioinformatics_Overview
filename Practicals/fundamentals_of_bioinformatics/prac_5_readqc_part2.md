@@ -154,12 +154,10 @@ Assignment 1 asks you to write a few scripts that run from your home directory (
 - obtain data 
 - perform analysis
 
-Lets write this script in the same way. 
+Lets write a script to perform our quality control steps in the same way. 
 
 We want our script to be nicely organised so that it's easy to read and follow so let's set up the structure. 
-First, run `cd ~` to get to your home directory, then use `nano` to make a new file called `runqc.sh` and set it up like the example below. 
-
-Feel free to change the wording. 
+First, run `cd ~` to get to your home directory, then use `nano` to make a new file called `runqc.sh` and set it up similar to the example below with descriptions that make sense to you. 
 
 ```bash
 #!/bin/bash
@@ -184,7 +182,7 @@ Feel free to change the wording.
 
 **Remember!** Whatever commands you can run in the terminal, you can also put into a script and they'll do the exact same thing. 
 
-The first thing we do in a practical is activate our software so add `source activate bioinf` to your script. 
+The first thing we do in a practical is activate our software so add `source activate bioinf` to your script in the "load software" section. 
 
 Next, we create some directories and obtain our data. 
 
@@ -192,7 +190,7 @@ The code below is copied directly from [Practical 4](prac_4_readqc.md).
 Most of this code is essential for the analysis in that it creates something that is used or required by a later step. However, some of it is not. 
 We want our script to be efficient and easy to follow so we only want to include code that is contributing to our analysis. 
 
-Which parts of the code below aren't essential? Take some time to look through and work it out. 
+Which parts of the code below aren't essential? Take some time to look through and work it out. You could use the `man` or help pages to work out what commands do if you can't remember.
 
 ```bash
 mkdir --parents ~/Practical_alignment/{ref,0_raw,1_trim,2_align,3_variants}
@@ -220,11 +218,56 @@ cd ~/Practical_alignment
 fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
 ```
 
-
-Copy the essential code into the appropriate parts of your script.
+Copy the essential code into the appropriate parts of your script. Add additional comments if needed. 
 
 The last two analysis steps that we need to include in our script are trimming and the final fastqc check.  
-Find these two commands in todays practical and paste them into your script. You should hopefully end up with something like shown below.
+Find these two commands in todays practical and paste them into your script. 
+
+Once you've completed the above, click the link below to see the next step. 
+
+<details>
+<summary>Click HERE when you've completed the above</summary>
+<p>Your script should now look like the script below.</p>
+<pre>#!/bin/bash
+
+# Variables
+
+# Load software
+source activate bioinf
+
+# Create directories
+mkdir --parents ~/Practical_alignment/{ref,0_raw,1_trim,2_align,3_variants}
+mkdir -p ~/Practical_alignment/0_raw/FastQC
+mkdir -p ~/Practical_alignment/1_trim/fastp
+mkdir -p ~/Practical_alignment/1_trim/FastQC
+
+# Move into the Practical directory
+cd Practical_alignment
+
+# Get data
+cp  ~/data/intro_ngs/chr2_sub.fa ref/
+ln -s ~/data/intro_ngs/*.fq.gz 0_raw/
+
+# Assess raw read quality with fastqc
+fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
+
+# Trim with fastp
+fastp --thread 2 \
+-i 0_raw/ERR3241917_1.fq.gz \
+-I 0_raw/ERR3241917_2.fq.gz \
+-o 1_trim/ERR3241917_1.fq.gz \
+-O 1_trim/ERR3241917_2.fq.gz \
+--unpaired1 1_trim/ERR3241917_1_orphan.fq.gz \
+--unpaired2 1_trim/ERR3241917_2_orphan.fq.gz \
+--cut_right \
+--cut_window_size 4 \
+--cut_mean_quality 20 \
+--length_required 75 \
+--html 1_trim/fastp/ERR3241917_fastp.html
+
+# Assess read quality after trimming with fastqc
+fastqc -o 1_trim/FastQC -t 2 1_trim/FastQC/ERR3241917_*.fq.gz</pre>
+</details>
 
 
 ```bash
@@ -270,9 +313,7 @@ fastqc -o 1_trim/FastQC -t 2 1_trim/FastQC/ERR3241917_*.fq.gz
 ```
 
 Your script should now have all of the necessary code to run the entire quality control workflow for the sample ERR3241917. However, one of the main reasons we write scripts is automation. 
-We want to run the same code on multiple samples and this script currently only runs one sample. We'll get to that but let's test our code before it gets more complicated. 
-
-However, before we test it, let's do a few checks. 
+We want to run the same code on multiple samples and this script currently only runs one sample. We'll get to that but let's do some final checks and test our code before it gets more complicated. 
 
 Things to check:
 1. Make sure that all directories referenced by your fastqc and fastp commands are created before these commands run
@@ -286,22 +327,22 @@ Things to check:
 If you don't test your script, you can't be sure that it doesn't have errors. 
 The best way to test a script is to run it in the way you are expecting other people to run it. 
 For example, your assignment scripts will be placed in the home directory (~) and executed. 
-None of the directories or data you've created will exist and so your script will have to create them. 
-Therefore, to properly test our script we should put it in the home directory, rename or delete the `Practical_alignment` directory, and then run the script. 
+None of the directories or data that you've created will exist and so your script will have to create them. 
+Therefore to properly test our script, we need to remove the original output files. Instead of deleting them, let's rename the directory in case we wnat to go back. 
 To check that the script runs all the way to the end, add an `echo "end of script"` or some other echo statement to the last line of your script. 
 
 Let's test it. 
 
 ```bash
 cd ~
-# rename our Practical_alignment directory to Prac_alignment
-mv Practical_alignment Prac_alignment
+# rename our Practical_alignment directory to Practical_alignment_original so that we can get our work back if we need
+mv Practical_alignment Practical_alignment_original
 
 #Run the script
 bash runqc.sh
 ```
 
-Did your script run? Take a look at the directory structure with `tree`. 
+Did your script run? Take a look at the directory structure with `tree` to check. 
 
 ```bash
 tree Practical_alignment
@@ -315,15 +356,17 @@ Once our script is running without errors, we can modify it so that it runs all 
 In this example we'll use a `for` loop that iterates over our three sample names and runs the code inside of the loop for each sample. We will need: 
 - a variable that contains our three sample names
 - A `for` loop that iterates over this variable and contains the code that we want to run
-These elements are shown below with the full command for the first `fastqc` step included. Note how the sample name (ERR3241917) has been replaced with `${SAM}`.  Try and add this loop to your own script making sure that you replace all sample names inside of the loop with the `${SAM}` variable and include the full commands for `fastp` and `fastqc`.  
+These elements are shown below with the full command for the first `fastqc` step included. Note how the sample name (ERR3241917) has been replaced with `${SAMPLE}`.  
+
+Take some time to look over this code and understand how it works. 
 
 ```bash
 # Variables
 SAMPLES=(ERR3241917 ERR3241921 ERR3241927)
 
-for SAM in "${SAMPLES[@]}";
+for SAMPLE in "${SAMPLES[@]}";
 do
-	fastqc -o 0_raw/FastQC -t 2 0_raw/${SAM}_*.fq.gz
+	fastqc -o 0_raw/FastQC -t 2 0_raw/${SAMPLE}_*.fq.gz
 	
 	<fastp command here>
 	
@@ -331,4 +374,26 @@ do
 done
 ```
 
-Spend the rest of the practical trying to get your script working for all three samples.
+Try and add this loop to your own script making sure that you replace all sample names inside of the loop with the `${SAMPLE}` variable and include the full commands for `fastp` and `fastqc`.  
+To test your script again:
+
+```bash
+cd ~ 
+# Delete the directory you created when you ran this script without the for loop
+rm -rf Practical_alignment
+
+# and Run the script again!
+bash runqc.sh
+```
+
+Once this script has run, take a look through the FastQC reports for your newly processed samples to make sure you're happy with the trimming process and final data quality.  
+
+And just before we go, let's delete the `Practical_alignment_original` directory as the new `Practical_alignment` directory contains all of the same analysis for the first sample plus analysis of the second and third sample. 
+
+**Check the `rm` command below carefully. It can't be undone if you delete the wrong thing.** 
+
+```bash
+rm -rf Practical_alignment_original
+# The -r option means recursive
+# The -f option means "Force"
+```
