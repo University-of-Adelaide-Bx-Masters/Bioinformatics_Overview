@@ -85,7 +85,7 @@ By default `sed` will print the entire input stream it receives, but setting the
 Try this by adding an `n` immediately after the `-r` in one of the above lines & you will notice you receive no output.
 This is useful if we wish to restrict our output to a subset of lines within a file, and by including a `p` at the end of the script section, only the section matching the results of the script will be printed.
 
-Make sure you are in the `Practical_3` directory & we can look through the file `Drosophila_melanogaster.BDGP6.ncrna.fa` again.
+Make sure you are in the `Practical_1` directory & we can look through the file `Drosophila_melanogaster.BDGP6.ncrna.fa` again.
 
 ```
 sed -n '1,10 p' Drosophila_melanogaster.BDGP6.ncrna.fa
@@ -226,7 +226,7 @@ Although we have initially set them to be one value, they are still variables.
 
 Let's create an empty file which will become our script.
 We'll give it the suffix `.sh` as that is the common convention for bash scripts.
-Make sure you're in the `Practical_3` folder, then enter:
+Make sure you're in the `Practical_1` folder, then enter:
 
 ```
 touch wellDone.sh
@@ -378,7 +378,7 @@ for f in ${FILES};
 
 #### Task
 
-Save this as a script in the `Practical_3` folder called `lineCount.sh`.
+Save this as a script in the `Practical_1` folder called `lineCount.sh`.
 **Add comments** where you think you need them to make sure you understand what's happening.
 
 #### 
