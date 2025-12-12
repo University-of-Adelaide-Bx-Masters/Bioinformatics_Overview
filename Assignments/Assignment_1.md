@@ -11,7 +11,22 @@ It is split into two parts with 30 marks for each part.
 
 ## Part 1 - Bash 
 
+You will need to produce two valid bash scripts for Part 1 of this assignment
 
+Q1. Write a bash script to: 
+- Download the gff3 file for your assigned species (see bottom of page) to your current directory from Ensembl [1 mark]
+- Count how many of each feature type there is, sorted in numerical order [4 marks]
+- Export the results to a file with a name of the form my_species_gff_features.txt where you use your assigned species name instead of my_species [1 mark]. NB: If your actual species is not included in the name, no marks will be given. The script must also include code to generate one or more comment lines in the output file/table before the table with the genome-build used, (hint: grep your gff to find the genome build info as the header is very large in most cases)
+- The script must also write the code used to generate the summary (counts) data to the output file as part of the file header. [2 marks]
+
+Q2. For the file we used in the practicals (Drosophila_melanogaster.BDGP6.ncrna.fa), add to the final practical script provided so that:
+- The output contains a meaningful header [1 mark] 
+- The output contains column names [2 marks]
+- The output includes: a) gene id; b) chromosome; c) start; d) stop; e) strand and f) gene_biotype [3 marks]
+- Appropriate comments which make the script easier to understand [1 mark]
+
+Note: If identical comments are identified in any submissions, a mark of **zero** will be given for this question for all suspicious submissions. 
+We also strongly, **strongly** suggest completing these scripts without the use of generative AI tools. You will be able to write your assignment scripts by repurposing the code and bioinformatics tools we went over in the first three practicals. 
 
 ## Part 2 - Next Generation Sequencing
 
