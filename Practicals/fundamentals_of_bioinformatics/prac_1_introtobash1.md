@@ -63,12 +63,12 @@ For practicals where R will be used, everything will be harder if you do not fol
 To make and enter the directory that you will be working in, run the following commands in the terminal pane (try to figure out what they mean — we will be going over them more later in the prac).
 
 ```
-mkdir ~/Project_0
-cd ~/Project_0
+mkdir ~/Practical_1
+cd ~/Practical_1
 ```
 
 You will now find yourself in this directory you have created.
-If you look at the bottom right pane of your RStudio session you will see `Project_0` appeared when you executed `mkdir ~/Project_0`.
+If you look at the bottom right pane of your RStudio session you will see `Practical_1` appeared when you executed `mkdir ~/Practical_1`.
 If you need to, you can navigate through the directories and select files with the file navigation pane just as you would with a normal file browser.
 
 Making this directory to work in will help you keep everything organised so you can find your work later.
@@ -91,13 +91,13 @@ Now we have setup our VM, the basic aims of the following sessions are:
 Once you're in the `Terminal` section of `RStudio`, you will notice some text describing your computer of the form
 
 ```
-a1234567@ip-10-255-0-115:/shared/a1234567/Project_0$
+a1234567@ip-10-255-0-115:/shared/a1234567/Practical_1$
 ```
 
 The first section of this describes your username (`a1234567`) and the machine `@ip-10-255-0-115`.
 The end of the machine identifier is marked with a colon (`:`).
 
-After the colon, the string (`~/Project_0`) represents your current directory, whilst the dollar sign (`$`) indicates the end of this path and the beginning of where you will type commands.
+After the colon, the string (`~/Practical_1`) represents your current directory, whilst the dollar sign (`$`) indicates the end of this path and the beginning of where you will type commands.
 This is the standard interface for the Bourne-again Shell, or `bash`.
 
 ### Where are we?
@@ -115,13 +115,13 @@ The command `pwd` is what we use to **p**rint the current (i.e. **w**orking) **d
 
 
 ```
-/shared/a1234567/Project_0
+/shared/a1234567/Practical_1
 ```
 
 Check with your neighbour to see if you get the same thing.
 If not, see if you can figure out why.
 
-At the beginning of this section we mentioned that `~/Project_0` represented your current directory, but now our machine is telling us that our directory is `/shared/a1234567/Project_0`.
+At the beginning of this section we mentioned that `~/Practical_1` represented your current directory, but now our machine is telling us that our directory is `/shared/a1234567/Practical_1`.
 This raises an important and very useful point.
 In `bash` the `~` symbol is a shortcut for the home directory of the current user.
 If NAME1 was logged in, this would be `/shared/NAME1` whilst if NAME2 was logged in this would be `/shared/NAME2`.
@@ -260,10 +260,10 @@ If `PWD` happened to be the name of a command which has been defined in your she
 Most `bash` tools are named using all lower-case, but there are a handful of exceptions.
 
 We can also change into a specific directory by giving the path to the `cd` command using text instead of dots and symbols.
-Making sure you're in your home directory we can change back into the Project_0 directory
+Making sure you're in your home directory we can change back into the Practical_1 directory
 ```
 cd
-cd Project_0
+cd Practical_1
 pwd
 ```
 
@@ -287,7 +287,7 @@ mkdir Practical_1
 mkdir Practical_2
 ```
 
-Now to change back into your Project_0 folder, type `cd P` without hitting enter.
+Now to change back into your Practical_1 folder, type `cd P` without hitting enter.
 Instead hit your <kbd>Tab</kbd> key and `bash` will complete as far as it can.
 If you have setup your directories correctly, you should see this complete to `cd Pr` which is unfinished.
 You also have `Practical_1` and `Practical_2` in your home folder, so `bash` has gone as far as it can.
@@ -301,7 +301,7 @@ cd
 ```
 
 Now type `cd Pr` and hit the <kbd>Tab</kbd> key twice and you will be shown all of the alternatives.
-You'll still have to type the `o` though to get to `Project_0`.
+You'll still have to type the `o` though to get to `Practical_1`.
 
 Another example which will complete all the way for you might be to go up one from your home folder.
 
@@ -358,12 +358,12 @@ ls /
 Here you can see a whole raft of directories which contain the vital information for the computer's operating system.
 Among them should be the `/shared` directory which is one level above your own home directory, and where the home directories for all users are located on our Linux system. Note that our system is a special case and most Linux systems have user home directories in `/home`, not `/shared`.
 
-Have a look inside your Project_0 directory from somewhere else.
+Have a look inside your Practical_1 directory from somewhere else.
 Tab auto-completion may help you a little.
 
 ```
 cd 
-ls Project_0
+ls Practical_1
 ```
 
 Navigate into this folder using you GUI view in `RStudio` and check that everything matches.
@@ -377,10 +377,10 @@ Give two ways we could inspect the contents of the `/` directory from your own h
 ### Creating a New Directory
 
 Now we know how to move around and view the contents of a directory, we should learn how to create a new directory using bash instead of the GUI folder view you are used to.
-Navigate to your `Project_0` folder using `bash`.
+Navigate to your `Practical_1` folder using `bash`.
 
 ```
-cd ~/Project_0
+cd ~/Practical_1
 ```
 
 Now we are in a suitable location, let's create a directory called `test`.
@@ -411,7 +411,7 @@ ls -l
 
 The above will give one or more lines of output, and one of the lines should be something similar to:
 
-`drwxrwxr-x 2 a1071750 a1071750       4096 Feb 23 09:40 Project_0`
+`drwxrwxr-x 2 a1071750 a1071750       4096 Feb 23 09:40 Practical_1`
 
 where `hh:mm` is the time of file/directory creation.
 
@@ -608,7 +608,7 @@ Now we've learned about a large number of commands, let's try performing somethi
 We'll download a file from the internet, then look through the file.
 **In each step remember to add the filename if it's not given!**
 
-1. Use the `cd` command to **make sure you are in the directory** `Project_0`
+1. Use the `cd` command to **make sure you are in the directory** `Practical_1`
 2. Use the command `wget` to download the `gff` file `ftp://ftp.ensembl.org/pub/release-89/gff3/drosophila_melanogaster/Drosophila_melanogaster.BDGP6.89.gff3.gz`
 3. Now unzip this file using the command `gunzip`.
 (Hint: After typing `gunzip`, use tab auto-complete to add the file name.)
