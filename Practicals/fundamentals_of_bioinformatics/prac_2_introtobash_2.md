@@ -59,7 +59,7 @@ First **change into your `test` directory** using the `cd` command, then enter t
 cp ~/data/intro_bash/words words
 ```
 
-Now page through the first few lines of the file using `less` to get an idea about what it contains.
+Now page through the first few lines of the file using `` to get an idea about what it contains.
 
 Let's try a few searches, and to get a feel for the basic syntax of the command, try to describe what you're searching for on your notes **BEFORE** you enter the command.
 Do the results correspond with what you expected to see?
@@ -354,7 +354,6 @@ grep -c 'region' GCF_000182855.2_ASM18285v1_genomic.gff
 If we wanted to count how many genes are annotated, the first idea we might have would be to do something similar using a search for the pattern `'gene'`.
 
 #### Question
-{:.no_toc}
 
 *Do you think this is the number of regions & genes?*
 
@@ -429,3 +428,81 @@ cut -f3 -s GCF_000182855.2_ASM18285v1_genomic.gff | sort | uniq -c
 
 In the above some of the advantages of the pipe symbol can clearly be seen.
 Note that we haven't edited the file on disk, we've just streamed the data contained in the file into various commands.
+
+### Using `awk`
+
+Sometimes we want to do more than simply extract fields from a file.  
+For this, we can use a very powerful command called `awk`.
+The command **`awk`** is a common tool for working with and manipulating text files that are arranged in columns, such as GFF files.  
+
+
+You can open the manual page for more information:
+
+```
+man awk
+```
+
+Similar to `cut`, `awk` can split each line of a file into fields.  
+By default it splits on **whitespace**, but we can tell it to split on **tabs** (as used in GFF files) by using the `-F` option (*F for field separator*).
+
+For example, to print the **3rd field** of a tab-delimited GFF file, we can use:
+
+```
+awk -F"\t" '{print $3}' GCF_000182855.2_ASM18285v1_genomic.gff | head -10
+```
+
+Here:
+
+- `-F"\t"` tells `awk` that fields are separated by tabs  
+- `{print $3}` tells `awk` to print the **third field**  
+- `$1`, `$2`, `$3`, … refer to columns 1, 2, 3, etc.
+
+You will notice that the first 9 lines output by this command are blank. That is because this GFF header lines contains no tabs (only spaces), so `awk` cannot split them into fields. Try piping this output into `less` and scrolling down until you see results
+
+```
+awk -F"\t" '{print $3}' GCF_000182855.2_ASM18285v1_genomic.gff | less
+```
+
+While the output of `awk` is similar to `cut -f3`, `awk` also allows us to filter rows or process text more easily using simple conditions. One of the most useful features of `awk` is that it can both select rows and extract fields at the same time.
+
+### Filtering with `awk`
+
+Instead of using a separate filtering command, we can ask `awk` to select only the rows we want.  
+For example, to print only the lines where the **feature type** (column 3) is `gene`, we can write:
+
+```
+awk -F"\t" '$3 == "gene" {print $3}' GCF_000182855.2_ASM18285v1_genomic.gff | head
+```
+
+This prints only those entries where the third column exactly matches `gene`.
+
+A natural question is: *What additional information is stored with each gene?*
+
+To learn this, we need to look at the 9th column.
+
+The **9th column** of a GFF file is called the **attributes column**.  
+It contains extra information about each feature in a semicolon-delimited format.  
+Each entry is a key–value pair, for example:
+
+```
+ID=gene-XYZ;Name=MyGene;gene_biotype=protein_coding
+```
+
+Common attributes include:
+
+- **ID** — a unique identifier for the feature  
+- **Name** — a human-readable gene name  
+- **gene_biotype** — categories such as protein_coding, lncRNA, pseudogene  
+
+The 9th column is extremely useful because it is where most biological meaning (gene names, transcript relationships, functional categories) is stored.
+
+We can print both the **3rd** and **9th** columns for gene entries:
+
+```
+awk -F"\t" '$3 == "gene" {print $3"\t"$9}' GCF_000182855.2_ASM18285v1_genomic.gff | head
+```
+
+This shows the feature type together with the attributes describing each gene. 
+
+### Question:
+Using the `Name=` attribute, what is the human-readable name of the first gene in this GFF file? What is its gene biotype? 
