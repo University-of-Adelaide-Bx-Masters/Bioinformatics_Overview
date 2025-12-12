@@ -54,11 +54,11 @@ Although we haven't specifically mentioned this up until now, your virtual machi
 
 ## Setup the directory for today
 
-First we will set up a directory for today's practical.
+First we will set up a directory for this week's practicals.
+All of the the work we do in the first three Introduction to Bash practicals will be performed in this directory.
 In general it is very worthwhile to keep all your project-specific code and data organised into a consistent location and structure.
 This is not essential, but is very useful and is good practice.
 If you don't follow this step, you will be making your life much harder and will not be following 'best practice' data analysis.
-For practicals where R will be used, everything will be harder if you do not follow the equivalent strategy there.
 
 To make and enter the directory that you will be working in, run the following commands in the terminal pane (try to figure out what they mean — we will be going over them more later in the prac).
 
