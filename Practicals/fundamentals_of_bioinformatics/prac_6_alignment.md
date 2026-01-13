@@ -350,15 +350,11 @@ Use the summary information above to answer the following questions:
 4. How many reads aligned as a "proper" pair? And what is a proper pair?? (**HINT:** this might be useful for the assignment)
 5. What do you think `inward oriented pairs` and `outward oriented pairs` means?
 
-## Filter and sort alignments
+## Sort alignments
 
-
-Before we call variants we will remove reads with low mapping quality and then sort the remaining alignments. 
-
-
-
+Before we call variants  we need to sort our read alignments.
 The original file will contain alignments in the order they were found in the original fastq file, so sorting arranges them in *genomic order*.
-This helps the variant caller to run the calling algorithm efficiently and prevents additional time to be allocated to going back and forth along the genome. 
+This helps the variant caller to run the calling algorithm efficiently and prevents additional time from be allocated to going back and forth along the genome. 
 This is standard for most downstream programs.
 
 ```bash

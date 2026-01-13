@@ -134,7 +134,7 @@ NC_000002.12	187	.	T	C	581.643	.	AB=0.485714;ABP=3.13438;AC=3;AF=0.5;AN=6;AO=34;
 6. How many variants are there in this file (Hint: each line that's not a header is considered a variant)
 
 <details>
-<summary>Answers</summary>
+<summary>Answer</summary>
 <ul><li>1. On chromosome NC_000002.12 at position 187</li>
 <li>2. T</li>
 <li>3. C</li>
@@ -155,7 +155,6 @@ Variants that pass this filter would be considered "high confidence".
 We can use `bcftools filter` to filter for variants that meet certain criteria using an expression filter. 
 This means we can either exclude (`-e`) or include (`-i`) variants based on a certain criteria. 
 
-
 Lets compress our VCF to save space and then exclude all variants that have a QUAL < 30, and then count how many variants meet this criteria. 
 
 ```bash
@@ -167,9 +166,14 @@ bcftools filter -e 'QUAL < 30' 3_variants/chr2_vars.vcf.gz -Oz -o 3_variants/chr
 
 # count number of variants that met filtering criteria
 zcat 3_variants/chr2_vars_q30.vcf.gz | grep -v "^#" | wc -l
+
+# you could join these two steps together if you don't want to save an intermediate file and just want to count variants passing the filter
+bcftools filter -e 'QUAL < 30' 3_variants/chr2_vars.vcf.gz | grep -v "^#" | wc -l
 ```
 
 - How many variants greater than QUAL 30 do you have? 
+- How many variants remain if we exclude variants with QUAL < 20
+
 ## Filter by depth - DP
 
 Along with QUAL, variants are also commonly filtered by depth (DP) which can be either total depth of reads across all samples (the INFO DP field) or the depth per sample (the FORMAT DP field). 
