@@ -24,22 +24,22 @@ This is known as lactase persistence (LP).
 
 With the advent of animal domestication and dairying practices, milk became a reliable and nutrient-rich food source for many populations. 
 This shift created strong selective pressure for genetic variants that allowed adults to continue producing lactase and digesting lactose — lactase persistence. 
-Because this selection occurred independently in different regions and distinct genetic variants arose in separate populations. 
+Because this selection occurred independently in different regions, distinct genetic variants conferring lactase persistence arose in separate populations. 
 The distribution of the five most common variants are shown in the figure below. 
 Note that all of these variants are located within intron 13 of the MCM6 gene. 
 
 <img src="images/lp_snp_frequencies_by_pop.jpg" alt="SNPs associated with lactose persistence across different populations" height="400">
 
-**SNPs associated with lactose persistence in different populations** from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
+**SNPs associated with lactose persistence in different populations:** from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
  
 We will be focusing on the Eurasian lactase persistence SNP, [rs4988235](https://asia.ensembl.org/Homo_sapiens/Phenotype/Locations?db=core;name=LACTASE%20PERSISTENCE;ph=3083;r=2:135850576-135851576;v=rs4988235;vdb=variation;vf=89657404), sometimes referred to as 13910C>T as in the figure above.
 The A allele enhances activator binding which increases lactase gene expression into adulthood. 
 
 ![SNPs conferring lactase persistence](images/lp_snps_in_mcm6.jpg)
 
-**SNPs conferring lactase persistence**
-This figure shows a schematic of MCM6 intron 13 lactase persistence enhancer region. 
-The light grey represents the genomic sequence in the human reference genome GRCh38 chr2:135,850,966-135,851,196.
+**SNPs conferring lactase persistence:**
+This figure shows a schematic of the MCM6 intron 13 lactase persistence enhancer region. 
+The light grey represents the genomic sequence in the human reference genome GRCh38 (chr2:135,850,966-135,851,196).
 The coloured boxes represent transcription factor binding sites and the red lines identify the five SNPs in this region conferring lactase persistence. 
 Image from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
 
@@ -53,15 +53,15 @@ The main steps in this workflow are shown in the figure below along with the fil
 
 [![Variant calling workflow](https://sbc.shef.ac.uk/wrangling-genomics/img/variant_calling_workflow.png)](https://sbc.shef.ac.uk/wrangling-genomics/04-variant_calling/index.html)
 
-The data we will analyse with this workflow is Illumina paired-end reads from three Iberian individuals sequenced as part of the [1000 Genomes project](https://www.coriell.org/1/NHGRI/Collections/1000-Genomes-Project-Collection/1000-Genomes-Project?gad_source=1&gad_campaignid=10942056189&gbraid=0AAAAACRxwMsdRVvA7OauKN189ncoe-14z&gclid=Cj0KCQjwsPzHBhDCARIsALlWNG2QLO7P-lzVqNwqHFEiqk7yXlSRMsX5fLr86aNfAq15Xk-_8Iv5caMaAgmBEALw_wcB)  and the reference genome is a 7Mbp segment (7 million basepairs) from Chromosome 2 in the human reference genome [GRCh38.p14](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/). 
+The data we will analyse with this workflow includes Illumina paired-end reads from three Iberian individuals sequenced as part of the [1000 Genomes project](https://www.coriell.org/1/NHGRI/Collections/1000-Genomes-Project-Collection/1000-Genomes-Project?gad_source=1&gad_campaignid=10942056189&gbraid=0AAAAACRxwMsdRVvA7OauKN189ncoe-14z&gclid=Cj0KCQjwsPzHBhDCARIsALlWNG2QLO7P-lzVqNwqHFEiqk7yXlSRMsX5fLr86aNfAq15Xk-_8Iv5caMaAgmBEALw_wcB)  and a 7Mbp (7 million basepairs) segment of the human reference genome  [GRCh38.p14](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/). 
 
 The first step in a bioinformatics analysis/workflow is _always_ quality control (QC) and that will be the focus for today. 
 This includes checking the quality of raw data, trimming our raw data, and then re-checking quality.
 We have included an extra sample for the initial quality assessment so that you see reads of varying quality. 
 ## Learning Outcomes
 
-1. Gain familiarity with high throughput sequencing data files (FASTQ reads)
-2. Learn how to assess the quality of FASTQ reads
+1. Gain familiarity with high throughput sequencing data files (FASTQ)
+2. Learn how to assess the quality of reads in FASTQ format
 3. Learn what symlinks are and why they are useful
 
 # **Setup**
@@ -98,11 +98,11 @@ Everyones prompt should now have changed to look something like below:
 ```
 
 The `(bioinf)` prefix lets you know you are in the `bioinf` conda environment, with access to the packages/tools installed in that environment. 
-It gives us access to both of the tools (`fastqc` and `fastp`) we need for todays practical. 
+It gives us access to both of the tools (`fastqc` and `fastp`) that we need for todays practical. 
 
 ## Create directory structure 
 
-Let's create a new directory for todays practical and set up the directory structure for today and the next three practicals. 
+Let's create a new directory for todays practical and create subdirectories that reflect the main steps in our analysis. We won't use some of these directories until later but they will help us stay organised when we get to those steps. 
 The command `tree` shows the the structure of the `Practical_alignment` directory. 
 
 ```bash
@@ -127,13 +127,15 @@ Practical_alignment/
 
 ## Get data (with symlinks!)
 
-The data we use and create in bioinformatics is often very large and takes up a lot of storage spaces. 
+The data used and created in bioinformatics analysis is often very large and takes up a lot of storage spaces. 
 Because data storage is usually limited and is surprisingly expensive, we need to manage our data carefully.
 One way we can do that is by using symlinks. 
 
 A symlink (or 'symbolic link') is a shortcut that points to another file or folder. 
 It lets you access the original file from a different location without duplicating it and thereby saves disk space.
-We will create symlinks to the .fastq files for our analysis and will copy over the reference sequence. 
+For example, the compressed fastq files we'll be using today are ~17 Mb each and there are 6 of them, totalling ~100Mb. If 60 students all copy these files to their project directories, that's ~6Gb of extra data being stored.
+Therefore, we will use symlinks to access the .fastq files for our analysis. 
+We could also do this with the reference sequence but we won't today so that we can compare how these files appear in our directory. 
 
 ```bash
 cd Practical_alignment
@@ -157,7 +159,7 @@ The directory structure should now be as below.
 
 Notice how the reference sequence is listed just by its name in black while the symlinks are blue with an arrow pointing to the full path to the file in red.
 
-To list just the files in the `0_raw` directory we can use `ls`. Compare the output of the two `ls` commands below and answer the questions. 
+To list just the files in the `0_raw` directory we can use `ls`. Compare the output of the two `ls` commands below and answer the questions. Don't forget about the `man` command if you need help.  
 
 ```bash
 ls 0_raw
@@ -172,7 +174,7 @@ In the `0_raw` directory you should have 8 files. These contain data for four sa
 # **Illumina Sequencing**
 
 In order to analyse our data, we need to understand how it was generated. 
-We will be analysing paired-end reads from Illumina, the most commonly used short-read sequencing platform. 
+We are analysing paired-end reads from Illumina, the most commonly used short-read sequencing platform. 
 Illumina uses the [Sequencing by Synthesis](https://youtu.be/fCd6B5HRaZ8) method which you will have learned about in the course materials.
 More information on Illumina sequencing is available on [their website](https://sapac.illumina.com/systems/sequencing-platforms.html).
 
@@ -187,26 +189,28 @@ More information on Illumina sequencing is available on [their website](https://
 
 The figure below shows the different parts of an Illumina sequencing template. 
 
-![](images/seq-template-pe.jpg)
+![](images/illumina_template_detail.png)
 - What happens if the insert fragment is shorter than the read length? 
 ### Adapters
-The adapters contain the sequencing primer binding sites (R1 and R2 Primers), index sequences, and the sites that allow library fragments to attach to the flow cell lawn (amplification elements).
+
+The adapters contain the sequencing primer binding sites (R1 and R2 Primers), index sequences, and the sites that allow library fragments to attach to the flow cell lawn (P5 and P7). 
 There are a limited number of standard Illumina adapter sequences ([detailed here](https://knowledge.illumina.com/library-preparation/general/library-preparation-general-reference_material-list/000001314)) and so tools are often able to determine which adapter was used automatically.  
 ### Insert
-This is the fragment of DNA that we want to sequence. If we are using barcodes, the barcode is ligated directly to the DNA fragment and is included in the read. 
+
+This is the fragment of DNA that we want to sequence. If we are using barcodes, the barcode is ligated directly to the DNA fragment and is included in the read (barcodes are not shown here). 
 ### Indexes and Barcodes
 
-Indexes and barcodes are both used to similar in that they allow multiple samples to be pooled together in a single sequencing run and later separated by their unique sequence tags. 
-This is called multiplexing. 
-Separating reads by their indexe or barcode into individual samples is called _de-multiplexing_. 
+Indexes and barcodes are similar in that they allow multiple samples to be pooled together in a single sequencing run and later separated by their unique sequence tags. 
+This is called _multiplexing_ and separating reads by their index or barcode into individual samples is called _de-multiplexing_. 
 Indexes are not included in either the forward or reverse read (indexes are shown in the figure above) and are commonly used in RNA-seq libraries. Indexed samples are generally de-multiplexed by the sequence provider. 
-If barcodes are used to further multiplex samples, they will be ligated directly to the DNA insert and will be included in the read. 
-De-multiplexing barcoded samples is not performed by the sequencing provider. Instead, a bioinformatician will de-multiplex using a tool like [sabre](https://github.com/najoshi/sabre). 
+If barcodes are used to further multiplex samples, they will be ligated directly to the DNA insert and will be included in the read itself. 
+De-multiplexing barcoded samples is not performed by the sequencing provider. 
+Instead, a bioinformatician will de-multiplex using a tool like [sabre](https://github.com/najoshi/sabre). 
 
 ## 3' Quality Drop-Off
 
 In general, Illumina sequencing produces highly accurate reads but read quality does tend to diminish towards the 3' end. 
-During the bridge-amplification stage, millions of clusters are created on the flowcell. Each cluster comprises of 1,000-2,000 identical copies of the same template. During the process of sequencing, the polymerases attached each of the thousands of copies in a cluster "advance" one base at a time. At the start (5' end) all the polymerases are in perfect sync; generating a bright, clean, consistant light signal for detecting which base was incorporated. However, as time/number of cycles progresses, some polymerases fall behind while some race in front. The polymerases gradually get further and further out of phase with each other. This leads to dimmer and less clear signals for detection, and thus lower quality base-calls.
+During the bridge-amplification stage, millions of clusters are created on the flowcell. Each cluster comprises of 1,000-2,000 identical copies of the same template. During the process of sequencing, the polymerases attached to each of the thousands of copies in a cluster "advance" one base at a time. At the start (5' end) all the polymerases are in perfect sync; generating a bright, clean, consistant light signal for detecting which base was incorporated. However, as time/number of cycles progresses, some polymerases fall behind while some race in front. The polymerases gradually get further and further out of phase with each other. This leads to dimmer and less clear signals for detection, and thus lower quality base-calls.
 
 ## PolyG artifact
 Illumina uses only two fluorescent colours in its chemistry to represent the four bases. 
@@ -225,7 +229,7 @@ These files are plain-text but are often very large so are commonly compressed u
 The `.gz` extension is added to signify this.
 Most modern bioinformatics tools can read `gzip` compressed files and so you should keep them compressed unless you are using a tool that specifically requires them to be decompresed. 
 
-Let's take a look at the first 4 lines in one of our FASTQ files.
+Let's take a look at the first 4 lines in one of our "unknown" sample FASTQ files.
 
 ```bash
 zcat 0_raw/unknown_R1.fq.gz | head -n 4
@@ -237,8 +241,8 @@ zcat 0_raw/unknown_R1.fq.gz | head -n 4
 <li>`head -n 4` takes the first 4 lines and sends them to stdout. Because there is nothing after the `head` command to send the output anywhere else, the output is printed to the terminal. </li></ul>
 </details>
 
-You should see something like below: 
 
+You should see something like below: 
 ```
 @SRR12313894.2 2 length=76
 GNTTCCATGTCGCTGAGTGGAATCTGTTCGTAGGTGGTCGCATAGCGCAGTGCCCTACTATGATCGCTAACTGGAG
@@ -252,15 +256,15 @@ The four lines are:
  3. A `+` symbol. The read identifier may also immediately follow but this is uncommon.
  4. Quality string
 
-The quality string has a character for each base in the sequence string. Therefore, the length of the sequence string and the quality string should match. Quality values are numbers from `0` to `93` and are often referred to as "Phred" quality scores. To encode the quality scores as a single character, the scores are mapped to the ASCII table:
+The quality string has a character for each base in the sequence string that indicates how confidently that base was called. Therefore, the length of the sequence string and the quality string should match. Quality values are numbers from `0` to `93` and are often referred to as "Phred" quality scores. To encode the quality scores as a single character (so that the sequence string and quality string are the same length), the scores are mapped to the ASCII table:
 
 Standard ASCII Chart - Hex to Decimal code conversion
 ![Standard ASCII Chart - Hex to Decimal code conversion](https://cdn.shopify.com/s/files/1/1014/5789/files/Standard-ASCII-Table_large.jpg?10669400161723642407) 
 From https://www.commfront.com/pages/ascii-chart 
 
-You will see that the first 33 characters (decimal values of 0-32) are all non-printable or white-space (think space, tab, backspace, bell etc). The first printable character is `!` and this has the decimal value of `33`. This character is used to represent a quality value of `0` while `"` has a decimal value of `34` and represents a quality value of `1` (`34-33`). 
+You will see that the first 33 characters in the table (decimal values of 0-32) are all non-printable or white-space (think space, tab, backspace, bell etc). The first printable character is `!` and this has the decimal value of `33`. This character is used to represent a quality value of `0` while `"` has a decimal value of `34` and represents a quality value of `1` (`34-33`). 
 As such these quality scores are said to be Phred+33 encoded and the quality score is simply obtained by substracting 33 from the decimal value of the character in the quality string. 
-Quality score values usually range from 0 (!) to 40 (I) but some files go as high as 41 (J) or 42 (K). 
+Quality score values usually range from 0 (!) to 40 (I) but some go a bit higher. 
 
 If you go digging into old Illumina files, you may find quality values which are Phred+64 encoded. That is, a quality value of `0` is represented by `@` which has a decimal value of `64`. However, Phred+33 encoding is the current standard and is often referred to as Illumina 1.9. 
 
@@ -282,12 +286,18 @@ This is more easily seen in the following table:
 | 30          | `?`                        | 10<sup>-3</sup>                    | 99.9%                 |
 | 40          | `I`                        | 10<sup>-4</sup>                    | 99.99%                |
 
+- In the first read in `unknown_R1.fq.gz`, the quality string included the characters `A`, `!`, and `J` (as well as some others). Use the ASCII table to determine what Phred score (a number between 0 and 41) these characters represent.
+- Then, use the table above to get an idea of what level of basecall confidence these numbers indicate.  
+- Adjust the code above to look at one of your ERR sample FASTQ files. How long are these reads compared with the "unknown" sample reads?
+-  What basecall accuracy does the Phred score of `?` indicate?
 
-* In the read we looked at above, the quality string included the characters `A`, `!`, and `J` (as well as some others). Use the ASCII table to determine what Phred score (a number between 0 and 41) these characters represent. 
+## Quality score binning
 
+You might have noticed that the quality scores in you FASTQ files don't contain a very wide range of characters. This is because quality scores are often binned to reduce filesize.  
+"Binning" groups similar quality values together so that instead of storing dozens of possible Phred scores, the file only stores a smaller set of representative values. This makes FASTQ files smaller and easier to archive, with little impact on most downstream analyses. As long as the relative differences in quality are preserved, aligners and many variant callers can still perform well. However, it does mean that the quality plots you see in tools like FastQC may appear more “stepped” or uniform than expected, and very fine-grained distinctions in base accuracy are not captured
 # **Quality Control**
 
-Now that we know what our data looks like, let's talk about Quality Control (QC). 
+Now that we know what our data looks like (FASTQ files), we can start Quality Control (QC). 
 
 QC generally consists of 3 steps:
 1. Check quality of raw data
@@ -297,7 +307,7 @@ QC generally consists of 3 steps:
 We will be using FastQC to check the quality of our raw and trimmed data and `fastp` to do the trimming. 
 Both of these tools are very commonly used for quality control with Illumina reads.
 
-Let's look at the help file for FastQC to see how it w*orks.
+Let's look at the help file for FastQC to see how it works.
 
 ```bash
 fastqc -h | less
@@ -329,30 +339,31 @@ The above command:
 2. Specified where to write the output (`-o ~/Practical_alignment/0_raw/FastQC`) and
 3. Requested two threads (`-t 2`).
 
+
 <details>
 <summary>What are threads?</summary>
+<ul>In a multi-threaded process, a big job is split into many smaller jobs that are then run at the same time (in parallel) which gets the job done a lot faster.</ul> 
+
 <ul>Let's use an analogy. If you were asked to plant 100 trees and it took you a minute per tree, it would take you 100 minutes to plant all of the trees.
 But if you and three friends were doing the job together, it would only take 25 minutes because each person would plant 25 trees and you could all work at the same time.
 These examples are analogous to a single-threaded process and a multi-threaded process in computing.</ul>
 
-<ul>In a multi-threaded process, a big job is split into many smaller jobs that are then run at the same time (in parallel) which gets the job done a lot faster.</ul> 
-
 <ul>While this is really useful, keep in mind that not all proceses can be split up in this way because the steps necessary to complete these processes are sequential.</ul>
 
-<ul>**Your VMs can run two parallel processes (2 threads)** but the University High Performance Computer (HPC) Phoenix can run over 70.
-You can tell if a tool can use multiple threads by looking at the documentatiion.</ul>
+<ul>Your VMs can run two parallel processes (2 threads) but the University High Performance Computer (HPC) Phoenix can run over 70.
+You can tell if a tool can use multiple threads by looking at the documentation.</ul>
 
 </details>
 
 FastQC creates an .html report (and a zip file but we don't need that) for each file provided which can be opened in a web browser. 
 
-To view the reports, use the `Files` pane to navigate to `~/Practical_alignment/0_raw/FastQC` and click on one of the html files you find (**If you don't see any html files call a tutor**). Choose `View in Web Browser` and the file will open in your browser.
+To view the reports, use the `Files` pane to navigate to `~/Practical_alignment/0_raw/FastQC` and open both of the html files you find (**If you don't see any html files call a tutor**). Click on a file and then choose `View in Web Browser` and the file will open in your browser.
 
 ## Inspecting FastQC reports
 
-Using the Basic Statistics information at the top of the fastqc report, answer the following questions:
+Using the Basic Statistics information at the top of the FastQC reports, your understanding of paired end reads, and some simple maths, answer the following questions:
 
-- How many reads are in each of the two FASTQ files?
+- How many reads are in each of the two FASTQ files? 
 - How many read pairs are there?
 - How many reads in total across both files?
 - How long are the reads?
@@ -370,7 +381,8 @@ Click on the `Per base sequence quality` hyper-link on the left of the page & yo
 These are the Phred scores we discussed earlier, and this plot is usually the first one that bioinformaticians will look at for making informed decisions about the overall quality of the data and settings for later stages of the analysis.
 The red dashed line indicates the maximum quality score at that position in the read and the blue line indicates the average quality score at that position. 
 
-* *What do you notice about the quality scores as you move from the 5' to the 3' end of the reads?*  Make sure to look at R1 and R2.
+* *What do you notice about the quality scores as you move from the 5' to the 3' end of the reads?*  
+* Are R1 or R2 reads higher quality? Why do you think this is? 
 
 #### Per Base Sequence Content
 
@@ -379,7 +391,7 @@ As such we would expect to observe relatively flat horizontal lines across this 
 Depending on the GC content of the species, we might see the A and T lines tracking together but separately from the G and C lines.
 It is also relatively common to see a drift towards G towards the end of a read.
 This is because most modern Illumina sequencing is performed on a "2-colour" system and G is the absence of both colours.
-What 
+
 ### Overrepresented Sequences
 
 Here we can see any sequence which are more abundant than would be expected.
@@ -405,13 +417,13 @@ fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
 - What is the maximum quality score shown in the 
 - What is the GC content of ERR3241917?
 - How does the GC content of ERR3241917 compare with the Unknown sample? Do you think that the Unknown sample is from a human?
-- What might have caused the over-represented sequence detected in read2 of sample ERR3241917? 
+- What might have caused the over-represented sequence detected in R2 of sample ERR3241917? 
 
 Now run `fastqc` on your two other human samples and check out their reports. 
 - ERR3241921
 - ERR3241927
 
-You might want to look at:
+Look over the following sections of their reports. 
 - Basic Statistics
 - Per base sequence quality
 - Per base sequence content

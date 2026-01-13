@@ -15,7 +15,6 @@ It is split into two parts with 30 marks for each part.
 
 ## Part 2 - Next Generation Sequencing
 
-You will write two bash scripts (described below) using tools and techniques that were covered in the practicals [2 marks]. Clear and concise comments should be included [2 marks].
 #### Data
 Athaliana reference genome:
 https://ftp.ebi.ac.uk/ensemblgenomes/pub/release-51/plants/fasta/arabidopsis_thaliana/dna/Arabidopsis_thaliana.TAIR10.dna.toplevel.fa.gz
@@ -27,7 +26,12 @@ SRR5882797_10M_1.fastq.gz https://adelaideuniversity.box.com/shared/static/egl3n
 
 SRR5882797_10M_2.fastq.gz https://adelaideuniversity.box.com/shared/static/g2ly4kzz1blus5juy426i37zl45o38pu.gz
 
-### Script 1 [5 marks]
+## Bash scripts
+
+You will write two bash scripts as described below. Both scripts must use the tools and techniques that were covered in the practicals. 
+Clear and concise comments should be included [2 marks].
+
+### Script 1 [5 marks] 
 Script 1 should do the following:
 1. Download the genomic sequence (i.e. fasta file) and annotation (i.e. gff file) of the model plant _Arabidopsis thaliana_ to the subdirectory `refs/Athaliana` from the Ensembl ftp directory using the links provided above.  [_2 marks_]
 2. Create a genome index for use with `bwa`[_1 marks_]

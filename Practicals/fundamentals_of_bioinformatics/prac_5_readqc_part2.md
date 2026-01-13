@@ -36,12 +36,6 @@ source activate bioinf
 
 We are working in the `~/Practical_alignment` directory again today and will be using the same data as in the last practical. 
 
-If you didn't complete the last practical, running the code below will catch you up.
-
-```bash
-
-```
-
 If you didn't complete the last practical, you may not have all of the required files.
 Running the script below will make sure that you are up to date. 
 
@@ -76,7 +70,7 @@ cp  ~/data/intro_ngs/chr2_sub.fa ref/
 fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
 ```
 
-## Fastp
+# **Fastp**
 
 There are many tools available for trimming.
 We are going to be using `fastp` in this practical. The tool `trimmomatic` ([see here](https://github.com/usadellab/Trimmomatic)) would be a good alternative. 
@@ -107,8 +101,6 @@ fastp --thread 2 \
 --html 1_trim/fastp/ERR3241917_fastp.html
 ```
 
-Let's use the help documentation to see what some of these options mean. 
-
 Fastp requires both R1 and R2 fastq files as input and creates four output files. Two files contain the trimmed paired reads (`-o` and `-O` options) and two files contain orphan/unpaired reads. 
 
 Fastp detects and removes adapters from reads by default so we don't have to specifically tell it to do this and the last four parameters/options in the fastp command are for quality trimming. 
@@ -119,7 +111,7 @@ The `--cut_right` option means that the window starts at the 3' end of the read 
 If a read is discarded but its pair is not, its pair will be sent to the orphan read file. 
 
 
-## Quality control post-trimming 
+# **Quality control post-trimming**
 
 To assess how the trimming has performed, run FastQC across the PAIRED reads output by fastp. 
 
@@ -129,11 +121,12 @@ mkdir -p ~/Practical_alignment/1_trim/FastQC
 fastqc -o 1_trim/FastQC -t 2 1_trim/FastQC/ERR3241917_*.fq.gz
 ```
 
-Take a look at the various FastQC HTML report files and compare pre and post trimming plots for:
+Take a look at the FastQC HTML report files and compare pre and post trimming plots for:
 
 * Per base sequence quality
 * Overrepresented sequences
 * Adapter Content
+
 
 # **Building a script**
 
@@ -148,16 +141,18 @@ However, bioinformaticians often need to analyse hundreds, or even thousands, of
 - Make it a LOT easier to write up the methods section of a manuscript for publication
 
 ## Script Structure 
+
 Assignment 1 asks you to write a few scripts that run from your home directory (`~`) and do the following: 
 - load software
 - create a project directory and all other necessary directories
 - obtain data 
 - perform analysis
 
-Lets write a script to perform our quality control steps in the same way. 
+Lets write a script to perform our quality control steps in the same way. To do this, we will first make a script that processes a single sample and then generalise it to run multiple samples. 
 
-We want our script to be nicely organised so that it's easy to read and follow so let's set up the structure. 
+We want our script to be nicely organised so that it's easy to read and follow so let's set up the structure/skeleton.  
 First, run `cd ~` to get to your home directory, then use `nano` to make a new file called `runqc.sh` and set it up similar to the example below with descriptions that make sense to you. 
+
 
 ```bash
 #!/bin/bash
@@ -180,17 +175,23 @@ First, run `cd ~` to get to your home directory, then use `nano` to make a new f
 
 ```
 
+## Add code
+
+Now we've got a skeleton for the script, we need to add the code. 
+
 **Remember!** Whatever commands you can run in the terminal, you can also put into a script and they'll do the exact same thing. 
 
 The first thing we do in a practical is activate our software so add `source activate bioinf` to your script in the "load software" section. 
 
 Next, we create some directories and obtain our data. 
 
-The code below is copied directly from [Practical 4](prac_4_readqc.md). 
-Most of this code is essential for the analysis in that it creates something that is used or required by a later step. However, some of it is not. 
-We want our script to be efficient and easy to follow so we only want to include code that is contributing to our analysis. 
+The code lines below are from [Practical 4](prac_4_readqc.md).  
+Some of this code is essential for the analysis in that it creates something that is used or required by a later step. However, some of it is not. 
+We want our script to be efficient and easy to follow so we only want to include code that is contributing to our analysis.  
 
-Which parts of the code below aren't essential? Take some time to look through and work it out. You could use the `man` or help pages to work out what commands do if you can't remember.
+**TASK: Go through the lines of code below and work out which lines are essential to analyse the ERR3241917 sample and which aren't. Add essential code to the script skeleton in the appropriate location.**
+
+Take some time to look through and work it out. You could use the `man` or help pages to work out what commands do if you can't remember.
 
 ```bash
 mkdir --parents ~/Practical_alignment/{ref,0_raw,1_trim,2_align,3_variants}
@@ -218,102 +219,17 @@ cd ~/Practical_alignment
 fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
 ```
 
-Copy the essential code into the appropriate parts of your script. Add additional comments if needed. 
-
 The last two analysis steps that we need to include in our script are trimming and the final fastqc check.  
-Find these two commands in todays practical and paste them into your script. 
+Find these two commands in todays practical and paste them into your script. Make sure you create the necessary directories as well. 
 
-Once you've completed the above, click the link below to see the next step. 
-
-<details>
-<summary>Click HERE when you've completed the above</summary>
-<p>Your script should now look like the script below.</p>
-<pre>#!/bin/bash
-
-# Variables
-
-# Load software
-source activate bioinf
-
-# Create directories
-mkdir --parents ~/Practical_alignment/{ref,0_raw,1_trim,2_align,3_variants}
-mkdir -p ~/Practical_alignment/0_raw/FastQC
-mkdir -p ~/Practical_alignment/1_trim/fastp
-mkdir -p ~/Practical_alignment/1_trim/FastQC
-
-# Move into the Practical directory
-cd Practical_alignment
-
-# Get data
-cp  ~/data/intro_ngs/chr2_sub.fa ref/
-ln -s ~/data/intro_ngs/*.fq.gz 0_raw/
-
-# Assess raw read quality with fastqc
-fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
-
-# Trim with fastp
-fastp --thread 2 \
--i 0_raw/ERR3241917_1.fq.gz \
--I 0_raw/ERR3241917_2.fq.gz \
--o 1_trim/ERR3241917_1.fq.gz \
--O 1_trim/ERR3241917_2.fq.gz \
---unpaired1 1_trim/ERR3241917_1_orphan.fq.gz \
---unpaired2 1_trim/ERR3241917_2_orphan.fq.gz \
---cut_right \
---cut_window_size 4 \
---cut_mean_quality 20 \
---length_required 75 \
---html 1_trim/fastp/ERR3241917_fastp.html
-
-# Assess read quality after trimming with fastqc
-fastqc -o 1_trim/FastQC -t 2 1_trim/FastQC/ERR3241917_*.fq.gz</pre>
-</details>
+Once you've completed this, [click HERE](prac_5_code_example.md)
 
 
-```bash
-#!/bin/bash
+## Sanity and formatting check
 
-# Variables
+Your script should now have all of the necessary code to run the entire quality control workflow for the sample ERR3241917. 
+Let's do some final checks before we test it. 
 
-# Load software
-source activate bioinf
-
-# Create directories
-mkdir --parents ~/Practical_alignment/{ref,0_raw,1_trim,2_align,3_variants}
-mkdir -p ~/Practical_alignment/0_raw/FastQC
-mkdir -p ~/Practical_alignment/1_trim/fastp
-mkdir -p ~/Practical_alignment/1_trim/FastQC
-
-# Move into the Practical directory
-cd Practical_alignment
-
-# Get data
-cp  ~/data/intro_ngs/chr2_sub.fa ref/
-ln -s ~/data/intro_ngs/*.fq.gz 0_raw/
-
-# Assess raw read quality with fastqc
-fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
-
-# Trim with fastp
-fastp --thread 2 \
--i 0_raw/ERR3241917_1.fq.gz \
--I 0_raw/ERR3241917_2.fq.gz \
--o 1_trim/ERR3241917_1.fq.gz \
--O 1_trim/ERR3241917_2.fq.gz \
---unpaired1 1_trim/ERR3241917_1_orphan.fq.gz \
---unpaired2 1_trim/ERR3241917_2_orphan.fq.gz \
---cut_right \
---cut_window_size 4 \
---cut_mean_quality 20 \
---length_required 75 \
---html 1_trim/fastp/ERR3241917_fastp.html
-
-# Assess read quality after trimming with fastqc
-fastqc -o 1_trim/FastQC -t 2 1_trim/FastQC/ERR3241917_*.fq.gz
-```
-
-Your script should now have all of the necessary code to run the entire quality control workflow for the sample ERR3241917. However, one of the main reasons we write scripts is automation. 
-We want to run the same code on multiple samples and this script currently only runs one sample. We'll get to that but let's do some final checks and test our code before it gets more complicated. 
 
 Things to check:
 1. Make sure that all directories referenced by your fastqc and fastp commands are created before these commands run
@@ -326,9 +242,9 @@ Things to check:
 
 If you don't test your script, you can't be sure that it doesn't have errors. 
 The best way to test a script is to run it in the way you are expecting other people to run it. 
-For example, your assignment scripts will be placed in the home directory (~) and executed. 
-None of the directories or data that you've created will exist and so your script will have to create them. 
-Therefore to properly test our script, we need to remove the original output files. Instead of deleting them, let's rename the directory in case we wnat to go back. 
+For example, your assignment scripts will be placed in the home directory (~) of the person marking it and executed. 
+None of the directories or data that you've created will exist yet and so your script will have to create them. 
+Therefore to properly test our script, we need to remove the original output files. Instead of deleting them, let's rename the directory in case we want to go back. 
 To check that the script runs all the way to the end, add an `echo "end of script"` or some other echo statement to the last line of your script. 
 
 Let's test it. 
@@ -352,7 +268,9 @@ If it didn't, try reading the error messages to work out where your script went 
 
 ## Automating for multiple samples
 
-Once our script is running without errors, we can modify it so that it runs all of our samples. 
+One of the main reasons we write scripts is automation (to run the exact same code on multiple samples) but this script currently only processes one sample. 
+Let's modify it so that it processes all of our samples.
+
 In this example we'll use a `for` loop that iterates over our three sample names and runs the code inside of the loop for each sample. We will need: 
 - a variable that contains our three sample names
 - A `for` loop that iterates over this variable and contains the code that we want to run
@@ -386,6 +304,8 @@ rm -rf Practical_alignment
 bash runqc.sh
 ```
 
+Did all of the steps in the analysis work? 
+
 Once this script has run, take a look through the FastQC reports for your newly processed samples to make sure you're happy with the trimming process and final data quality.  
 
 And just before we go, let's delete the `Practical_alignment_original` directory as the new `Practical_alignment` directory contains all of the same analysis for the first sample plus analysis of the second and third sample. 
@@ -397,3 +317,16 @@ rm -rf Practical_alignment_original
 # The -r option means recursive
 # The -f option means "Force"
 ```
+
+## Summary of progress
+
+Over the last two practicals we have: 
+- Obtained our raw reads with symlinks
+- Used FastQC to assess quality of raw reads
+- Used fastp to trim reads
+- Used FastQC to re-assess quality of trimmed reads
+- Written a script that runs all of these steps for us. 
+
+In the next practical we will align our trimmed reads to the reference genome. 
+
+
