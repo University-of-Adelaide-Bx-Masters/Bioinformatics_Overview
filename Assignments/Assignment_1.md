@@ -43,41 +43,35 @@ We also strongly, **strongly** suggest completing these scripts without the use 
 Athaliana reference genome:
 https://ftp.ebi.ac.uk/ensemblgenomes/pub/release-51/plants/fasta/arabidopsis_thaliana/dna/Arabidopsis_thaliana.TAIR10.dna.toplevel.fa.gz
 
-Annotation file: 
-https://ftp.ebi.ac.uk/ensemblgenomes/pub/release-51/plants/gff3/arabidopsis_thaliana/Arabidopsis_thaliana.TAIR10.51.gff3.gz
-
 SRR5882797_10M_1.fastq.gz https://adelaideuniversity.box.com/shared/static/egl3n16r0ziaxlvbs9074xqd1liktnuz.gz
 
 SRR5882797_10M_2.fastq.gz https://adelaideuniversity.box.com/shared/static/g2ly4kzz1blus5juy426i37zl45o38pu.gz
+### 2.1. Variant Calling Script [18 marks]
 
-## Bash scripts
+ Write a bash script to perform the variant calling analysis tasks listed below. **This script should use tools and techniques that were covered in the module.** 
+ 
+ **Note:** [1 mark] will be awarded for placing all files in the directories specified in the instructions below and [2 marks] will be awarded for including clear and concise comments throughout. 
+ 
+  Your script should do the following:
+1. Download the reference genome (i.e. fasta file) of the model plant _Arabidopsis thaliana_ to the subdirectory `ref` from the Ensembl ftp directory using the link provided above and either `curl` or `wget`. [1 mark]
+2. Download the sequencing data (Illumina paired-end reads) at the links provided to the directory `0_raw` using `curl` or `wget` and rename these files to the names provided alongside the links.  [3 marks]
+3. Index the reference genome for use with `bwa`. You will need to unzip it first. [1 mark]
+4. Run `fastqc` on raw reads. [1 mark]
+5. Trim reads for poor quality bases using `fastp`. Write trimmed reads to the directory `1_trim`. [2 marks]
+6. Align paired-end reads to the genome using `bwa mem`, resulting in a single BAM file in the directory `2_align`. Don't include read groups (exclude the `-R` option and the string following it). Ensure there are no intermediary SAM (`.sam`) files saved. [3 marks]
+7. Sort and index your BAM file. Remove the unsorted BAM file after you've done this. [3 marks]
+8. Call variants and write the vcf to `3_variants`. You do not need to remove duplicates from your sorted BAM file and should instead use your sorted BAM file from step 7 as input for variant calling. [1 mark]
+9. Filter variants to keep only variants with QUAL>=30 and print the number of variants that meet this criteria to standard output (`stdout`). [2 marks]
 
-You will write two bash scripts as described below. Both scripts must use the tools and techniques that were covered in the practicals. 
-Clear and concise comments should be included [2 marks].
 
-### Script 1 [5 marks] 
-Script 1 should do the following:
-1. Download the genomic sequence (i.e. fasta file) and annotation (i.e. gff file) of the model plant _Arabidopsis thaliana_ to the subdirectory `refs/Athaliana` from the Ensembl ftp directory using the links provided above.  [_2 marks_]
-2. Create a genome index for use with `bwa`[_1 marks_]
-3. Identify how many chromosomes are in the genome and write this information to standard output (`stdout`) [2 marks]
-
-### Script 2 [13 marks]
-
-Script 2 should do the following: 
-1. Download the sequencing data (Illumina paired-end reads) at the links provided to the directory `0_raw/fastq` using `curl` or `wget` and rename these files to the names provided alongside the links.  [3 marks]
-2. Trim your data for poor quality bases and remove adapters using `fastp`. Write your trimmed reads to the directory `1_trim/fastq` [3 marks]
-3. Align paired-end reads to the genome using `bwa mem`, resulting in a single BAM file in the directory `2_align/bam`. Ensure there are no intermediary SAM (`.sam`) files saved. [3 marks]
-4. Sort and index your BAM file [2 marks]
-5. Count the number of reads that aligned as proper pairs and output this number to the terminal. [2 marks]
-
-### Short Answer Questions [8 marks]
-1. Describe the 4 main components of a FASTQ read/record. [1 mark]
+### 2.B Short Answer Questions [12 marks]
+1. Describe the 4 main components (the four lines) of a FASTQ read/record. [2 marks]
 2. Illumina short reads suffer from a deterioration in quality towards the 3' end. Describe the process which causes this. [1 mark]
 3. What does it mean if reads align as a proper pair? [1 mark]
-4. Illumina short reads may contain portions of adapter sequences at their 3' end. Describe how and why some reads may contain parts of an adapter while others may not. [1 mark]
-5. What is the difference between a SAM and a BAM file? [2 marks]
-6. Index files are regularly encountered in bioinformatics. For example, `.bai` (and `.csi`) is an index file for BAM files and `.fai` are index files of FASTA files. Describe, in general terms, what index files are and what they facilitate. [1 mark]
-7. Why are paired-end Illumina reads usually considered superior to Illumina single-end reads? [1 mark]
-
-
+4. Illumina short reads may contain portions of adapter sequences at their 3' end. Describe how and why some reads may contain parts of an adapter while others may not. [1 marks]
+5. What is the difference between a SAM and a BAM file? [1 mark] 
+6. Index files are regularly encountered in bioinformatics. For example, `.bai` (and `.csi`) is an index file for BAM files and `.fai` are index files of FASTA files. Describe, in general terms, what index files facilitate. [1 mark] 
+7. What is the difference between a local and global sequence alignment and under what general condition would you use them? [2 marks]
+8. In protein residue sequence alignment we use a substitution matrix to score mismatches. Why can't all amino acid substitutions be considered equal? [2 marks]  
+9. What does the bitwise SAM FLAG 83 indicate? [1 mark] 
 
