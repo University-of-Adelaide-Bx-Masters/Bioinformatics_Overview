@@ -430,9 +430,9 @@ echo Done
     + Next, the value of the new variable `${SUFFIX}` is checked to make sure it contains only `fa` or `fasta`  
 		    + If this condition is met a message will print to `stdout`  
 		    + If one of these conditions is not satisfied, the script will exit giving an error message (`exit 1`)  
-    + The output file (`OUTFILE`) is defined by changing the suffix from whichever is provided to `.locations`. The use of the `%` to *snip* the filename and replace with another is a very useful trick  [see here for more on %](https://stackoverflow.com/s/10535985/how-to-remove-filename-prefix-with-a-posix-shell/25536935#25536935)
+    + The output file (`OUTFILE`) is defined by changing the suffix from whichever is provided to `.locations`. The use of the `%` to *snip* the filename and replace with another is a very useful trick
 		+ Finally the header lines containing the word "chromosome" are piped into `sed`  
-		    + `sed` then captures the **chromosome** (`(.*)`), **start** (`[0-9]+`), **end** `([0-9]+):` and **gene id** (`[^ ]+`). If you have trouble seeing how this works you can [go here](https://university-of-adelaide-bx-masters.github.io/BIOTECH-7005-BIOINF-3000/Practicals/Bash_Practicals/regex_example)   
+		    + `sed` then captures the **chromosome** (`(.*)`), **start** (`[0-9]+`), **end** `([0-9]+):` and **gene id** (`[^ ]+`). If you have trouble seeing how this works, you can [go here](https://github.com/University-of-Adelaide-Bx-Masters/Bioinformatics_Overview/blob/main/Practicals/fundamentals_of_bioinformatics/regex_example.md). 
 				+ These are returned in the order **gene id**, **chromosome**, **start**, **end**  
 				+ All information is written to the file specified in `${OUTFILE}`  
 
