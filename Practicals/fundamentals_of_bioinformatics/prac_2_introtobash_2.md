@@ -321,7 +321,7 @@ As there is a lot of information about each feature, note that each line after t
 The first feature is annotated as a *region* in the third field, whilst the second feature is annotated as a *gene*.
 
 #### Question
-{:.no_toc}
+
 
 - *How many features are contained in this file?*
 - *If we tried the following*: `wc -l GCF_000182855.2_ASM18285v1_genomic.gff` *would it be correct?*
