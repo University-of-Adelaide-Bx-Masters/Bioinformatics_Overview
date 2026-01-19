@@ -135,7 +135,7 @@ Here is a slightly more complicated regex command:
 
 Ask an AI model to explain what this command does, step by step. Run the command on our dataset, and see if the result is what you expected. 
 
-## WRITE SECTION EXPLAINING AI MODELS CAN BE WRONG! YOU MUST ALWAYS TEST YOUR CODE
+While AI tools can be very helpful when writing code, but they’re not always right. Sometimes an AI will confidently suggest code that looks correct, but actually doesn’t work. This is called a **hallucination**. Unless you have given it express permission to do so, the AI tool will not have access to your files, your data, or your computer; because of this it can make up file names or commands that don’t really exist. Because of this, it’s important to treat AI suggestions as a starting point, test them yourself, and always check the documentation or your output to make sure the code really does what you expect.
 
 # Standard Output
 
