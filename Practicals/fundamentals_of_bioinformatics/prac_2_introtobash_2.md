@@ -143,9 +143,9 @@ All of the output we have seen so far was 'printed' to your terminal.
 Each function returned output to you using a data stream called *standard out*, or `stdout` for short.
 Most of these tools also send information to another data stream called *standard error* (or `stderr`), and this is where many error messages go.
 This is actually sent to your terminal as well, and you may have seen this if you've made any mistakes so far.
-This basic data flow can be visualised in the following chart from www.linuxunit.com.
+This basic data flow can be visualised in the following chart:
 
-![](https://www.linuxunit.com/images/stdin-stdout-stderr.png)
+![](https://miro.medium.com/v2/resize:fit:1200/0*zEsSRKyg3fUMUfba.png)
 
 Note also that everything you've typed on your keyboard is sent to each command as a data stream called `stdin`.
 Any guesses what that is short for?
