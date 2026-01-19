@@ -1,4 +1,4 @@
-# Assignment 1
+# Practical Assignment 1a - Fundamentals of Bioinformatics
 
 This assignment covers all material in Module 1 - Fundamentals of Bioinformatics. 
 It is split into two parts with 30 marks for each part. 
@@ -7,7 +7,7 @@ It is split into two parts with 30 marks for each part.
 
 - All bash/shell scripts should be uploaded as separate `.sh` files. 
 - All other answers should be provided in a single pdf. An easy way to do this is to complete your assignment in Word (or another word processor) and export/save your final document as a pdf.  Alternatively, you are welcome to use Rmarkdown, LaTeX, or something similar that can produce pdf output. 
-- Please ensure that this pdf contains your name, student number, and the assignment name (Assignment 1).
+- Please ensure that this pdf contains your name, student number, and the assignment name (Practical Assignment 1a - Fundamentals of Bioinformatics).
 
 ## Part 1 - Bash 
 
