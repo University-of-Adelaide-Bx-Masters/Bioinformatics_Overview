@@ -36,8 +36,7 @@ source activate bioinf
 
 We are working in the `~/Practical_alignment` directory again today and will be using the same data as in the last practical. 
 
-If you didn't complete the last practical, you may not have all of the required files.
-Running the script below will make sure that you are up to date. 
+If you didn't complete the last practical, running the script below will make sure that you are up to date. 
 
 To run the script:
 1. Type `nano catchup_prac5.sh` to make a new bash script.
@@ -83,9 +82,10 @@ mkdir -p ~/Practical_alignment/1_trim/fastp
 fastp --thread 2 -i 0_raw/ERR3241917_1.fq.gz -I 0_raw/ERR3241917_2.fq.gz -o 1_trim/ERR3241917_1.fq.gz -O 1_trim/ERR3241917_2.fq.gz --unpaired1 1_trim/ERR3241917_1_orphans.fq.gz --unpaired2 1_trim/ERR3241917_2_orphans.fq.gz ---cut_right --cut_window_size 4 --cut_mean_quality 20 --length_required 75 --html 1_trim/fastp/ERR3241917_fastp.html
 ```
 
-The command will take a minute or two to run but it doesn't provide any output while it does this so don't worry when it looks like it's doing nothing! 
+The command will take a minute or two to run. It doesn't provide any output while running so don't worry. Just wait.  
 
-To make the  `fastp` command easier to understand, we have re-formatted it like we might find in a bash script (see below).
+To make the  `fastp` command easier to understand, it is shown below re-formatted like we might find in a bash script.
+
 ```bash
 fastp --thread 2 \
 -i 0_raw/ERR3241917_1.fq.gz \
@@ -101,19 +101,25 @@ fastp --thread 2 \
 --html 1_trim/fastp/ERR3241917_fastp.html
 ```
 
-Fastp requires both R1 and R2 fastq files as input and creates four output files. Two files contain the trimmed paired reads (`-o` and `-O` options) and two files contain orphan/unpaired reads. 
+Fastp requires both R1 and R2 fastq files as input and creates four output files. Two files contain the trimmed paired reads (`-o` and `-O` options) and two files contain unpaired reads, or orphan reads. 
 
-Fastp detects and removes adapters from reads by default so we don't have to specifically tell it to do this and the last four parameters/options in the fastp command are for quality trimming. 
+<details>
+<summary>What are orphan/unpaired reads?</summary>
+<ul>When paired-end reads are trimmed, sometimes one read doesn't meet the minimum quality requirements to be retained while the other does. This read is therefore discarded and the read that remains is now considered an Orphan read, or an unpaired read. </ul>
+
+
+</details>
+
+Fastp detects and removes adapters from reads by default so we don't have to specifically tell it to do this and the remaining parameters/options in the fastp command are for quality trimming. 
 Quality trimming is often done using a sliding window. 
 This works by moving a small “window” along each read and checking the average quality score of the bases inside that window. 
 In this case, the window is 4 bp wide (`--cut_window_size`) and bases are trimmed if the average quality in the window is less than 20 (`--cut_mean_quality`). 
 The `--cut_right` option means that the window starts at the 3' end of the read  and `--length_required 75` indicates that if a read is less than 75bp long after trimming and removing adapters, it should be discarded. 
 If a read is discarded but its pair is not, its pair will be sent to the orphan read file. 
 
-
 # **Quality control post-trimming**
 
-To assess how the trimming has performed, run FastQC across the PAIRED reads output by fastp. 
+To assess how the trimming has performed, run FastQC on the paired reads output by fastp. 
 
 ```bash
 mkdir -p ~/Practical_alignment/1_trim/FastQC
@@ -121,12 +127,17 @@ mkdir -p ~/Practical_alignment/1_trim/FastQC
 fastqc -o 1_trim/FastQC -t 2 1_trim/FastQC/ERR3241917_*.fq.gz
 ```
 
-Take a look at the FastQC HTML report files and compare pre and post trimming plots for:
+Take a look at the FastQC report files and compare them with the reports from the raw data.
+- What is the minimum length of the trimmed reads?
+- How many read pairs remain?
+- How much sequence was lost to trimming and orphan reads?
 
-* Per base sequence quality
-* Overrepresented sequences
-* Adapter Content
+We can also look at the .html report produced by `fastp` for more detailed information on trimming. Open it and find the answers to the following:
+- What is the mean read length after filtering?
+- How many reads were removed because they were of low quality?
+- How many reads were removed because they were too short after trimming? 
 
+The data we're using for this practical is very good quality and there weren't any obvious problems in the FastQC report for the raw, untrimmed data. However, it still contained some low quality data which trimming was able to remove.  FastQC reports give an indication of data quality but data that appears to be of very high quality can still contain some low quality reads. This is why we should always trim reads and remove adapters as part of quality control. 
 
 # **Building a script**
 
@@ -142,7 +153,7 @@ However, bioinformaticians often need to analyse hundreds, or even thousands, of
 
 ## Script Structure 
 
-Assignment 1 asks you to write a few scripts that run from your home directory (`~`) and do the following: 
+Assignment 1 Part 2 asks you to write a script that runs from your home directory (`~`) and does the following: 
 - load software
 - create a project directory and all other necessary directories
 - obtain data 
@@ -179,7 +190,7 @@ First, run `cd ~` to get to your home directory, then use `nano` to make a new f
 
 Now we've got a skeleton for the script, we need to add the code. 
 
-**Remember!** Whatever commands you can run in the terminal, you can also put into a script and they'll do the exact same thing. 
+**Remember!** Whatever commands you can run in the terminal, you can also put into a script and they'll do the exact same thing (unless you're using relative filepaths and aren't running the command from the same location). 
 
 The first thing we do in a practical is activate our software so add `source activate bioinf` to your script in the "load software" section. 
 
@@ -189,7 +200,7 @@ The code lines below are from [Practical 4](prac_4_readqc.md).
 Some of this code is essential for the analysis in that it creates something that is used or required by a later step. However, some of it is not. 
 We want our script to be efficient and easy to follow so we only want to include code that is contributing to our analysis.  
 
-**TASK: Go through the lines of code below and work out which lines are essential to analyse the ERR3241917 sample and which aren't. Add essential code to the script skeleton in the appropriate location.**
+**Go through the lines of code below and work out which lines are essential to analyse the ERR3241917 sample and which aren't. Add essential code to the script skeleton in the appropriate location.**
 
 Take some time to look through and work it out. You could use the `man` or help pages to work out what commands do if you can't remember.
 
@@ -224,7 +235,6 @@ Find these two commands in todays practical and paste them into your script. Mak
 
 Once you've completed this, [click HERE](prac_5_code_example.md)
 
-
 ## Sanity and formatting check
 
 Your script should now have all of the necessary code to run the entire quality control workflow for the sample ERR3241917. 
@@ -232,22 +242,20 @@ Let's do some final checks before we test it.
 
 
 Things to check:
-1. Make sure that all directories referenced by your fastqc and fastp commands are created before these commands run
-2. If you have split a single command over multiple lines (you may have this for fastp), there should be no spaces after the `\` (signifying that the command continues on the next line) at the end of each line. If there are spaces, nano should highlight them for you so you can remove them. 
+1. Make sure that all directories referenced by your `fastqc` and `fastp` commands are created before these commands run
+2. If you have split a single command over multiple lines (you may have this for `fastp`), there should be no spaces after the `\` (signifying that the command continues on the next line) at the end of each line. If there are spaces, nano should highlight them for you so you can remove them. 
 3. Check for typos and capitalisation. Bash is fussy.
 4. Make sure that you are in the right directory! This script is designed to be run/executed from your home directory but our analysis (from getting our data and onwards) uses "relative" filepaths that will only work when we are located in `~/Practical_alignment`. Therefore, make sure your script changes into this directory after creating new directories and before obtaining your data. 
-
+5. To check that the script runs all the way to the end, add an `echo "end of script"` or some other echo statement to the last line of your script. 
 
 ## Testing your script
 
 If you don't test your script, you can't be sure that it doesn't have errors. 
 The best way to test a script is to run it in the way you are expecting other people to run it. 
-For example, your assignment scripts will be placed in the home directory (~) of the person marking it and executed. 
+For example, your assignment scripts will be placed in the home directory (~) of the person marking it and executed/run from there. 
 None of the directories or data that you've created will exist yet and so your script will have to create them. 
-Therefore to properly test our script, we need to remove the original output files. Instead of deleting them, let's rename the directory in case we want to go back. 
-To check that the script runs all the way to the end, add an `echo "end of script"` or some other echo statement to the last line of your script. 
 
-Let's test it. 
+Therefore to properly test our script, we need to remove the original output files. However, instead of deleting them permanently, let's rename the directory in case we want to go back and then run our script.
 
 ```bash
 cd ~
@@ -304,9 +312,11 @@ rm -rf Practical_alignment
 bash runqc.sh
 ```
 
-Did all of the steps in the analysis work? 
+Hopefully you managed to get all of the steps in the analysis to run properly! If not, go back and try to work out what went wrong. 
+
 
 Once this script has run, take a look through the FastQC reports for your newly processed samples to make sure you're happy with the trimming process and final data quality.  
+
 
 And just before we go, let's delete the `Practical_alignment_original` directory as the new `Practical_alignment` directory contains all of the same analysis for the first sample plus analysis of the second and third sample. 
 
@@ -327,6 +337,4 @@ Over the last two practicals we have:
 - Used FastQC to re-assess quality of trimmed reads
 - Written a script that runs all of these steps for us. 
 
-In the next practical we will align our trimmed reads to the reference genome. 
-
-
+In the next practical we will do the next step in our variant calling workflow, align trimmed reads to the reference genome.

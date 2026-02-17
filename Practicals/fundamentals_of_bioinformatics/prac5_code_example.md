@@ -1,5 +1,5 @@
 
-### Your script should now look something ike the script below. 
+### Your script should now look something like the script below. 
 
 Take a look through it, noting which commands are in which sections and making sure you understand why they're there and what they do. 
 

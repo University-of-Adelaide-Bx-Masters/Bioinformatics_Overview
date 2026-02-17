@@ -46,7 +46,7 @@ Image from [The molecular basis of lactase persistence: Linking genetics and epi
 
 ## Practical Overview
 
-In this practical (and the next three) we will use a simple read alignment and variant calling workflow to determine the genotype of three samples at the site of the rs4988235 SNP.
+In this practical (and the next three) we will use a read alignment and variant calling workflow to determine the genotype of three samples at the site of the rs4988235 SNP.
 We will then consider how this relates to the phenotype of lactose tolerance. 
  
 The main steps in this workflow are shown in the figure below along with the file types produced by each step. 
@@ -55,7 +55,7 @@ The main steps in this workflow are shown in the figure below along with the fil
 
 The data we will analyse with this workflow includes Illumina paired-end reads from three Iberian individuals sequenced as part of the [1000 Genomes project](https://www.coriell.org/1/NHGRI/Collections/1000-Genomes-Project-Collection/1000-Genomes-Project?gad_source=1&gad_campaignid=10942056189&gbraid=0AAAAACRxwMsdRVvA7OauKN189ncoe-14z&gclid=Cj0KCQjwsPzHBhDCARIsALlWNG2QLO7P-lzVqNwqHFEiqk7yXlSRMsX5fLr86aNfAq15Xk-_8Iv5caMaAgmBEALw_wcB)  and a 7Mbp (7 million basepairs) segment of the human reference genome  [GRCh38.p14](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_000001405.40/). 
 
-The first step in a bioinformatics analysis/workflow is _always_ quality control (QC) and that will be the focus for today. 
+The first step in a bioinformatics analysis/workflow is _always_ quality control (QC) and that will be the focus for today and the next practical. 
 This includes checking the quality of raw data, trimming our raw data, and then re-checking quality.
 We have included an extra sample for the initial quality assessment so that you see reads of varying quality. 
 ## Learning Outcomes
@@ -102,7 +102,8 @@ It gives us access to both of the tools (`fastqc` and `fastp`) that we need for 
 
 ## Create directory structure 
 
-Let's create a new directory for todays practical and create subdirectories that reflect the main steps in our analysis. We won't use some of these directories until later but they will help us stay organised when we get to those steps. 
+Let's create a new directory for todays practical and create subdirectories that reflect the main steps in our analysis. This will help us stay organised. 
+
 The command `tree` shows the the structure of the `Practical_alignment` directory. 
 
 ```bash
@@ -122,19 +123,21 @@ Practical_alignment/
 └── ref
 ```
 
-* *In the `mkdir` command, what did the argument `--parents` do?*
-* *In the same command, what was the effect of placing `ref`, `0_raw`, `1_trim` etc.  inside the curly braces?*
+**Questions**
+* In the `mkdir` command, what did the argument `--parents` do?
+* In the same command, what was the effect of placing `ref`, `0_raw`, `1_trim` etc.  inside the curly braces?
 
 ## Get data (with symlinks!)
 
-The data used and created in bioinformatics analysis is often very large and takes up a lot of storage spaces. 
+The data associated with bioinformatics can take up a lot of storage space. 
 Because data storage is usually limited and is surprisingly expensive, we need to manage our data carefully.
 One way we can do that is by using symlinks. 
 
 A symlink (or 'symbolic link') is a shortcut that points to another file or folder. 
-It lets you access the original file from a different location without duplicating it and thereby saves disk space.
-For example, the compressed fastq files we'll be using today are ~17 Mb each and there are 6 of them, totalling ~100Mb. If 60 students all copy these files to their project directories, that's ~6Gb of extra data being stored.
-Therefore, we will use symlinks to access the .fastq files for our analysis. 
+It lets you access the original file from a different location without duplicating it and thereby saves disk space. This is a good technique if multiple people need to access the same dataset on a shared system (eg. Phoenix).
+
+For example, the compressed fastq files we'll be using today are ~21 Mb each and there are 6 of them, totalling ~120Mb. If 60 students all copy these files to their project directories, that's over 7Gb of extra data being stored.
+Therefore, we will use symlinks to access the raw fastq files for our analysis. 
 We could also do this with the reference sequence but we won't today so that we can compare how these files appear in our directory. 
 
 ```bash
@@ -157,7 +160,9 @@ The directory structure should now be as below.
 
 ![Directory structure](images/prac4_dir_structure.png)
 
-Notice how the reference sequence is listed just by its name in black while the symlinks are blue with an arrow pointing to the full path to the file in red.
+Notice how the reference sequence is listed just by its name in black while the local symlink names are blue with an arrow pointing to the full path to the linked file in red.
+
+In the `0_raw` directory you should have 8 files. There are two files for each sample, containing Read 1 and Read 2 respectively for a total of 4 samples. The samples starting with ERR are the Iberian samples we will be analysing with our variant calling workflow and the unknown sample is provided so that you get to see data of a different quality. 
 
 To list just the files in the `0_raw` directory we can use `ls`. Compare the output of the two `ls` commands below and answer the questions. Don't forget about the `man` command if you need help.  
 
@@ -167,10 +172,10 @@ ls 0_raw
 ls -lh 0_raw 
 ```
 
+**Questions:**
 - What is the effect of `-l` and `-h`?
 - What information does the second option provide that could be useful for debugging? 
 
-In the `0_raw` directory you should have 8 files. These contain data for four samples. There are two files for each sample, containing Read 1 and Read 2 respectively. The samples starting with ERR are the Iberian samples we will be analysing with our variant calling workflow and the unknown sample is provided so that you get to see data of a different quality. 
 # **Illumina Sequencing**
 
 In order to analyse our data, we need to understand how it was generated. 
@@ -190,7 +195,9 @@ More information on Illumina sequencing is available on [their website](https://
 The figure below shows the different parts of an Illumina sequencing template. 
 
 ![](images/illumina_template_detail.png)
-- What happens if the insert fragment is shorter than the read length? 
+
+**Question:**
+- What happens if the insert length (the DNA fragment) is shorter than the read length? 
 ### Adapters
 
 The adapters contain the sequencing primer binding sites (R1 and R2 Primers), index sequences, and the sites that allow library fragments to attach to the flow cell lawn (P5 and P7). 
@@ -229,32 +236,65 @@ These files are plain-text but are often very large so are commonly compressed u
 The `.gz` extension is added to signify this.
 Most modern bioinformatics tools can read `gzip` compressed files and so you should keep them compressed unless you are using a tool that specifically requires them to be decompresed. 
 
-Let's take a look at the first 4 lines in one of our "unknown" sample FASTQ files.
+Let's take a look at the first 8 lines in `0_raw/ERR3241917_1.fq.gz`. 
 
 ```bash
-zcat 0_raw/unknown_R1.fq.gz | head -n 4
+zcat 0_raw/ERR3241917_1.fq.gz | head -n 8
 ```
 <details>
 <summary>Code Explanation</summary>
 <ul><li>'zcat' unzips the file and sends it to stdout (standard output). </li>
 <li>The `|` takes standard output from `zcat` and sends it to `head`. </li>
-<li>`head -n 4` takes the first 4 lines and sends them to stdout. Because there is nothing after the `head` command to send the output anywhere else, the output is printed to the terminal. </li></ul>
+<li>`head -n 8` takes the first 8 lines and sends them to stdout. Because there is nothing after the `head` command to send the output anywhere else, the output is printed to the terminal. </li></ul>
 </details>
 
-
-You should see something like below: 
+You should see something like this: 
 ```
-@SRR12313894.2 2 length=76
-GNTTCCATGTCGCTGAGTGGAATCTGTTCGTAGGTGGTCGCATAGCGCAGTGCCCTACTATGATCGCTAACTGGAG
+@ERR3241917.10210 A00296:38:HFH2MDSXX:3:2337:7139:6402/1
+GCAAATCAAAACCACTATGAGATATCTCACACCAGTTAGAATGGCAATCATTAAAAAGTCAGGAAACAACAGGTGCTGGAGAGGATGTGGAGAAATAGGAACACTTTTACACTGTTGGTGGGACTGTAAACTAGTTCAACCATTGTGGAA
 +
-A!AAFJJJJJJJJJJJJJJJJJJJJJJFJJJJJJJJJJJJJJJJJJJJJJF-AFJ<JJ7AAJJJJJJFJAF7AJJA
+?????????????????????????????????????????????????????????????????????????????????????????????+????????????????????????????????????????????????????????
+@ERR3241917.14387 A00296:38:HFH2MDSXX:4:1413:17933:15483/1
+GTGACAGTGTGAGACTCTGTCCAAAAAAAAAAAAAAAAAAAAAAAATAAAGAAAAGAAAAAAAAAAAAATAAAAAAAGGTAAATAAAAAAAAGGAAAAATAAATAAATAAAAAAAAAAATAAAAAAATAAAAAAAAAAAAACAACCCAAA
++
+??????????????????????????????????????????????+???+????+??????????+??++?????++++'??+???????+???????+??++???+???+??+????+???+????'?++???+???++??++?++??
+
 ```
 
+This shows us two reads and each read is made up of 4 lines. 
 The four lines are: 
  1. Read identifier, starting with the `@` symbol
  2. Sequence string
  3. A `+` symbol. The read identifier may also immediately follow but this is uncommon.
  4. Quality string
+
+The first and fourth line are explained more in the next few sections. 
+## Read Identifier
+The read identifier line always begins with an @ symbol but may vary significantly after this depending on where the data came from (directly from the sequencing provider vs downloaded from public database). 
+The figure below explains the components of the first read identifier that we saw above. If you received this data directly from Illumina, it would not contain the first two fields as this was added when the data was made publicly available. Instead it would start with the @ followed directly by the machine ID. The remaining parts of the header are fairly standard for illumina sequencing.  
+
+![ERR2341917 Illumina read identifier](images/Illumina_read_identifier.png)
+
+This information can be helpful in identifying if any spatial effects have affected the quality of the reads. You usually won’t need most of this information, but it can be handy for times of serious data exploration.
+
+Take a look at the beginning of the `ERR3241917_2.fq.gz`  file.   
+```bash
+zcat 0_raw/ERR3241917_2.fq.gz | head -n 8
+```
+You will notice that the information in the identifier is identical to the first file we inspected, with the exception that there is a `2` at the end. This indicates that these reads are the second in the pair of reads. The two files will have an identical structure where the order of the sequences in one is identical to the order of the sequences in the other. This way when they are read as a pair of files, they can be stepped through read-by-read.
+
+Now have a look at one of the unknown sample fastq files to see what information the read IDs contain. 
+```bash
+zcat 0_raw/unknown_R1.fq.gz | head -n 16
+```
+
+Each read ID should contain: 
+- the accession number of the sample (you could search for this on NCBI to find the original dataset)
+- a unique read number
+- read length
+
+As you can see, the information in the identifier can vary quite a lot depending on where the data came from. 
+## Quality string
 
 The quality string has a character for each base in the sequence string that indicates how confidently that base was called. Therefore, the length of the sequence string and the quality string should match. Quality values are numbers from `0` to `93` and are often referred to as "Phred" quality scores. To encode the quality scores as a single character (so that the sequence string and quality string are the same length), the scores are mapped to the ASCII table:
 
@@ -288,12 +328,11 @@ This is more easily seen in the following table:
 
 - In the first read in `unknown_R1.fq.gz`, the quality string included the characters `A`, `!`, and `J` (as well as some others). Use the ASCII table to determine what Phred score (a number between 0 and 41) these characters represent.
 - Then, use the table above to get an idea of what level of basecall confidence these numbers indicate.  
-- Adjust the code above to look at one of your ERR sample FASTQ files. How long are these reads compared with the "unknown" sample reads?
--  What basecall accuracy does the Phred score of `?` indicate?
+- What are the most common characters in the quality strings of reads in sample ERR3241917? What basecall accuracy do these characters indicate?
 
 ## Quality score binning
 
-You might have noticed that the quality scores in you FASTQ files don't contain a very wide range of characters. This is because quality scores are often binned to reduce filesize.  
+You might have noticed that the quality scores in your Iberian sample FASTQ files don't contain a very wide range of characters. This is because quality scores are often binned to reduce filesize.  
 "Binning" groups similar quality values together so that instead of storing dozens of possible Phred scores, the file only stores a smaller set of representative values. This makes FASTQ files smaller and easier to archive, with little impact on most downstream analyses. As long as the relative differences in quality are preserved, aligners and many variant callers can still perform well. However, it does mean that the quality plots you see in tools like FastQC may appear more “stepped” or uniform than expected, and very fine-grained distinctions in base accuracy are not captured
 # **Quality Control**
 
@@ -320,7 +359,7 @@ fastqc -h | less
 
 Type `q` to exit when you're finished. 
 
-Let's run FastQC on one of our samples.  
+Let's run FastQC on our unknown sample.  
 
 ```bash
 # create a directory for FastQC output files
@@ -329,7 +368,7 @@ mkdir -p ~/Practical_alignment/0_raw/FastQC
 # Make sure you're in the right directory
 cd ~/Practical_alignment
 
-# Run fastqc on our unknown sample
+# Run fastqc
 fastqc -o 0_raw/FastQC/ -t 2 0_raw/unknown_R*.fq.gz
 ``` 
 
@@ -338,7 +377,6 @@ The above command:
 1. Gave both read1 and read2 for the "unknown" sample to fastqc using the wildcard `*` in the place of the value 1 or 2.
 2. Specified where to write the output (`-o ~/Practical_alignment/0_raw/FastQC`) and
 3. Requested two threads (`-t 2`).
-
 
 <details>
 <summary>What are threads?</summary>
@@ -361,71 +399,92 @@ To view the reports, use the `Files` pane to navigate to `~/Practical_alignment/
 
 ## Inspecting FastQC reports
 
-Using the Basic Statistics information at the top of the FastQC reports, your understanding of paired end reads, and some simple maths, answer the following questions:
+Let's look at the FastQC reports for our Unknown sample. **These reads are paired-end RNA-seq.**
 
-- How many reads are in each of the two FASTQ files? 
+Using the Basic Statistics information at the top of the FastQC reports, answer the following questions:
+
+- How many reads are in each of the two "unknown" FASTQ files? 
 - How many read pairs are there?
-- How many reads in total across both files?
 - How long are the reads?
 - What is the approximate GC content?
 - How many Mbp of sequence information is there across both files?
-- Coverage (x or fold) is a measure of how many times you would expect each base in the genome to be covered by an aligned base after aligning all the reads. It is the total number of bases in your reads divided by the genome size. If these reads are from a 7Mbp genome (7 Million basepairs), how many fold coverage do we have?
+
 
 The left hand menu contains a series of clickable links to navigate through the report, with a quick guideline about each section given as a tick, cross or exclamation mark.
 
 Let's look at some other parts of the report. 
 
-#### Per Base Sequence Quality
+### Per Base Sequence Quality
 
 Click on the `Per base sequence quality` hyper-link on the left of the page & you will see a boxplot of the QC score distributions for every position in the read.
-These are the Phred scores we discussed earlier, and this plot is usually the first one that bioinformaticians will look at for making informed decisions about the overall quality of the data and settings for later stages of the analysis.
+These are produced from the Phred scores we discussed earlier, and this plot is usually the first one that bioinformaticians will look at for making informed decisions about the overall quality of the data and settings for later stages of the analysis.
 The red dashed line indicates the maximum quality score at that position in the read and the blue line indicates the average quality score at that position. 
 
-* *What do you notice about the quality scores as you move from the 5' to the 3' end of the reads?*  
-* Are R1 or R2 reads higher quality? Why do you think this is? 
+* What do you notice about the quality scores as you move from the 5' to the 3' end of the reads?  Can you explain why this is the case? 
+* Are R1 or R2 reads higher quality? Can you explain why this is the case? 
 
-#### Per Base Sequence Content
+### Per Base Sequence Content
 
-During the preparation of the sequencing library, the genome is randomly fragmented.
-As such we would expect to observe relatively flat horizontal lines across this plot, demonstrating that we have indeed sampled fragments at random across the genome.
+In a WGS experiment where DNA is randomly fragmented, we would expect to see relatively flat horizontal lines across this plot. 
 Depending on the GC content of the species, we might see the A and T lines tracking together but separately from the G and C lines.
+RNA-Seq data will usually fail this section because the "random" hexamer priming used in RNA-seq library preparation is not truly random. Additionally, this plot may also show artefacts from barcode sequences or adapters early in the reads before stabilising.
 It is also relatively common to see a drift towards G towards the end of a read.
-This is because most modern Illumina sequencing is performed on a "2-colour" system and G is the absence of both colours.
+This is because most modern Illumina sequencing is performed on a "2-colour" system and G is the absence of both colours. 
 
+### Per Sequence GC content
+This plot gives the GC distribution of all sequences. The line should be normal(ish) for whole genome sequencing but sharp peaks are not unusual in RNA-Seq indicating highly-expressed sequences. The peak of the curve should align with the expected GC content of the species. 
+
+### Sequence Length Distribution
+The distributions of sequence lengths in our data. Here we have sequences that are all the same lengths, however if the length of your reads is vital (e.g. smallRNA data), then this can plot can be informative.
+
+### Sequence Duplication Levels
+This plot shows about what you’d expect from a typical NGS experiment. There are few to no duplicated sequences and lots of unique sequences representing the diverse transcriptome. This is only calculated on a small sample of the library for computational efficiency and is just to give a rough guide if anything unusual stands out.
 ### Overrepresented Sequences
-
 Here we can see any sequence which are more abundant than would be expected.
-
 A normal high-throughput library will contain a diverse set of sequences but sometimes we find that some sequences are more common than we would expect. 
 This can be for a range of reasons. 
-It could mean that a sequence is highly biologically significant, indicate that the library is contaminated, it could be the result of a sequencing artifact. 
+It could mean that a sequence is highly biologically significant (ie. in RNA-seq), indicate that the library is contaminated, or it could be the result of a sequencing artifact. 
 Sometimes you will also see sequences here that match the adapters used in the library prep. 
-In small RNA libraries where sequences are not randomly fragmented, the same sequence may naturally be present in a significant proportion of the library.
 
 ### Adapter Content
 
 For whole genome shotgun sequencing library preps we expect to see little adapter content in the reads.
 If there is a significant up-turn in adapter content towards the 3' end, this may indicate the genomic DNA was over-fragmented during library prep.
 
-# Student Exercise
-Run `fastqc` on the sample ERR3241917 and answer the following questions.
+**Questions:**
+Remembering that the Unknown sample is RNA-seq, answer the following:
+- Should we be worried about the Per base sequence content plot? Why?
+- What about the Per sequence GC content plot? 
+- What could be the cause of the overrepresented sequences?
+
+### Example FastQC report
+[This](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/bad_sequence_fastqc.html) is a FastQC report of poor quality reads. Look through the report and read the notes below.
+
+**Per Base Sequence Quality** - Looking at the first plot, we can clearly see this data is not as high quality as the one we have been exploring ourselves.
+
+**Per Tile Sequence Quality** - Some physical artefacts are visible and some tiles seem to be consistently lower quality. Whichever approach we take to cleaning the data will more than likely account for any of these artefacts. Sometimes it's just helpful to know where a problem has arisen.
+
+**Overrepresented Sequences** - There seem to be a lot of enriched sequences of unknown origin. There is one hit to an Illumina adapter sequence, so we know at least one of the contaminants in the data. Note that some of these sequences are the same as others on the list, just shifted one or two base pairs. A possible source of this may have been non-random fragmentation.
+
+
+Interpreting these reports can take time and experience. Descriptions of each of the sections are provided [here](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/) by the FastQC authors. 
+
+# In-Class Exercise
+Run `fastqc` on the sample ERR3241917 and look through the FastQC reports to answer the following questions.
 
 ```bash
 fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
 ```
 
-- What is the maximum quality score shown in the 
-- What is the GC content of ERR3241917?
-- How does the GC content of ERR3241917 compare with the Unknown sample? Do you think that the Unknown sample is from a human?
-- What might have caused the over-represented sequence detected in R2 of sample ERR3241917? 
 
-Now run `fastqc` on your two other human samples and check out their reports. 
+- What is the GC content of ERR3241917?
+ - How many Mbp of sequence have you got in total for ERR3241917?
+- Coverage (x or fold) is a measure of how many times you would expect each base in the genome to be covered by an aligned base after aligning all the reads. It is the total number of bases in your reads divided by the genome size. If these reads from a 7Mbp genome (7 Million basepairs), how many fold coverage do you have?
+ - You should see an additional plot called "Per tile sequence quality" that was not present in the Unknown sample report. It will look like a big blue square. What information does this plot give us and when might it be useful?
+ - FastQC automatically assigns a tick, cross, or exclamation mark to each plot. Do you think you can rely on this to tell you if there's a problem with your data?
+
+Now run `fastqc` on your two other human samples and check their reports. 
 - ERR3241921
 - ERR3241927
 
-Look over the following sections of their reports. 
-- Basic Statistics
-- Per base sequence quality
-- Per base sequence content
-- Overrepresented sequences
-
+In the next practical, we'll finish quality control by trimming our data and then re-assessing data quality. 

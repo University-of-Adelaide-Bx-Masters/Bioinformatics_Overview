@@ -82,7 +82,7 @@ cd ~/Practical_alignment
 ## make symlinks
 ln -s ~/data/intro_ngs/*.fq.gz 0_raw/
 # get reference
-cp  ~/data/intro_ngs/chr2_sub.fa ref/
+cp --no-clobber ~/data/intro_ngs/chr2_sub.fa ref/
 
 for SAM in "${SAMPLES[@]}";
 do
@@ -176,25 +176,25 @@ Let's look at the basic `bwa` command for read alignment to see how it works. Th
 
 First, BWA mem aligns reads to the reference genome. 
 Its default is to write alignment data to `stdout`, not to a file. 
-The pipe `|` to captures this stdout (which is in SAM format at this point) to send it to SAMtools instead of just printing it all to the terminal. 
+The pipe `|` to captures this stdout (which is in SAM format) to send it to SAMtools instead of just printing it all to the terminal. 
 The SAMtools `view` command converts the SAM alignment data to BAM format (a compressed binary version of SAM format) and also throws out any reads with the FLAG 4 set (these are reads that didn't align but we talk about FLAGs a bit later). Finally, the binary output from SAMtools is directed to the new file `aln.bam`.  
 
 Here is the command for you to cut and paste with the appropriate paths. This command also includes the `-R` option to add read group information to the BAM file which is necessary for variant calling.  
 ```bash
-bwa mem -t 2 ref/chr2_sub.fa -R '@RG\tID:17\tSM:ERR3241917' 1_trim/ERR3241917_1.fq.gz 1_trim/ERR3241917_2.fq.gz | samtools view -bh -F4 - > 2_align/bam/ERR3241917_aln.bam
+bwa mem -t 2 ref/chr2_sub.fa -R '@RG\tID:ERR3241917\tSM:ERR3241917' 1_trim/ERR3241917_1.fq.gz 1_trim/ERR3241917_2.fq.gz | samtools view -bh -F4 - > 2_align/bam/ERR3241917_aln.bam
 ```
 
 <details>
 <summary>What are Read Groups?</summary>
-<ul>Read groups are labels attached to sequencing reads that describe how and where the reads were generated. They can include important metadata about the sequencing process, such as which sample, library, or sequencing run a read came from.</ul>
+<ul>A read group is a set of reads that are generated from a single run of a sequencing instrument. Read group information is often included in SAM/BAM files, particularly when variant calling, and is used to mitigate the effect of sequencing artifacts in the analysis. Read group information is provided using tags. For example, the ID tag and the sample SM tag. </ul>
 
-<ul>In our case, each of our samples is a single run and so is considered a single read group. We have therefore set the sample tag (SM) to the sample name and the ID to the last two numbers of the sample name which is unique across our three samples. 
-If one sample was sequenced in two batches or across multiple flow cells, this would constitute multiple read groups. </ul>
+<ul>In our case, we will consider each of our samples a separate read group and so we set the sample tag (SM) and the ID tag to the sample name. 
+If one sample was sequenced in two batches or across multiple flow cells, this would technically constitute multiple read groups and these reads should therefore be aligned to the reference separately and be allocated different read group IDs. </ul>
 </details>
 
 This will take about a minute to run and the output sent to the terminal is normal! 
 
-## SAM file format
+# SAM and BAM files
 
 For a summary of the SAM format, see [Overview of file types](./../../Course_materials/overview_of_file_types.md)
 
@@ -239,7 +239,7 @@ After the header, the first read in your alignment file should look something li
 ERR3241917.10210        83      NC_000002.12    1209771 0       124M3D26M       =       1209571 -353    TTCCACAATGGTTGAACTAGTTTACAGTCCCACCAACAGTGTAAAAGTGTTCCTATTTCTCCACATCCTCTCCAGCACCTGTTGTTTCCTGACTTTTTAATGATTGCCATTCTAACTGGTGTGAGATATCTCATAGTGGTTTTGATTTGC  ????????????????????????????????????????????????????????+?????????????????????????????????????????????????????????????????????????????????????????????  NM:i:3  MD:Z:124^GAT26  MC:Z:150M       AS:i:141        XS:i:141        RG:Z:ERR3241917
 ```
 
-### SAM FLAGs
+## SAM FLAGs
 The second column in a SAM file contains what appears to be a normal number but it is actually a _bitwise_ field that contains multiple pieces of information about how a read mapped to the reference. 
 
 The table below contains a set of standardised terms that describe how a read aligned to the reference and gives each term a "Decimal" value. These numbers are determined using a binary system and have the property that all unique combinations of these numbers have a unique value when they are summed.
@@ -268,11 +268,10 @@ This means that we can specify any combination of descriptions by simply adding 
 
 You don't have to be able to work this out on your own! 
 
-**TASK:**
-You can use the [Decoding SAM flags](https://broadinstitute.github.io/picard/explain-flags.html) page to find out what  any FLAG value means. 
-Go there now to decode the FLAG values 83, 99, 97, and 133. A small sketch might be helpful. 
+**TASK:** You can use the [Decoding SAM flags](https://broadinstitute.github.io/picard/explain-flags.html) page to find out what  any FLAG value means. 
+- Go there now to decode the FLAG values 83, 99, 97, and 133. A small sketch might be helpful. 
 
-### MAPQ - mapping quality
+## MAPQ - mapping quality
 
 The 5th field contains the `MAPQ` score which indicates how well the read aligned, and how unique each alignment is.
 How this value is calculated can differ between alignment tools, but primarily, a higher score indicates a better, more unique alignment.
@@ -289,7 +288,7 @@ The MAPQ score indicates how likely it is that the read is mapped incorrectly an
 | 50                  | 1 in 100,000                       | 99.999%            |
 | 60                  | 1 in 1,000,000                     | 99.9999%           |
 
-### CIGAR strings
+## CIGAR strings
 CIGAR strings describe how the individual bases of a read align to the reference using a very simple code of numbers and letters where: 
 
 - `M` - alignment match (can be either a match or mismatch)
@@ -306,28 +305,28 @@ For example, the CIGAR `8M2I4M1D3M` is interpreted as:
 - `1D`  1 deletion
 - `3M`  3 alignment matches
 
-### SAM storage
+## Data storage
 
 SAM files contain a lot of information and are often many Gb in size. 
 To reduce storage requirements, storage formats such as BAM and CRAM are often favoured over SAM as they represent the alignment information in a compressed form.
 
 BAM (for Binary Alignment Map) is a lossless compression while CRAM can range from lossless to lossy depending on how much compression you want to achieve (up to very much indeed).
-Lossless means that we can completely recover all the data when converting between compression levels, while lossy removes a part of the data that cannot be recovered when converting back to its uncompressed state.
-BAMs and CRAMs hold the same information as their SAM equivalent, structured in the same way, however what is different between them is how the files themselves are encoded.
+Lossless means that we can completely recover all the data when converting between compression levels, while lossy removes a part of the data that cannot be recovered when converting back to its uncompressed state . Binning quality scores in `fastq` files to reduce storage requirements is lossy as we permanently lose the original data.
+BAMs and CRAMs hold the same information as their SAM equivalent, structured in the same way but the way the files are encoded differs. 
 
-Most analysis programs that deal with alignments will take SAM and BAM files as input and/or output, and the majority will strictly ask for BAMs as they are more compressed than SAMs.
+
+Many analysis programs that we use to analyse alignments in SAM/BAM files will strictly ask for BAM files as they are more compressed than SAMs.
 CRAM files are increasing in popularity and can generally be used with most major programs, with older versions containing more limited options for CRAM input.
 
-### Summarising alignments
+## Summarising alignments
 
-We can get a summary of how our reads aligned using `samtools stats`. It might take a minute to run. 
+After aligning our reads, we need to see how the alignment went. We can get a summary of how our reads aligned using `samtools stats`. It might take a minute to run. You could alternatively use the `samtools flagstat` command which gives slightly less information. 
 
 ```bash
 samtools stats 2_align/bam/ERR3241917_aln.bam > 2_align/log/ERR3241917.stats
 ```
 
-You could alternatively use the `samtools flagstat` command which gives slightly less information. 
-Have a look at the output of the .stats file using `less`  (`q` to exit).
+Have a look at the output in the .stats file using `less`  (`q` to exit).
 
 ```bash
 less 2_align/log/ERR3241917.stats
@@ -342,69 +341,79 @@ cat 2_align/log/ERR3241917.stats | grep "^SN"
 
 When it finishes, you will see all the summarised information from the file, including aligned reads, how many sequences are found in the header etc...
 
-**TASK:**
-Use the summary information above to answer the following questions:
+**TASK:** Use the summary information above to answer the following questions:
 1. How many reads aligned to the genome?
 2. Is this the same number of reads as were in your trimmed data according to FastQC? What do you think is going on? 
 3. How many reads aligned as a pair?
 4. How many reads aligned as a "proper" pair? And what is a proper pair?? (**HINT:** this might be useful for the assignment)
 5. What do you think `inward oriented pairs` and `outward oriented pairs` means?
 
-## Sort alignments
+# Sort alignments
 
-Before we call variants  we need to sort our read alignments.
-The original file will contain alignments in the order they were found in the original fastq file, so sorting arranges them in *genomic order*.
-This helps the variant caller to run the calling algorithm efficiently and prevents additional time from be allocated to going back and forth along the genome. 
-This is standard for most downstream programs.
+The next thing we'll do is sort our read alignments.
+The original file will contain alignments in the order they were found in the original fastq file. We'll be visualising our alignments next so we'll arrange our read alignments in genomic order so that IGV (the visualiser) is able to quickly find and display the read alignments for a particular section of the genome.
+Read alignments must also be sorted by genomic order for variant calling for the same reason. 
+This helps the variant caller to run the calling algorithm efficiently by reducing the amount of time it spends searching for all of the alignments to a particular location in the genome. 
 
 ```bash
 samtools sort 2_align/bam/ERR3241917_aln.bam -o 2_align/bam/ERR3241917_sorted.bam
 ```
 
-Once we've sorted our alignments, we usually *index* the file. This index is different but functions in the same way as the reference genome index and allows for rapid searching of the file. 
-Running the following command will create an associated `bai` file which is the index associated with our sorted alignments.
+Once we've sorted our alignments, we usually *index* the file. This index functions in the same way as the reference genome index in that it allows for rapid searching of the file. It will have the suffix `.bai`. 
 
 ```bash
 samtools index 2_align/bam/ERR3241917_sorted.bam
 ```
 
-We can also delete our unsorted BAM file to reduce storage requirements. 
+We will also delete our unsorted BAM file to reduce storage requirements. 
 
 ```bash
+# How big are the unsorted bam files?
 ls -lh 2_align/bam/*
+# delete the unsorted bam files
 rm 2_align/bam/ERR3241917_aln.bam
 ```
 
-Now we need to run the read alignment and sorting steps for the two other samples (ERR3241921 and ERR3241927). We could manually go through and change the sample names in the code above and run each line manually or we could use a loop to automate the process. 
-Create a new file called `align.sh` in the `Practical_alignment` directory and paste  the code block below into it. Notice how it only includes the two sample names that we haven't run yet. 
-Save it, and then run it with `bash align.sh`. 
+At this point, we have processed a single sample through alignment, sorting and indexing but we need to do this for our two other samples as well (ERR3241921 and ERR3241927). 
+
+We could go through and change the sample names in the code above and run each line manually... or we could use a loop to automate the process. Let's do that. 
+
+**Exercise**
+
+The script below (you can tell it's a script because it starts with a shebang `#!/bin/bash`) takes the remaining two samples through the steps above but isn't commented. 
+Create a new file called `align.sh` in the `Practical_alignment` directory and paste the entire script into it. 
+Now, add your own comments to the script wherever there's a `#` to describe what's happening. 
+
+Save it, and then run the script with `bash align.sh` to process your remaining two samples. 
 
 ```bash
 #!/bin/bash
 
+# 
 source activate bioinf
 
-# sample names 
+#  
 SAMPLES=(ERR3241921 ERR3241927)
 
+# 
 for SAM in "${SAMPLES[@]}";
 do
-	#Align reads to reference
+	# 
 	bwa mem -t 2 -R '@RG\tID:'${SAM: -2}'\tSM:'${SAM}'' ref/chr2_sub.fa 1_trim/${SAM}_1.fq.gz 1_trim/${SAM}_2.fq.gz | samtools view -bh -F4 - > 2_align/bam/${SAM}_aln.bam
 
-	#sort reads
+	#
 	samtools sort 2_align/bam/${SAM}_aln.bam -o 2_align/bam/${SAM}_sorted.bam
 
-	#index BAM
+	#
 	samtools index 2_align/bam/${SAM}_sorted.bam
 	
-	#delete un-sorted BAM file
+	#
 	rm 2_align/bam/${SAM}_aln.bam
 done
 
 ```
 
-## Visualise alignments
+# Visualise alignments
 
 We are now going to use IGV to visualise our genome (`chr2_sub.fa`) and our read alignments. 
 We have already sorted and indexed our BAM file (containing read alignments) but need to index the reference sequence as well. 
@@ -412,33 +421,54 @@ We have already sorted and indexed our BAM file (containing read alignments) but
 ```bash
 samtools faidx ref/chr2_sub.fa
 ```
+This should have created a file called `chr2_sub.fa.fai` 
 
-Now download the following files to your local computer using  RStudio's File browser. Select one file at a time by checking the checkbox and click "More" >> "Export...". Click the "Download" button and save it somewhere obvious.
+Download the following files to your local computer using  RStudio's File browser. Select one file at a time by checking the checkbox and click "More" >> "Export...". Click the "Download" button and save it somewhere obvious.
 - `~/Practical_alignment/ref/chr2_sub.fa`
-- `~/Practical_alignment/ref/chr2_sub.fai`
+- `~/Practical_alignment/ref/chr2_sub.fa.fai`
 - all of the `.bam` and `.bai` files for all three samples in `~/Practical_alignment/2_align/bam/` (6 files) 
 
 
-Go to [IGV-web](https://igv.org/app/). 
-Click the "Genome" button in the top left followed by `Local File` and select both the `chr2_sub.fa` and `chr2_sub.fa.fai` files. Once the reference genome is loaded, load a "Track" from a `Local File ...` by selecting both the matching `.bam` and `.bam.bai` files for a single sample. Then add two more tracks for the remaining two samples.
+Go to [IGV-web](https://igv.org/app/) and you'll see something like below. The "Genome" button in the top left is for loading the reference sequence and the "Tracks" button is for loading other types of information. For example, read alignments.
 
+![](images/igv_how_to_use.png)
 
-Take some time to work out how to move around, zoom in and out. The stacked grey arrows represent the reads aligned to the reference genome but you'll see that some are different colours. 
+Click the "Genome" button followed by `Local File` and select both the `chr2_sub.fa` and `chr2_sub.fa.fai` files at once. Click "Open".  
+
+Now, load read alignments for one of your samples. Click "Tracks" and `Local File` and select both the `.bam` and matching `.bam.bai` files for a single sample. 
+
+![](images/igv_genome_and_track.png)
+
+Then add two more tracks for the remaining two samples.
+
+Take some time to work out how to move around and zoom in and out (the slider on the right).  If you zoom in enough, you'll see stacked grey arrows (like below) which are the reads you aligned to the reference genome. You might notice that some are different colours (one is red in the image below).
+
+![](images/igv_reads.png)
+
 Read pairs coloured red have an insert size that is larger than expected and blue read pairs have a smaller than expected insert size. You may also see reads coloured teal, green, and dark blue and these indicate different orientations of read pairs ([see here for more details on read pair colouring and IGV in general](https://igv.org/doc/desktop/#UserGuide/tracks/alignments/paired_end_alignments/)). Differences between a read and the reference genome are indicated by the small coloured bars within reads. 
-You can expand the track height so you can see more reads aligned to a particular position by clicking on the cog on the right of the track, selecting "Set track height", and increasing the number from 300 to, for example, 600. You can also scroll down reads in locations where there are more reads than can be shown. 
 
-Once you've explored a bit and worked out how to navigate, copy the locations below into the search bar in IGV to navigate to them to see what these features look like.  
+You can expand the track height so you can see more reads aligned to a particular position by clicking on the cog on the right of the track, selecting "Set track height", and increasing the number from 300 to, for example, 600. You can also scroll down the reads in locations where there are more reads than can be shown. 
 
-Homozygous SNP
-- NC_000002.12:5,691,054-5,691,346
-Heterozygous SNP in two samples
+### Exercise - explore IGV
+
+Copy the locations listed below one at a time into the coordinates search bar in IGV to navigate to them and match up each location with one of the features of interest listed below. 
+
+Location 1
+-  NC_000002.12:5,691,054-5,691,346
+Location 2
 - NC_000002.12:1,353,476-1,353,576
-4bp Deletion
+Location 3
 - NC_000002.12:1,353,205-1,353,306
-Single bp insertion (indicated by purple `I`)
+Location 4
 - NC_000002.12:5,705,733-5,705,879
-Different genotype in each sample
+Location 5
 - NC_000002.12:2,851,027-2,851,127
-A more complicated region
-- NC_000002.12:5,114,993-5,115,578
+
+Feature of interest:
+- 4bp Deletion
+- Homozygous SNP
+- Single bp insertion
+- Heterozygous SNP in two samples
+- Different genotype in each sample
+
 
