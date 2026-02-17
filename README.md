@@ -14,7 +14,7 @@ Delivered in Semester 1
 **Read Alignment and Variant Calling**
 
 - Practical 4 - [Read QC](Practicals/fundamentals_of_bioinformatics/prac_4_readqc.md)
-- Practical 5 - [Read QC part 2](Practicals/fundamentals_of_bioinformatics/prac_5_readqc_part2.md)
+- Practical 5 - [Read QC Pt2 and Scripting](Practicals/fundamentals_of_bioinformatics/prac_5_readqc_part2.md)
 - Practical 6 - [Read Alignment](Practicals/fundamentals_of_bioinformatics/prac_6_alignment.md)
 - Practical 7 - [Variant Calling](Practicals/fundamentals_of_bioinformatics/prac_7_variantcall.md)
 
