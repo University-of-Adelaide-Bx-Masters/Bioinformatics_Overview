@@ -7,9 +7,9 @@ Delivered in Semester 1
 
 **Introduction to BASH**
 
-- Practical 1 
-- Practical 2
-- Practical 3
+- Practical 1 - [Intro to BASH 1](Practicals/fundamentals_of_bioinformatics/prac_1_introtobash1.md)
+- Practical 2 - [Intro to BASH 2](Practicals/fundamentals_of_bioinformatics/prac_2_introtobash2.md)
+- Practical 3 - [Intro to BASH 3](Practicals/fundamentals_of_bioinformatics/prac_3_introtobash3.md)
 
 **Read Alignment and Variant Calling**
 
