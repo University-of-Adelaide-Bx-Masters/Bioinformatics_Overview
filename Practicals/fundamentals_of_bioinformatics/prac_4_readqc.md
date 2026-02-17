@@ -7,9 +7,9 @@
 * TOC
 {:toc}
 
-# **Introduction/Background**
+# **1. Introduction/Background**
 
-## Biological and genetic basis for lactose intolerance 
+## 1.1 Biological and genetic basis for lactose intolerance 
  
 Lactose intolerance affects around 70% of adults worldwide. 
 Generally, a healthy newborn baby can digest about 60–70 g of lactose per day (roughly one litre of breast milk) due to the presence of the enzyme lactase in the small intestine. 
@@ -44,7 +44,7 @@ The coloured boxes represent transcription factor binding sites and the red line
 Image from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
 
 
-## Practical Overview
+## 1.2 Practical Overview
 
 In this practical (and the next three) we will use a read alignment and variant calling workflow to determine the genotype of three samples at the site of the rs4988235 SNP.
 We will then consider how this relates to the phenotype of lactose tolerance. 
@@ -58,13 +58,13 @@ The data we will analyse with this workflow includes Illumina paired-end reads f
 The first step in a bioinformatics analysis/workflow is _always_ quality control (QC) and that will be the focus for today and the next practical. 
 This includes checking the quality of raw data, trimming our raw data, and then re-checking quality.
 We have included an extra sample for the initial quality assessment so that you see reads of varying quality. 
-## Learning Outcomes
+## 1.3 Learning Outcomes
 
 1. Gain familiarity with high throughput sequencing data files (FASTQ)
 2. Learn how to assess the quality of reads in FASTQ format
 3. Learn what symlinks are and why they are useful
 
-# **Setup**
+# **2. Setup**
 
 This practical will again be using RStudio to interact with our VM's. 
 See [the first practical](../Bash_Practicals/1_IntroBash.md#rstudio) to remind yourself how to connect. 
@@ -72,7 +72,7 @@ See [the first practical](../Bash_Practicals/1_IntroBash.md#rstudio) to remind y
 All of the code/commands in this practical should be run in the terminal pane. 
 
 **Please use the same filenames and paths as the practical.**
-## Activate software 
+## 2.1 Activate software 
 
 The practicals use an anaconda (`conda`) software environment to provide access to the software you'll need. This is very common practice in bioinformatics. We have set up these environments already so you just need to activate them. 
 
@@ -100,7 +100,7 @@ Everyones prompt should now have changed to look something like below:
 The `(bioinf)` prefix lets you know you are in the `bioinf` conda environment, with access to the packages/tools installed in that environment. 
 It gives us access to both of the tools (`fastqc` and `fastp`) that we need for todays practical. 
 
-## Create directory structure 
+## 2.2 Create directory structure 
 
 Let's create a new directory for todays practical and create subdirectories that reflect the main steps in our analysis. This will help us stay organised. 
 
@@ -127,7 +127,7 @@ Practical_alignment/
 * In the `mkdir` command, what did the argument `--parents` do?
 * In the same command, what was the effect of placing `ref`, `0_raw`, `1_trim` etc.  inside the curly braces?
 
-## Get data (with symlinks!)
+## 2.3 Get data (with symlinks!)
 
 The data associated with bioinformatics can take up a lot of storage space. 
 Because data storage is usually limited and is surprisingly expensive, we need to manage our data carefully.
@@ -176,7 +176,7 @@ ls -lh 0_raw
 - What is the effect of `-l` and `-h`?
 - What information does the second option provide that could be useful for debugging? 
 
-# **Illumina Sequencing**
+# **3. Illumina Sequencing**
 
 In order to analyse our data, we need to understand how it was generated. 
 We are analysing paired-end reads from Illumina, the most commonly used short-read sequencing platform. 
@@ -190,7 +190,7 @@ More information on Illumina sequencing is available on [their website](https://
 <ul>This process repeats for hundreds of cycles, producing a series of colour images that are computationally converted into a sequence of bases for each cluster. The result is millions to billions of short reads that can then be aligned to a reference genome or assembled de novo for downstream analysis. Sequencing can be performed as single-end (SE), where only one end of each fragment is read, or as paired-end (PE), where both ends are sequenced, providing more information for accurate alignment and detection of structural variation.</ul>
 </details>
 
-## Sequencing Template Components
+## 3.1 Sequencing Template Components
 
 The figure below shows the different parts of an Illumina sequencing template. 
 
@@ -198,14 +198,15 @@ The figure below shows the different parts of an Illumina sequencing template.
 
 **Question:**
 - What happens if the insert length (the DNA fragment) is shorter than the read length? 
-### Adapters
+
+### 3.1.1Adapters
 
 The adapters contain the sequencing primer binding sites (R1 and R2 Primers), index sequences, and the sites that allow library fragments to attach to the flow cell lawn (P5 and P7). 
 There are a limited number of standard Illumina adapter sequences ([detailed here](https://knowledge.illumina.com/library-preparation/general/library-preparation-general-reference_material-list/000001314)) and so tools are often able to determine which adapter was used automatically.  
-### Insert
+### 3.1.2 Insert
 
 This is the fragment of DNA that we want to sequence. If we are using barcodes, the barcode is ligated directly to the DNA fragment and is included in the read (barcodes are not shown here). 
-### Indexes and Barcodes
+### 3.1.3 Indexes and Barcodes
 
 Indexes and barcodes are similar in that they allow multiple samples to be pooled together in a single sequencing run and later separated by their unique sequence tags. 
 This is called _multiplexing_ and separating reads by their index or barcode into individual samples is called _de-multiplexing_. 
@@ -214,12 +215,12 @@ If barcodes are used to further multiplex samples, they will be ligated directly
 De-multiplexing barcoded samples is not performed by the sequencing provider. 
 Instead, a bioinformatician will de-multiplex using a tool like [sabre](https://github.com/najoshi/sabre). 
 
-## 3' Quality Drop-Off
+## 3.2 Quality - 3' Quality Drop-Off
 
 In general, Illumina sequencing produces highly accurate reads but read quality does tend to diminish towards the 3' end. 
 During the bridge-amplification stage, millions of clusters are created on the flowcell. Each cluster comprises of 1,000-2,000 identical copies of the same template. During the process of sequencing, the polymerases attached to each of the thousands of copies in a cluster "advance" one base at a time. At the start (5' end) all the polymerases are in perfect sync; generating a bright, clean, consistant light signal for detecting which base was incorporated. However, as time/number of cycles progresses, some polymerases fall behind while some race in front. The polymerases gradually get further and further out of phase with each other. This leads to dimmer and less clear signals for detection, and thus lower quality base-calls.
 
-## PolyG artifact
+## 3.3 PolyG artifact
 Illumina uses only two fluorescent colours in its chemistry to represent the four bases. 
 - C  = red
 - T  = green
@@ -229,7 +230,7 @@ Illumina uses only two fluorescent colours in its chemistry to represent the fou
 One limitation of this system is that if the signal from a cluster becomes too weak to detect, the instrument interprets the lack of signal as a string of high confidence **G’s**, even if the real bases are different.
 This tends to happen more often near the 3' end of reads. 
 
-# **FASTQ file format**
+# **4. FASTQ file format**
 
 Illumina reads are stored in FASTQ files with the extension `.fq` or `.fastq`. 
 These files are plain-text but are often very large so are commonly compressed using `gzip`. 
@@ -269,11 +270,11 @@ The four lines are:
  4. Quality string
 
 The first and fourth line are explained more in the next few sections. 
-## Read Identifier
+## 4.1 Read Identifier
 The read identifier line always begins with an @ symbol but may vary significantly after this depending on where the data came from (directly from the sequencing provider vs downloaded from public database). 
 The figure below explains the components of the first read identifier that we saw above. If you received this data directly from Illumina, it would not contain the first two fields as this was added when the data was made publicly available. Instead it would start with the @ followed directly by the machine ID. The remaining parts of the header are fairly standard for illumina sequencing.  
 
-![ERR2341917 Illumina read identifier](images/Illumina_read_identifier.png)
+<img src="images/Illumina_read_identifier.png" alt="ERR2341917 Illumina read identifier" height="250">
 
 This information can be helpful in identifying if any spatial effects have affected the quality of the reads. You usually won’t need most of this information, but it can be handy for times of serious data exploration.
 
@@ -294,13 +295,14 @@ Each read ID should contain:
 - read length
 
 As you can see, the information in the identifier can vary quite a lot depending on where the data came from. 
-## Quality string
+## 4.2 Quality string
 
 The quality string has a character for each base in the sequence string that indicates how confidently that base was called. Therefore, the length of the sequence string and the quality string should match. Quality values are numbers from `0` to `93` and are often referred to as "Phred" quality scores. To encode the quality scores as a single character (so that the sequence string and quality string are the same length), the scores are mapped to the ASCII table:
 
 Standard ASCII Chart - Hex to Decimal code conversion
 ![Standard ASCII Chart - Hex to Decimal code conversion](https://cdn.shopify.com/s/files/1/1014/5789/files/Standard-ASCII-Table_large.jpg?10669400161723642407) 
-From https://www.commfront.com/pages/ascii-chart 
+
+**Chart above from https://www.commfront.com/pages/ascii-chart**
 
 You will see that the first 33 characters in the table (decimal values of 0-32) are all non-printable or white-space (think space, tab, backspace, bell etc). The first printable character is `!` and this has the decimal value of `33`. This character is used to represent a quality value of `0` while `"` has a decimal value of `34` and represents a quality value of `1` (`34-33`). 
 As such these quality scores are said to be Phred+33 encoded and the quality score is simply obtained by substracting 33 from the decimal value of the character in the quality string. 
@@ -308,7 +310,7 @@ Quality score values usually range from 0 (!) to 40 (I) but some go a bit higher
 
 If you go digging into old Illumina files, you may find quality values which are Phred+64 encoded. That is, a quality value of `0` is represented by `@` which has a decimal value of `64`. However, Phred+33 encoding is the current standard and is often referred to as Illumina 1.9. 
 
-## Phred scores
+## 4.3 Phred scores
 
 Phred quality scores give a measure of the confidence the caller has that the sequence base is correct.
 To do this, the quality scores are related to the probability of calling an incorrect base through the formula
@@ -330,11 +332,11 @@ This is more easily seen in the following table:
 - Then, use the table above to get an idea of what level of basecall confidence these numbers indicate.  
 - What are the most common characters in the quality strings of reads in sample ERR3241917? What basecall accuracy do these characters indicate?
 
-## Quality score binning
+## 4.4 Quality score binning
 
 You might have noticed that the quality scores in your Iberian sample FASTQ files don't contain a very wide range of characters. This is because quality scores are often binned to reduce filesize.  
 "Binning" groups similar quality values together so that instead of storing dozens of possible Phred scores, the file only stores a smaller set of representative values. This makes FASTQ files smaller and easier to archive, with little impact on most downstream analyses. As long as the relative differences in quality are preserved, aligners and many variant callers can still perform well. However, it does mean that the quality plots you see in tools like FastQC may appear more “stepped” or uniform than expected, and very fine-grained distinctions in base accuracy are not captured
-# **Quality Control**
+# **5. Quality Control**
 
 Now that we know what our data looks like (FASTQ files), we can start Quality Control (QC). 
 
@@ -397,7 +399,8 @@ FastQC creates an .html report (and a zip file but we don't need that) for each 
 
 To view the reports, use the `Files` pane to navigate to `~/Practical_alignment/0_raw/FastQC` and open both of the html files you find (**If you don't see any html files call a tutor**). Click on a file and then choose `View in Web Browser` and the file will open in your browser.
 
-## Inspecting FastQC reports
+## 5.1 FastQC Reports
+### 5.1.1 FastQC basic statistics
 
 Let's look at the FastQC reports for our Unknown sample. **These reads are paired-end RNA-seq.**
 
@@ -409,12 +412,11 @@ Using the Basic Statistics information at the top of the FastQC reports, answer 
 - What is the approximate GC content?
 - How many Mbp of sequence information is there across both files?
 
-
 The left hand menu contains a series of clickable links to navigate through the report, with a quick guideline about each section given as a tick, cross or exclamation mark.
 
 Let's look at some other parts of the report. 
 
-### Per Base Sequence Quality
+### 5.1.2 Per Base Sequence Quality
 
 Click on the `Per base sequence quality` hyper-link on the left of the page & you will see a boxplot of the QC score distributions for every position in the read.
 These are produced from the Phred scores we discussed earlier, and this plot is usually the first one that bioinformaticians will look at for making informed decisions about the overall quality of the data and settings for later stages of the analysis.
@@ -423,7 +425,7 @@ The red dashed line indicates the maximum quality score at that position in the 
 * What do you notice about the quality scores as you move from the 5' to the 3' end of the reads?  Can you explain why this is the case? 
 * Are R1 or R2 reads higher quality? Can you explain why this is the case? 
 
-### Per Base Sequence Content
+### 5.1.3 Per Base Sequence Content
 
 In a WGS experiment where DNA is randomly fragmented, we would expect to see relatively flat horizontal lines across this plot. 
 Depending on the GC content of the species, we might see the A and T lines tracking together but separately from the G and C lines.
@@ -431,22 +433,22 @@ RNA-Seq data will usually fail this section because the "random" hexamer priming
 It is also relatively common to see a drift towards G towards the end of a read.
 This is because most modern Illumina sequencing is performed on a "2-colour" system and G is the absence of both colours. 
 
-### Per Sequence GC content
+### 5.1.4 Per Sequence GC content
 This plot gives the GC distribution of all sequences. The line should be normal(ish) for whole genome sequencing but sharp peaks are not unusual in RNA-Seq indicating highly-expressed sequences. The peak of the curve should align with the expected GC content of the species. 
 
-### Sequence Length Distribution
+### 5.1.5 Sequence Length Distribution
 The distributions of sequence lengths in our data. Here we have sequences that are all the same lengths, however if the length of your reads is vital (e.g. smallRNA data), then this can plot can be informative.
 
-### Sequence Duplication Levels
+### 5.1.6 Sequence Duplication Levels
 This plot shows about what you’d expect from a typical NGS experiment. There are few to no duplicated sequences and lots of unique sequences representing the diverse transcriptome. This is only calculated on a small sample of the library for computational efficiency and is just to give a rough guide if anything unusual stands out.
-### Overrepresented Sequences
+### 5.1.7 Overrepresented Sequences
 Here we can see any sequence which are more abundant than would be expected.
 A normal high-throughput library will contain a diverse set of sequences but sometimes we find that some sequences are more common than we would expect. 
 This can be for a range of reasons. 
 It could mean that a sequence is highly biologically significant (ie. in RNA-seq), indicate that the library is contaminated, or it could be the result of a sequencing artifact. 
 Sometimes you will also see sequences here that match the adapters used in the library prep. 
 
-### Adapter Content
+### 5.1.8 Adapter Content
 
 For whole genome shotgun sequencing library preps we expect to see little adapter content in the reads.
 If there is a significant up-turn in adapter content towards the 3' end, this may indicate the genomic DNA was over-fragmented during library prep.
@@ -457,7 +459,7 @@ Remembering that the Unknown sample is RNA-seq, answer the following:
 - What about the Per sequence GC content plot? 
 - What could be the cause of the overrepresented sequences?
 
-### Example FastQC report
+## 5.2 Example FastQC report
 [This](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/bad_sequence_fastqc.html) is a FastQC report of poor quality reads. Look through the report and read the notes below.
 
 **Per Base Sequence Quality** - Looking at the first plot, we can clearly see this data is not as high quality as the one we have been exploring ourselves.
@@ -466,10 +468,9 @@ Remembering that the Unknown sample is RNA-seq, answer the following:
 
 **Overrepresented Sequences** - There seem to be a lot of enriched sequences of unknown origin. There is one hit to an Illumina adapter sequence, so we know at least one of the contaminants in the data. Note that some of these sequences are the same as others on the list, just shifted one or two base pairs. A possible source of this may have been non-random fragmentation.
 
-
 Interpreting these reports can take time and experience. Descriptions of each of the sections are provided [here](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/) by the FastQC authors. 
 
-# In-Class Exercise
+# **In-Class Exercise**
 Run `fastqc` on the sample ERR3241917 and look through the FastQC reports to answer the following questions.
 
 ```bash

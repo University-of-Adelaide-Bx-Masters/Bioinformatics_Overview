@@ -7,26 +7,26 @@
 * TOC
 {:toc}
 
-# **Introduction**
+# **1. Introduction**
 This is the second part of our read alignment and variant calling workflow where we are trying to determine the genotype of three individuals at the SNP rs4988235 which predicts lactose tolerance. 
 Click  [here](prac_4_readqc.md) if you want to remind yourself of the background information. 
 
 In [the last practical](prac_4_readqc.md) we assessed the quality of Illumina reads using FastQC and talked about some of the errors or artifacts specific to Illumina sequencing. Today we'll cover the remainder of the Quality Control phase. We'll also look at a scripting example.
 
-[![Variant calling workflow](https://sbc.shef.ac.uk/wrangling-genomics/img/variant_calling_workflow.png)
-## **Overview of today**
+![Variant calling workflow](https://sbc.shef.ac.uk/wrangling-genomics/img/variant_calling_workflow.png)
+## 1.1 Overview of today
 Today we will  trim our data to remove artifacts, adapters, and low quality base calls and run FastQC again to see what our data looks like after trimming. 
 
 We need to remove adapters because they don't match any part of the sequenced genome and this will make read alignment more challenging, and low quality stretches of sequence are removed as they are more likely to contain sequencing errors and therefore, may not accurately represent the sequenced genome.
 Trimming can also remove some sequencing artifacts, like polyG artifacts.  
 Even if the report from FastQC shows that you have good quality data, it is still best-practice to trim.
 
-## Learning Outcomes
+## 1.2 Learning Outcomes
 1. Learn how to perform adapter and quality trimming
 2. Learn how to build a script
 3. Learn why it is useful to build a script
 
-## Setup and Catchup
+## 1.3 Setup and Catchup
 Let's activate our `bioinf` conda environment again.
 
 ```bash
@@ -69,7 +69,7 @@ cp  ~/data/intro_ngs/chr2_sub.fa ref/
 fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
 ```
 
-# **Fastp**
+# **2. Fastp**
 
 There are many tools available for trimming.
 We are going to be using `fastp` in this practical. The tool `trimmomatic` ([see here](https://github.com/usadellab/Trimmomatic)) would be a good alternative. 
@@ -117,7 +117,7 @@ In this case, the window is 4 bp wide (`--cut_window_size`) and bases are trimme
 The `--cut_right` option means that the window starts at the 3' end of the read  and `--length_required 75` indicates that if a read is less than 75bp long after trimming and removing adapters, it should be discarded. 
 If a read is discarded but its pair is not, its pair will be sent to the orphan read file. 
 
-# **Quality control post-trimming**
+# **3. Quality control post-trimming**
 
 To assess how the trimming has performed, run FastQC on the paired reads output by fastp. 
 
@@ -139,9 +139,9 @@ We can also look at the .html report produced by `fastp` for more detailed infor
 
 The data we're using for this practical is very good quality and there weren't any obvious problems in the FastQC report for the raw, untrimmed data. However, it still contained some low quality data which trimming was able to remove.  FastQC reports give an indication of data quality but data that appears to be of very high quality can still contain some low quality reads. This is why we should always trim reads and remove adapters as part of quality control. 
 
-# **Building a script**
+# **4. Building a script**
 
-The way you have been running this analysis so far (running commands directly in the terminal) is great for learning how to use new tools and for working out how you will analyse your data. 
+The way you have been running this analysis so far (running commands directly in the terminal) is great for learning how to use new tools and for working out how you will analyse your data. It's how most of the practicals are set up. 
 However, bioinformaticians often need to analyse hundreds, or even thousands, of samples at once which clearly isn't practical using this method. This is where scripting comes in. 
 
 **Bash scripts:**
@@ -151,7 +151,7 @@ However, bioinformaticians often need to analyse hundreds, or even thousands, of
 - Allow us to share our analysis with other scientists (on github for example) and to improve it over time
 - Make it a LOT easier to write up the methods section of a manuscript for publication
 
-## Script Structure 
+## 4.1 Script Structure 
 
 Assignment 1 Part 2 asks you to write a script that runs from your home directory (`~`) and does the following: 
 - load software
@@ -186,7 +186,7 @@ First, run `cd ~` to get to your home directory, then use `nano` to make a new f
 
 ```
 
-## Add code
+## 4.2 Add code
 
 Now we've got a skeleton for the script, we need to add the code. 
 
@@ -235,7 +235,7 @@ Find these two commands in todays practical and paste them into your script. Mak
 
 Once you've completed this, [click HERE](prac_5_code_example.md)
 
-## Sanity and formatting check
+## 4.3 Sanity and formatting check
 
 Your script should now have all of the necessary code to run the entire quality control workflow for the sample ERR3241917. 
 Let's do some final checks before we test it. 
@@ -248,7 +248,7 @@ Things to check:
 4. Make sure that you are in the right directory! This script is designed to be run/executed from your home directory but our analysis (from getting our data and onwards) uses "relative" filepaths that will only work when we are located in `~/Practical_alignment`. Therefore, make sure your script changes into this directory after creating new directories and before obtaining your data. 
 5. To check that the script runs all the way to the end, add an `echo "end of script"` or some other echo statement to the last line of your script. 
 
-## Testing your script
+## 4.4 Testing your script
 
 If you don't test your script, you can't be sure that it doesn't have errors. 
 The best way to test a script is to run it in the way you are expecting other people to run it. 
@@ -274,7 +274,7 @@ tree Practical_alignment
 
 If it didn't, try reading the error messages to work out where your script went wrong. 
 
-## Automating for multiple samples
+## 4.5 Automating for multiple samples
 
 One of the main reasons we write scripts is automation (to run the exact same code on multiple samples) but this script currently only processes one sample. 
 Let's modify it so that it processes all of our samples.
@@ -320,7 +320,7 @@ Once this script has run, take a look through the FastQC reports for your newly 
 
 And just before we go, let's delete the `Practical_alignment_original` directory as the new `Practical_alignment` directory contains all of the same analysis for the first sample plus analysis of the second and third sample. 
 
-**Check the `rm` command below carefully. It can't be undone if you delete the wrong thing.** 
+**Check the `rm` command below carefully. It can't be undone.**  
 
 ```bash
 rm -rf Practical_alignment_original
@@ -328,7 +328,7 @@ rm -rf Practical_alignment_original
 # The -f option means "Force"
 ```
 
-## Summary of progress
+# **5. Summary of progress**
 
 Over the last two practicals we have: 
 - Obtained our raw reads with symlinks

@@ -7,7 +7,7 @@
 * TOC
 {:toc}
 
-# Introduction
+# **1. Introduction**
 In the last three practicals we performed quality control on Illumina reads and then aligned our reads to the reference genome. We also visualised our alignments with IGV and saw examples of homozygous and herozygous SNPs. 
 We are now up to the final step in our analysis - variant calling.  
 In the context of the biological question we are investigating, this is the step where we find the genotype of our three Iberian samples at the location of the Eurasian lactase persistence SNP, rs4988235 (also called 13910C>T) and from this, we will be able to predict whether or not these people are lactose tolerant. 
@@ -15,7 +15,7 @@ In the context of the biological question we are investigating, this is the step
 
 [![Variant calling workflow](https://sbc.shef.ac.uk/wrangling-genomics/img/variant_calling_workflow.png)](https://sbc.shef.ac.uk/wrangling-genomics/04-variant_calling/index.html)
 
-## Overview of today
+## 1.1 Overview of today
 
 While sequence alignment is potentially the most important aspect of most high-throughput sequencing pipelines, in whole genome sequencing (WGS) experiments, such as we are simulating here, it is crucial to not only identify where reads have mapped, but regions in which they differ. These regions are called "sequence variants", and can take many forms. Three major types of sequence variation include:
 
@@ -25,13 +25,13 @@ While sequence alignment is potentially the most important aspect of most high-t
 
 We are working with short reads and will be focusing on SNPs and InDels. 
 
-## Learning Outcomes
+## 1.2 Learning Outcomes
 
 1. Learn about different types of duplicates and how to handle them
 2. Learn how to call variants to produce a VCF
 3. Learn about the VCF format and how to interpret it
 
-## Setup and catchup
+## 1.3 Setup and catchup
 
 Let's activate our software!
 
@@ -59,23 +59,29 @@ bwa index ref/chr2_sub.fa
 cp ~/data/intro_ngs/bams/* ~/Practical_alignment/2_align/bam/.
 
 ```
-# **Mark duplicates**
+# **2. Mark duplicates**
 
 The next step in a variant calling workflow is marking duplicates. But what are duplicates? 
-###### PCR duplicates
+## 2.1 What are duplicates
+
+##### PCR Duplicates
 During some sequencing processes (in traditional Illumina sequencing), DNA or cDNA fragments are amplified in a Polymerase Chain Reaction (PCR) using specific adapters and primers.
 If the initial unique targets are saturated during this process, then replicated fragments may be amplified, leading to what we refer to as "Library Duplicates" or "PCR Duplicates".
-###### Optical duplicates
+
+##### Optical Duplicates
+
 If a single cluster on the Illumina flowcell is imaged as two or more clusters, we will get two or more reads from the same cluster called Optical duplicates. 
-###### How do we identify them?
+
+##### How do we identify them?
+
 With the exception of any sequencing errors, duplicate reads will be identical and will therefore map to the exact same position, like in the figure below.  Therefore, if alignments are sorted by coordinates, any duplicated reads should be next to each other. 
 For every set of duplicates identified, we keep the read (or read pair for paired end reads) with the highest base quality as the original read and mark the others as DUP. 
 
-![Identifying duplicate reads from alignment](images/duplicate_read_example.png) 
-
+<img src="images/duplicate_read_example.png" alt="Identifying duplicate reads from alignment" height="300">
+ 
 Optionally, `samtools markdups` can also compare the read groups and barcodes of duplicated reads. If two or more reads appear to be duplicates based on their alignment but have different read groups or barcodes, then they will not be marked as duplicates.  
 
-###### When don't we mark duplicates?
+##### Do we always mark duplicates?
 Duplicate detection as noted above works well for paired-end reads but not as well for single-end reads. 
 Additionally, count-based sequencing approaches such as ChIP-seq and RNA-seq are generally prone to having high-coverage areas (especially if you have deep sequencing) which may look like duplicates.
 Some small non-coding RNAs are also short, so its very likely to have similar alignment starts and ends.
@@ -84,7 +90,7 @@ In these cases, we might choose not to mark duplicates at all or we might run ou
 
 For the data we're working with, it makes sense to mark duplicates. 
 
-## Mark duplicates with samtools
+## 2.2 Mark duplicates with samtools
 
 The tool we'll use to mark duplicates is `samtools markdup` but it requires BAM files to be formatted so that:
 - Mate cigar strings and mate quality score tags must be present. We can add these with `samtools fixmate`
@@ -111,7 +117,7 @@ samtools view 2_align/bam/ERR3241917_markdups.bam | less
 
 You should see that most alignments have a few extra columns of information beginning with the tags `MQ`,  `MC`, and `ms` but not all. This is because these columns contain information about the mate of the read described by an alignment. If a read didn't align as part of a proper pair, this information isn't calculated or added.  
 
-# **Variant Calling**
+# **3. Variant Calling**
 
 Variant callers work by counting all reference and alternative alleles at every individual site on the reference genome. 
 Because there will be two alleles (e.g. A and B) for each individual reference base (assuming the organism that you are sampling is diploid), then there will be sites which are all reference (AA) or alternate (BB) alleles, which we call a homozygous site. 
@@ -121,13 +127,13 @@ We saw examples of homozygous and heterozygous sites in the IGV visualisation an
 There are many variant calling algorithms, which all have advantages and disadvantages in terms of selectivity and sensitivity. 
 Many algorithms aim to detect *regions* of the genome where many variants have been called, rather than individual sites, and thus are called *haplotype callers*. 
 
-## What is a VCF?
+## 3.1 What is a VCF?
 The standard output of a variant caller is a *variant call format* (VCF) file, a tab-separated file which details information about every sequence variant within the alignment. For information on the VCF file specification see [here](https://samtools.github.io/hts-specs/). The VCF file specification is continuously evolving and is regulated by the [Global Alliance for Genomics & Health](https://www.ga4gh.org/#/fileformats-team).
 
 The VCF file contains everything that you need to know about the sequence variant including its location (chromosome and position), the reference and alternate alleles, the variant quality score and the genotype code (e.g. 0/0, 1/1, 0/1). 
 Additionally, the VCF file can be annotated to include information on the region in which a variant was found, such as gene information, whether the variant had an ID (from major databases such as NCBI's dbSNP for example) or whether the variant changed an amino-acid codon or not (synonymous vs non-synonymous sequence variants).
 
-## Interpreting VCF files
+## 3.2 Interpreting VCF files
 
 Try and answer the following questions with reference to the example VCF below. The [Overview of file types](./../../../Course_materials/overview_of_file_types.md) document includes a section on VCFs that may help. 
 
@@ -173,7 +179,7 @@ As a quick overview:
 20      1234567 .       GTC     G,GTCT  50      PASS    NS=3;DP=9;AA=G  GT:GQ:DP        0/1:35:4        0/2:17:2        1/1:40:3
 ```
 
-## Calling variants
+## 3.3 Calling variants
 
 We are using the haplotype-based caller `freebayes`, which is a [Bayesian genetic variant detector designed to find small polymorphisms, specifically SNPs (single-nucleotide polymorphisms), indels (insertions and deletions), MNPs (multi-nucleotide polymorphisms), and complex events (composite insertion and substitution events) smaller than the length of a short-read sequencing alignment](https://github.com/ekg/freebayes). 
 
@@ -196,7 +202,7 @@ freebayes \
 
 ```
 
-## Interpreting our VCF
+## 3.4 Interpreting our VCF
 
 Lets have a look at our VCF file using `less`.  
 
@@ -238,22 +244,20 @@ NC_000002.12	187	.	T	C	581.643	.	AB=0.485714;ABP=3.13438;AC=3;AF=0.5;AN=6;AO=34;
 <li>6. 10 reads with reference allele and 6 reads with alternate allele</li> </ul>
 </details>
 
+
 The QUAL column contains a phred-scaled quality score for the assertion made in the ALT column and high QUAL scores indicate high confidence calls. For example, a QUAL of 30 indicates  a 1 in 1000 chance of this variant not really existing, or 99.9% confidence that the variant does exist.
-
-
 
 ```bash
 grep -v "^#" chr2_vars.vcf | awk -F"\t" ' $6<x {print}' | wc -l
 ```
 
-# **VCF filtering**
+# **4. VCF filtering**
 Just because a variant is called doesn't mean that it is a true positive! We filter variants to try and remove false positives without removing any true variants. 
 
-## Filter by QUAL
+## 4.1 Filtering by QUAL
 A very common way to filter variants is by QUAL - the variant quality score.  
 QUAL is a phred-scaled quality score for the assertion made in the ALT column and high QUAL scores indicate high confidence calls. 
 For example, a QUAL of 30 indicates  a 1 in 1000 chance of this variant not really existing, or 99.9% confidence that the variant does exist. This is a fairly common threshold to use for filtering and variants passing would be considered "high confidence". 
-
 
 We can use `bcftools filter` to filter variants using an expression filter. 
 This means we can either exclude (`-e`) or include (`-i`) variants based on a certain criteria. 
@@ -283,7 +287,7 @@ bcftools filter -e 'QUAL < 30' 3_variants/chr2_vars.vcf.gz | grep -v "^#" | wc -
 <ul>Variants with QUAL scores of less than 0.1 make up most of the variants with QUAL less than 20 and 30.  Therefore the threshold that we choose to filter by (we will use 30) is primarily removing very low quality variants and only a smaller number of higher confidence calls.  </ul>
 </details>
 
-## Filter by depth - DP
+## 4.2 Filtering by depth
 
 Along with QUAL, variants are also commonly filtered by depth (DP) which can be either total depth of reads across all samples (the INFO DP field) or the depth per sample (the FORMAT DP field). 
 Filtering by depth per sample is particularly useful for removing variants called within regions of very high read depth which are often an indication of misalignment or an additional repeat copy in a sample vs the reference. 
@@ -292,7 +296,7 @@ To do this, the value we filter on depends on the average read depth of the samp
 
 Similarly, if you have very low coverage of a variant, it reduces your ability to accurately call a heterozygotic site (especially if you are confident that you sequenced the sample to an adequate depth!). Therefore, we could exclude variants with `INFO/DP<10` (less than 10 reads across all samples aligned to this location). 
 
-## Final filtering of VCF
+## 4.3 Finally filtering our VCF
 We will remove variants with:
 - QUAL < 30 **OR**
 - Sample read depth > 45 **OR**
@@ -309,7 +313,7 @@ zcat 3_variants/chr2_vars_q30_dp.vcf.gz | grep -v "^#" | wc -l
 - How many variants remained after filtering? 
 
 Now that we have only high-quality variants remaining, we can move on to answering our original question. 
-# **Biological Interpretation**
+# **5. Biological Interpretation** and visualisation
 
 The goal of this analysis was to see how we could use a simple variant calling pipeline to find the genotype of three samples at the site of the Eurasian lactase persistence SNP rs4988235 (also called 13910C>T) and hence infer whether or not these samples were lactose intolerant. 
 
@@ -332,12 +336,11 @@ bcftools filter -r 'NC_000002.12:2851076' 3_variants/chr2_vars_q30_dp.vcf.gz | l
 4. What are the genotypes of your three samples at this location? 
 5. Based on this information, use the second figure below to predict the ability of each of your samples to digest lactose as an adult. 
 
-
-![[Pasted image 20251024125101.png]]
+![](images/lct_and_mcm6_in_igv.png)
 
 **The MCM6 and LCT genes viewed in IGV**. The arrows on the genes pointing left indicate that these genes are on the reverse strand. 
 
-![Lactase Persistence SNP](https://onlinelibrary.wiley.com/cms/asset/98815270-7bb1-4f31-9741-cd3f08d5e1e5/ahg12575-gra-0001.png)
+![Genetics of lactase persistence](images/lactase_genotype_fig.jpg)
 
 **The genetics of lactase persistence (LP)** from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
 
@@ -353,7 +356,7 @@ ERR3241917: homozygous for reference allele</li>
 </ul>
 </details>
 
-## IGV visualisation
+# 6. IGV visualisation
 Let's take a look at the Eurasian lactase persistence SNP in the IGV browser but this time we'll include a GFF track. GFF stands for General Feature Format and GFF files describe genes and other features in genomic sequences (see [here](./../../../Course_materials/overview_of_file_types.md) for more information). Because a GFF includes coordinates describing the position of different features, it is specific to a particular reference or genomic sequence. 
 
 First, copy the GFF to your project directory. 
@@ -383,26 +386,20 @@ Once your files are loaded, navigate to the LCT and MCM6 genes which are located
 
 You can click on different parts of genes and features in the gff track to get more information. 
 
-Find out the following:
+**Find out the following:**
 - What is the GeneID of the MCM6 gene?
 - How many exons does the MCM6 gene have?
 - Why are there two LCT genes displayed and what's the difference between them?
 
 The Eurasian lactase persistence SNP is in intron 13 of the MCM6 gene but you can navigate to it quickly by pasting the coordinates NC_000002.12:2850977-2851180 into the search bar. This should place the SNP in the middle of the screen.
 
+**Answer the following:**
 - What do the bright green and orange in ERR3241921 indicate?  
 - How many reads are aligned over the SNP in ERR3241921?
 - Of these, how many have the A allele?
 - Does what you see in IGV align with what you discovered using the variant calling workflow with respect to this SNP?
- 
-# Summary
 
-In this practical, you used a variant calling workflow to genotype the Eurasian lactase persistence SNP in three different samples from which you were able to infer lactose tolerance status. 
-
-To do this, you started with raw sequencing data in **FASTQ** format, you first assessed read quality and removed low-quality bases and adapters through **quality control and trimming**. The cleaned reads were then **aligned** to a reference genome, producing **SAM/BAM** files that record where each read maps and how confidently it aligns. After filtering these alignments to remove low-quality and duplicate reads, you performed **variant calling**, generating **VCF** files that list genetic differences between each sample and the reference genome.
-
-While our final interpretation of this analysis focused on a single, well-known variant for teaching purposes, this workflow detected thousands of genetic variants. These variants contain far more information than can be examined manually, including data relevant to health, ancestry, and biological function. Analysing this data is complex and outside the scope of this module but is explored further in other parts of the course. 
-## Resource management
+# **7. Resource management** and summary
 
 A final note on managing computational resources. It is very common to have a limited amount of space to store computational data. 
 The analysis we just completed produced a lot of intermediate files that take up valuable space on our Virtual Machines so let's clean up a bit by removing the larger files. Remember that you can always re-create these files from the raw data by running the code again. 
@@ -415,3 +412,8 @@ rm 2_align/bam/*_sorted.bam
 rm 1_trim/ERR*.fq.gz
 ```
 
+Over the last four practicals you used a variant calling workflow to genotype the Eurasian lactase persistence SNP in three different samples from which you were able to infer lactose tolerance status. 
+
+To do this, you started with raw sequencing data in FASTQ format, you first assessed read quality and removed low-quality bases and adapters through quality control and trimming. The cleaned reads were then aligned to a reference genome, producing SAM/BAM files that record where each read maps and how confidently it aligns. After filtering these alignments to remove low-quality and duplicate reads, you performed **variant calling**, generating VCF files that list genetic differences between each sample and the reference genome.
+
+While our final interpretation of this analysis focused on a single, well-known variant for teaching purposes, this workflow detected thousands of genetic variants. These variants contain far more information than can be examined manually, including data relevant to health, ancestry, and biological function. Analysing this data is complex and outside the scope of this module but is explored further in other parts of 

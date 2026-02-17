@@ -7,7 +7,7 @@
 * TOC
 {:toc}
 
-# **Introduction**
+# **1. Introduction**
 This is the third practical in a set of four where we are aligning reads from three Iberian individuals to a small section of human Chromosome 2 and calling variants to determine the genotype of these individuals at the site of the SNP rs4988235. This genotype predicts lactose tolerance/intolerance.
 
 In the last two practicals we learnt about quality control. 
@@ -17,14 +17,14 @@ Now that QC is complete, we move onto the next step: aligning reads to the refer
 [![Variant calling workflow](https://sbc.shef.ac.uk/wrangling-genomics/img/variant_calling_workflow.png)](https://sbc.shef.ac.uk/wrangling-genomics/04-variant_calling/index.html)
 
 
-## **Overview of today**
+## 1.1 Overview of today
 A very common approach in bioinformatics is to sequence the genome of an organism (or many organisms) and compare the reads with an existing reference genome.
 A reference genome is an accepted representation of an organisms genome that is used by all researchers looking at that particular organism. 
 This gives us a shared coordinate system that allows us to document genomic differences in an organised way that is easy to record and communicate. 
 In order to make this comparison we must "align" or "map" our reads. 
 In read alignment/read mapping, we use software to find the place in the reference that best matches each read (see the figure below). 
 
-![Basic process of aligning reads to a reference genome](https://training.galaxyproject.org/training-material/topics/sequence-analysis/images/mapping/mapping.png)
+<img src="images/read_alignment_to_ref_example.png" alt="Mapping reads to a  reference" height="300">
 
 **Basic process of aligning reads to a reference genome** from [Galaxy mapping training](https://training.galaxyproject.org/training-material/topics/sequence-analysis/tutorials/mapping/tutorial.html)
 
@@ -35,14 +35,14 @@ How all of the reads map to the reference is documented in a specially formatted
 These files tend to be VERY large and so we compress them into **BAM** files which have a `.bam` extension. 
 We'll talk about all of the information contained within SAM/BAM files and finally, we'll use IGV to visualise the read alignments against the reference genome. 
 
-## Learning Outcomes
+## 1.2 Learning Outcomes
 
 1. Learn what indexes are for
 2. Learn what an alignment file is (SAM and BAM) and understand the contents
 3. Run commands to summarise and view mapping statistics from SAM/BAM files
 4. Visualise alignment coverage
 
-## Setup and catchup
+## 1.3 Setup and catchup
 
 Let's activate our `bioinf` conda environment again.
 
@@ -111,7 +111,7 @@ done
 ```
 
 
-# **The reference genome and indexing**
+# **2. The reference genome and indexing**
 
 We will be aligning our reads to a 7Mb portion of the human reference genome GRCh38.p14.  
 
@@ -160,7 +160,7 @@ ls ref/
 
 We don't need to look at the contents of these files as they are specific to the aligner and some of them aren't even human readable. 
 
-## Read alignment
+# **3. Read alignment**
 
 Now that we have trimmed our reads (last practical) and created an index for our reference, we are ready to start read alignment. 
 
@@ -194,7 +194,7 @@ If one sample was sequenced in two batches or across multiple flow cells, this w
 
 This will take about a minute to run and the output sent to the terminal is normal! 
 
-# SAM and BAM files
+# **4. SAM and BAM files**
 
 For a summary of the SAM format, see [Overview of file types](./../../Course_materials/overview_of_file_types.md)
 
@@ -239,7 +239,7 @@ After the header, the first read in your alignment file should look something li
 ERR3241917.10210        83      NC_000002.12    1209771 0       124M3D26M       =       1209571 -353    TTCCACAATGGTTGAACTAGTTTACAGTCCCACCAACAGTGTAAAAGTGTTCCTATTTCTCCACATCCTCTCCAGCACCTGTTGTTTCCTGACTTTTTAATGATTGCCATTCTAACTGGTGTGAGATATCTCATAGTGGTTTTGATTTGC  ????????????????????????????????????????????????????????+?????????????????????????????????????????????????????????????????????????????????????????????  NM:i:3  MD:Z:124^GAT26  MC:Z:150M       AS:i:141        XS:i:141        RG:Z:ERR3241917
 ```
 
-## SAM FLAGs
+## 4.1 SAM FLAGs
 The second column in a SAM file contains what appears to be a normal number but it is actually a _bitwise_ field that contains multiple pieces of information about how a read mapped to the reference. 
 
 The table below contains a set of standardised terms that describe how a read aligned to the reference and gives each term a "Decimal" value. These numbers are determined using a binary system and have the property that all unique combinations of these numbers have a unique value when they are summed.
@@ -271,7 +271,7 @@ You don't have to be able to work this out on your own!
 **TASK:** You can use the [Decoding SAM flags](https://broadinstitute.github.io/picard/explain-flags.html) page to find out what  any FLAG value means. 
 - Go there now to decode the FLAG values 83, 99, 97, and 133. A small sketch might be helpful. 
 
-## MAPQ - mapping quality
+## 4.2 MAPQ - mapping quality
 
 The 5th field contains the `MAPQ` score which indicates how well the read aligned, and how unique each alignment is.
 How this value is calculated can differ between alignment tools, but primarily, a higher score indicates a better, more unique alignment.
@@ -288,7 +288,7 @@ The MAPQ score indicates how likely it is that the read is mapped incorrectly an
 | 50                  | 1 in 100,000                       | 99.999%            |
 | 60                  | 1 in 1,000,000                     | 99.9999%           |
 
-## CIGAR strings
+## 4.3 CIGAR strings
 CIGAR strings describe how the individual bases of a read align to the reference using a very simple code of numbers and letters where: 
 
 - `M` - alignment match (can be either a match or mismatch)
@@ -305,7 +305,7 @@ For example, the CIGAR `8M2I4M1D3M` is interpreted as:
 - `1D`  1 deletion
 - `3M`  3 alignment matches
 
-## Data storage
+## 4.4 Data storage
 
 SAM files contain a lot of information and are often many Gb in size. 
 To reduce storage requirements, storage formats such as BAM and CRAM are often favoured over SAM as they represent the alignment information in a compressed form.
@@ -318,7 +318,7 @@ BAMs and CRAMs hold the same information as their SAM equivalent, structured in 
 Many analysis programs that we use to analyse alignments in SAM/BAM files will strictly ask for BAM files as they are more compressed than SAMs.
 CRAM files are increasing in popularity and can generally be used with most major programs, with older versions containing more limited options for CRAM input.
 
-## Summarising alignments
+## 4.5 Summarising alignments
 
 After aligning our reads, we need to see how the alignment went. We can get a summary of how our reads aligned using `samtools stats`. It might take a minute to run. You could alternatively use the `samtools flagstat` command which gives slightly less information. 
 
@@ -348,9 +348,9 @@ When it finishes, you will see all the summarised information from the file, inc
 4. How many reads aligned as a "proper" pair? And what is a proper pair?? (**HINT:** this might be useful for the assignment)
 5. What do you think `inward oriented pairs` and `outward oriented pairs` means?
 
-# Sort alignments
+# **5. Sort alignments**
 
-The next thing we'll do is sort our read alignments.
+The next thing we do is sort our read alignments.
 The original file will contain alignments in the order they were found in the original fastq file. We'll be visualising our alignments next so we'll arrange our read alignments in genomic order so that IGV (the visualiser) is able to quickly find and display the read alignments for a particular section of the genome.
 Read alignments must also be sorted by genomic order for variant calling for the same reason. 
 This helps the variant caller to run the calling algorithm efficiently by reducing the amount of time it spends searching for all of the alignments to a particular location in the genome. 
@@ -413,7 +413,7 @@ done
 
 ```
 
-# Visualise alignments
+# **6. Visualise alignments**
 
 We are now going to use IGV to visualise our genome (`chr2_sub.fa`) and our read alignments. 
 We have already sorted and indexed our BAM file (containing read alignments) but need to index the reference sequence as well. 
@@ -448,21 +448,16 @@ Take some time to work out how to move around and zoom in and out (the slider on
 Read pairs coloured red have an insert size that is larger than expected and blue read pairs have a smaller than expected insert size. You may also see reads coloured teal, green, and dark blue and these indicate different orientations of read pairs ([see here for more details on read pair colouring and IGV in general](https://igv.org/doc/desktop/#UserGuide/tracks/alignments/paired_end_alignments/)). Differences between a read and the reference genome are indicated by the small coloured bars within reads. 
 
 You can expand the track height so you can see more reads aligned to a particular position by clicking on the cog on the right of the track, selecting "Set track height", and increasing the number from 300 to, for example, 600. You can also scroll down the reads in locations where there are more reads than can be shown. 
-
 ### Exercise - explore IGV
 
 Copy the locations listed below one at a time into the coordinates search bar in IGV to navigate to them and match up each location with one of the features of interest listed below. 
 
-Location 1
--  NC_000002.12:5,691,054-5,691,346
-Location 2
-- NC_000002.12:1,353,476-1,353,576
-Location 3
-- NC_000002.12:1,353,205-1,353,306
-Location 4
-- NC_000002.12:5,705,733-5,705,879
-Location 5
-- NC_000002.12:2,851,027-2,851,127
+Locations:
+- Location 1: NC_000002.12:5,691,054-5,691,346
+- Location 2: NC_000002.12:1,353,476-1,353,576
+- Location 3: NC_000002.12:1,353,205-1,353,306
+- Location 4: NC_000002.12:5,705,733-5,705,879
+- Location 5: NC_000002.12:2,851,027-2,851,127
 
 Feature of interest:
 - 4bp Deletion
