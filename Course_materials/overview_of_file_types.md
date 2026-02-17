@@ -293,15 +293,13 @@ VCF stands for Variant Calling Format. VCF files describe variants including sin
 
 VCF files have the `.vcf` extension. 
 
-
-Meta-information lines 
-File meta-information lines start with “##” and must appear first in the VCF file, before the header line (section 1.5) and data record lines (section 1.6). They may be either unstructured or structured. An unstructured meta-information line consists of a key (denoting the type of meta-information recorded) and a value (which may not be empty and must not start with a ‘<’ character), separated by an ‘=’ character: ##key=value Several unstructured meta-information lines are defined in this specification, notably ##fileformat. Others not defined by this specification, e.g. ##fileDate and ##source, are commonly found in VCF files. These typically have meanings that are obvious, or they are immaterial for processing the file, or both. 
-
-A structured meta-information line is similar, but the value is itself a comma-separated list of key=value pairs, enclosed within ‘<’ and ‘>’ characters: ##key= All structured lines require an ID which must be unique within their type, i.e., within all the meta-information lines with the same “##key=” prefix. For all of the structured lines (##INFO, ##FORMAT, ##FILTER, etc.) described in this specification, extra fields can be included after the default fields. For example:
-### Format
+## Format
 
 VCF files begin with meta-information lines (lines starting with `##`) followed by a header containing the column names (starts with `#`), and finally the main body of the file. 
-#### Meta-information
+
+### Meta-information
+The meta-information section contains definitions and descriptions for the data in the main body of the file. It's essential to understanding the VCF. 
+
 Meta-information may be unstructured or structured. 
 Unstructured meta-information has the format `##key=value`. In the example below, `##fileformat=VCFv4.2` and `##fileDate=20090805` are of this type, as well as a number of other lines. 
 
