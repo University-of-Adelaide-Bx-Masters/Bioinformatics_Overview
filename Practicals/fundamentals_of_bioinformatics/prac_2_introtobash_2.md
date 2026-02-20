@@ -53,13 +53,13 @@ As well as the series of conventional numbers and characters that we are familia
 ## Pattern Searching
 In this section we'll learn the basics of using the `grep` command & what forms the output can take.
 Firstly, we'll need to get the file that we'll search in this section.
-First **change into your `test` directory** using the `cd` command, then enter the following, depending on your operating system:
+First **change into your `test` directory** using the `cd` command, then enter the following:
 
 ```bash
 cp ~/data/intro_bash/words words
 ```
 
-Now page through the first few lines of the file using `` to get an idea about what it contains.
+Now page through the first few lines of the file using `less` to get an idea about what it contains.
 
 Let's try a few searches, and to get a feel for the basic syntax of the command, try to describe what you're searching for on your notes **BEFORE** you enter the command.
 Do the results correspond with what you expected to see?
@@ -135,7 +135,7 @@ Here is a slightly more complicated regex command:
 
 Ask an AI model to explain what this command does, step by step. Run the command on our dataset, and see if the result is what you expected. 
 
-While AI tools can be very helpful when writing code, but they’re not always right. Sometimes an AI will confidently suggest code that looks correct, but actually doesn’t work. This is called a **hallucination**. Unless you have given it express permission to do so, the AI tool will not have access to your files, your data, or your computer; because of this it can make up file names or commands that don’t really exist. Because of this, it’s important to treat AI suggestions as a starting point, test them yourself, and always check the documentation or your output to make sure the code really does what you expect.
+While AI tools can be very helpful when writing code, they’re not always right. Sometimes an AI will confidently suggest code that looks correct, but actually doesn’t work. This is called a **hallucination**. Unless you have given it express permission to do so, the AI tool will not have access to your files, your data, or your computer; because of this it can make up file names or commands that don’t really exist. Because of this, it’s important to treat AI suggestions as a starting point, test them yourself, and always check the documentation or your output to make sure the code really does what you expect.
 
 # Standard Output
 
@@ -183,7 +183,7 @@ Now enter
 echo ~
 ```
 
-**Why did this happen? Think back to Monday's prac if you need a hint**
+**Why did this happen? Think back to the previous prac if you need a hint**
 
 ## Sending Output To A File
 
@@ -260,7 +260,7 @@ This trick of writing a header at the start of a file is very common and can be 
 Now let's add another row describing where we've obtained the data from.
 
 ```
-echo -e '# Obtained from ftp://ftp.ensembl.org/pub/release-89/fasta/drosophila_melanogaster/ncrna/Drosophila_melanogaster.BDGP6.ncrna.fa.gz on 2017-08-14' >> SeqIDs.txt
+echo -e '# Obtained from ftp://ftp.ensembl.org/pub/release-89/fasta/drosophila_melanogaster/ncrna/Drosophila_melanogaster.BDGP6.ncrna.fa.gz on 2026-02-26' >> SeqIDs.txt
 ```
 
 Have a look at the file using `less`
@@ -292,9 +292,6 @@ ls -lh /usr/bin | less
 
 Page through the output until you get bored, then hit `q` to quit.
 
-This process can also be visualised using the following diagram from Unix Bootcamp:
-
-![](https://camo.githubusercontent.com/1652e94dd89d73b1e5ad43feabe12d5aac7e033b/68747470733a2f2f646f63732e676f6f676c652e636f6d2f64726177696e67732f642f3161444b397a716163677572465a537a6a704c4d5653676f64306a462d4b4648576553565f53554c387668452f7075623f773d39313626683d333534)
 
 # Inspecting genomic files using `bash`
 
