@@ -5,6 +5,8 @@ Delivered in Semester 1
 
 ## Module 1: Fundamentals of Bioinformatics
 
+[VM login instructions](Course_materials/vm_login_instructions.md)
+
 **Introduction to BASH**
 
 - Practical 1 - [Intro to BASH 1](Practicals/fundamentals_of_bioinformatics/prac_1_introtobash1.md)
