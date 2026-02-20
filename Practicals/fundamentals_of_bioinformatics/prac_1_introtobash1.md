@@ -283,15 +283,15 @@ These directories are just to demonstrate some aspects of tab auto-completion.
 
 ```
 cd
-mkdir Practical_1
-mkdir Practical_2
+mkdir Prac_test_1
+mkdir Prac_test_2
 ```
 
 Now to change back into your Practical_1 folder, type `cd P` without hitting enter.
 Instead hit your <kbd>Tab</kbd> key and `bash` will complete as far as it can.
-If you have setup your directories correctly, you should see this complete to `cd Pr` which is unfinished.
-You also have `Practical_1` and `Practical_2` in your home folder, so `bash` has gone as far as it can.
-Now it's up to us to enter the next letter `a` or `o` before hitting <kbd>Tab</kbd><kbd>Enter</kbd>. If you enter `a` as the next letter `cd Pra` it will complete to `cd Practical_` which is as far as it can go. 
+If you have setup your directories correctly, you should see this complete to `cd Prac` which is unfinished.
+You also have `Prac_test_1` and `Prac_test_2` in your home folder, so `bash` has gone as far as it can.
+Now it's up to us to enter the next letter `a` or `_` before hitting <kbd>Tab</kbd><kbd>Enter</kbd>. If you enter `_` as the next letter `cd Prac_` before pressing <kbd>Tab</kbd> it will complete to `cd Prac_test_` which is as far as it can go. 
 
 When faced with multiple choices, we can also hit the <kbd>Tab</kbd> key twice and `bash` will give us all available alternatives.
 Let's see this in action by changing back to our home folder.
@@ -300,8 +300,8 @@ Let's see this in action by changing back to our home folder.
 cd
 ```
 
-Now type `cd Pr` and hit the <kbd>Tab</kbd> key twice and you will be shown all of the alternatives.
-You'll still have to type the `o` though to get to `Practical_1`.
+Now type `cd Prac` and hit the <kbd>Tab</kbd> key twice and you will be shown all of the alternatives.
+You'll still have to type the `t` though to get to `Practical_1`.
 
 Another example which will complete all the way for you might be to go up one from your home folder.
 
@@ -317,17 +317,17 @@ This also makes navigating your computer system very fast once you get the hang 
 Importantly, if tab auto-completion doesn't appear to be working, you've probably made a typo somewhere, or are not where you think you are.
 It's a good check for mistakes.
 
-You can now delete empty Practical_1 and Practical_2 directories.
+You can now delete empty Prac_test_1 and Prac_test_2 directories.
 
 ```
-rmdir ~/Practical_1
-rmdir ~/Practical_2
+rmdir ~/Prac_test_1
+rmdir ~/Prac_test_2
 ```
 
 #### Question
 {:.no_toc}
 
-Are the paths `~/Practical_1` and `~/Practical_2` relative or absolute paths?
+Are the paths `~/Prac_test_1` and `~/Prac_test_2` relative or absolute paths?
 
 
 ### Looking at the Contents of a Directory
