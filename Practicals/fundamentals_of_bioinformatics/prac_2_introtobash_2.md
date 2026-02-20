@@ -5,7 +5,7 @@ After our first practical, you should be feeling a bit more confident working in
 
 - Understand how regular expressions (regex) works and use them to search text or sequence files.
 - Use `grep` to find patterns, count features, and tidy up output.
-- Work with the redirect symbol (>) and pipes (|) to link commands together and save results to files.
+- Work with the redirect symbol (`>`) and pipes (`|`) to link commands together and save results to files.
 - Inspect real FASTA and GFF files and extract useful information from them.
 
 # Regular Expressions
