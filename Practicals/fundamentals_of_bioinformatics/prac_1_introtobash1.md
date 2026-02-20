@@ -7,9 +7,9 @@ The VM is essentially a program that is running on a server but which behaves as
 You will be able to log in to the VM and interact with the programs that it has installed.
 The VMs provided each have 2 virtual CPU cores, 16GB of system memory and a lot of shared hard disk space. That said, I encourage you to keep your stored files to a sensible minimum. Delete old data that you have moved from `./data` to your directory as it can be moved back if needed. 
 They are yours to use for the semester, but they are also yours to look after.
-The University runs these VMs on AWS RONIN (Amazon Web Services) and pays by the minute for `cpu` time and for the storage. Because of this, we have implemented auto shutdown of VMs if they remain idle for too long (idle means no jobs running or no user input).
+The University runs these VMs on AWS RONIN (Amazon Web Services) and pays by the minute for `cpu` time and for the storage. Because of this, we have implemented auto shutdown of VMs after a 3 hour period. If you are still working in your VM after 3 hours and it shuts down, just log back in and continue working.
 
-**Please [go here](../AWS_RONIN_connection) for instructions on connecting to your VM.**
+**Please [go here](../../Course_materials/vm_login_instructions.md) for instructions on connecting to your VM.**
 
 ## RStudio
 
