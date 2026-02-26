@@ -54,10 +54,7 @@ Accessing your cloud compute resource is like having your very own server.
 
     Importantly, because of the one-time password you will be the only person to be able to access your VM as the system has been set up to allow you to use one VM at a time.
 
-You can access your VM:
 
-- When connected directly to the University WiFi Network
-- When connected from another network using the [Adelaide University VPN](https://www.adelaide.edu.au/technology/your-services/network-services/remote-access-via-virtual-private-network-vpn). NOTE: any issues you have with connection via VPN need to be resolved by ITDS, as we have no control over the VPN client config or your access to VPN. 
 
 Practice how to [disconnect from your VM](vm_logout_instructions.md) and then re-connect and go back to the practical instructions. 
 
