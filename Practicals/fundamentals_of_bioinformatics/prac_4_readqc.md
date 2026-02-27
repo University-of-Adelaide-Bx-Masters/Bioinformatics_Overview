@@ -30,7 +30,7 @@ Note that all of these variants are located within intron 13 of the MCM6 gene.
 
 <img src="images/lp_snp_frequencies_by_pop.jpg" alt="SNPs associated with lactose persistence across different populations" height="400">
 
-**SNPs associated with lactose persistence in different populations:** from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
+**SNPs associated with lactase persistence in different populations:** from [The molecular basis of lactase persistence: Linking genetics and epigenetics](https://pmc.ncbi.nlm.nih.gov/articles/PMC12336946/)
  
 We will be focusing on the Eurasian lactase persistence SNP, [rs4988235](https://asia.ensembl.org/Homo_sapiens/Phenotype/Locations?db=core;name=LACTASE%20PERSISTENCE;ph=3083;r=2:135850576-135851576;v=rs4988235;vdb=variation;vf=89657404), sometimes referred to as 13910C>T as in the figure above.
 The A allele enhances activator binding which increases lactase gene expression into adulthood. 
@@ -67,7 +67,7 @@ We have included an extra sample for the initial quality assessment so that you 
 # **2. Setup**
 
 This practical will again be using RStudio to interact with our VM's. 
-See [the first practical](../Bash_Practicals/1_IntroBash.md#rstudio) to remind yourself how to connect. 
+See [the first practical](../../Course_materials/vm_login_instructions.md) to remind yourself how to connect. 
 
 All of the code/commands in this practical should be run in the terminal pane. 
 
@@ -79,6 +79,7 @@ The practicals use an anaconda (`conda`) software environment to provide access 
 For today's practical, you will need to activate the `bioinf` conda environment:
 
 ```bash
+cd ~
 source activate bioinf
 ```
 
@@ -199,7 +200,7 @@ The figure below shows the different parts of an Illumina sequencing template.
 **Question:**
 - What happens if the insert length (the DNA fragment) is shorter than the read length? 
 
-### 3.1.1Adapters
+### 3.1.1 Adapters
 
 The adapters contain the sequencing primer binding sites (R1 and R2 Primers), index sequences, and the sites that allow library fragments to attach to the flow cell lawn (P5 and P7). 
 There are a limited number of standard Illumina adapter sequences ([detailed here](https://knowledge.illumina.com/library-preparation/general/library-preparation-general-reference_material-list/000001314)) and so tools are often able to determine which adapter was used automatically.  
