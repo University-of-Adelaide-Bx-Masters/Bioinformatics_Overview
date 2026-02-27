@@ -79,7 +79,7 @@ Let's run it on our first sample and then discuss the code.
 ```bash
 mkdir -p ~/Practical_alignment/1_trim/fastp
 
-fastp --thread 2 -i 0_raw/ERR3241917_1.fq.gz -I 0_raw/ERR3241917_2.fq.gz -o 1_trim/ERR3241917_1.fq.gz -O 1_trim/ERR3241917_2.fq.gz --unpaired1 1_trim/ERR3241917_1_orphans.fq.gz --unpaired2 1_trim/ERR3241917_2_orphans.fq.gz ---cut_right --cut_window_size 4 --cut_mean_quality 20 --length_required 75 --html 1_trim/fastp/ERR3241917_fastp.html
+fastp --thread 2 -i 0_raw/ERR3241917_1.fq.gz -I 0_raw/ERR3241917_2.fq.gz -o 1_trim/ERR3241917_1.fq.gz -O 1_trim/ERR3241917_2.fq.gz --unpaired1 1_trim/ERR3241917_1_orphans.fq.gz --unpaired2 1_trim/ERR3241917_2_orphans.fq.gz --cut_right --cut_window_size 4 --cut_mean_quality 20 --length_required 75 --html 1_trim/fastp/ERR3241917_fastp.html
 ```
 
 The command will take a minute or two to run. It doesn't provide any output while running so don't worry. Just wait.  
@@ -124,7 +124,7 @@ To assess how the trimming has performed, run FastQC on the paired reads output 
 ```bash
 mkdir -p ~/Practical_alignment/1_trim/FastQC
 
-fastqc -o 1_trim/FastQC -t 2 1_trim/FastQC/ERR3241917_*.fq.gz
+fastqc -o 1_trim/FastQC -t 2 1_trim/ERR3241917_*.fq.gz
 ```
 
 Take a look at the FastQC report files and compare them with the reports from the raw data.
@@ -233,7 +233,7 @@ fastqc -o 0_raw/FastQC -t 2 0_raw/ERR3241917_*.fq.gz
 The last two analysis steps that we need to include in our script are trimming and the final fastqc check.  
 Find these two commands in todays practical and paste them into your script. Make sure you create the necessary directories as well. 
 
-Once you've completed this, [click HERE](prac_5_code_example.md)
+Once you've completed this, [click HERE](prac5_code_example.md)
 
 ## 4.3 Sanity and formatting check
 
