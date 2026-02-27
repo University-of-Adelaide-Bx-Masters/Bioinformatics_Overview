@@ -12,7 +12,6 @@ In our last practical, we introduced you to the concept of regular expressions (
 # sed: The Stream Editor
 
 One additional and very useful command in the terminal is `sed`, which is short for *stream editor*.
-Instead of the `man` page for `sed` the `info sed` page is larger but a little easier to digest.
 This is a very powerful command which can be a little overwhelming at first.
 If using this for your own scripts & you can't figure something out, remember 'Google is your friend' & sites like <https://www.stackoverflow.com> are full of people wrestling with similar problems to you.
 These are great places to start looking for help & even advanced programmers use these tools.
@@ -25,12 +24,12 @@ For today, there are two key `sed` functionalities that we want to introduce.
 
 ## Altering a file or other input
 
-`sed` uses *regular expressions* that we have come across under the `grep` section, and we can use these to replace strings or characters within a text string, like we did in `R` using `str_extract()` and `str_replace()`.
+`sed` uses *regular expressions* that we have come across under the `grep` section, and we can use these to replace strings or characters within a text string.
 The command works in the form `sed 'SCRIPT' INPUT`, and the script section is where all the action happens.
 Input can be given to `sed` as either a file, or just as a text stream via the *pipe* that we have already introduced.
 
 In the following example the script begins with an `s` to indicate that we are going to make a substitution.
-The beginning of the first pattern (i.e. the *regexp* we are searching for) is denoted with the slash, with the identical delimiter indicating the replacement pattern, and this is in turn completed with the same delimiter.
+The beginning of the first pattern (i.e. the *regex* we are searching for) is denoted with the slash, with the identical delimiter indicating the replacement pattern, and this is in turn completed with the same delimiter.
 Try this simple example from the link <https://www.grymoire.com/Unix/Sed.html> which is a very detailed & helpful resource about usage of `sed`.
 Here we are sending the input (`echo Sunday`) to the command via the pipe, so no `INPUT` section is required:
 
@@ -51,7 +50,7 @@ It only replaced the first instance of day and left the second.  You can make it
 echo Sundayday | sed 's/day/night/g'
 ```
 
-You can 'capture' parts of the pattern in parentheses and access that in the second part of the regular expression (what you are switching to) using \1, \2, etc., to denoted the number of the captured string.
+You can 'capture' parts of the pattern in parentheses and access that in the second part of the regular expression (what you are switching to) using \1, \2, etc., to denote the number of the captured string.
 If you wanted to match `ATGNNNTGA`, where `N` is any base, and just output these three bases you could try the following
 
 ```
@@ -100,7 +99,7 @@ We could also restrict the range to specific lines by using the `sed` increment 
 sed -n '1~4p' Drosophila_melanogaster.BDGP6.ncrna.fa
 ```
 This will print every 4th line, beginning at the first, and is very useful for files with multi-line entries.
-The `fastq` file format from NGS data, and which we'll look at in week 6 will use this format.
+The `fastq` file format from NGS data, which we'll look at in the next topic, uses this format.
 
 
 We can also make `sed` operate like `grep` by making it only print the lines which match a pattern.
@@ -144,14 +143,14 @@ The command `done` then finished the `do` command.
 All commands like `do`, `if` or `case` have completing statements, which respectively are `done`, `fi` & `esac`.
 
 An important concept which was glossed over in the previous paragraph is that of a *variable*.
-These are essentially just *placeholders* which have a value that can change, much like an object in `R`.
+These are essentially just *placeholders* which have a value that can change.
 In the above loop, the same operation was performed on the variable `i`, but the value changed from 1 to 2 to 3.
 Variables in shell scripts can hold numbers or text strings and don't have to be formally defined as in some other languages.
 We will commonly use this technique to list files in a directory, then to loop through a series of operations on each file.
 
 ### `If` Statements (Conditional statements)
 
-If statements are those which only have a binary `yes` or `no` response.
+`if` statements are those which only have a binary `yes` or `no` response.
 For example, we could specify things like:
 
 - **if** (`i>1`) then `do` something, or
@@ -171,7 +170,7 @@ A good example of this is the use of the command `!=` as the representation of *
 
 Now that we've been through just some of the concepts & tools we can use when writing scripts, it's time to tackle one of our own where we can bring it all together.
 
-Every bash shell script begins with what is known as a *shebang*, which we would commonly recognise as a hash sign followed by an exclamation mark, i.e `\#!`.
+Every bash shell script begins with what is known as a *shebang*, which we would commonly recognise as a hash sign followed by an exclamation mark, i.e `#!`.
 This is immediately followed by `/bin/bash`, which tells the interpreter to run the command `bash ` in the directory `/bin`.
 This opening sequence is vital & tells the computer how to respond to all of the following commands.
 As a string this looks like:
@@ -187,7 +186,7 @@ It's presence as a comment here, followed by the exclamation mark, is specifical
 ## An Example Script
 Let's now look at some simple scripts.
 These are really just examples of some useful things you can do & may not really be the best scripts from a technical perspective.
-Hopefully they give you some pointers so you can get going
+Hopefully they give you some pointers so you can get going.
 
 **Don't try to enter these commands directly in the terminal!!!**
 They are designed to be placed in a script which we will do after we've inspected the contents of the script.
@@ -238,8 +237,8 @@ Now open this using the using the text editor *nano*:
 nano wellDone.sh
 ```
 
-Enter the above code into this file **setting your actual name as the ME variable**,  and save it by using `Ctrl+o` (indicated as `^O`) in the nano screen.
-Once you're finished, you can exit the `nano` editor by hitting `Ctrl+x` (written as `^X`), then confirm saving changes with `y`, and finally press `Enter` to return to the terminal.
+Enter the above code into this file **setting your actual name as the ME variable**.
+Once you're finished, you can save and exit the `nano` editor by hitting `Ctrl+x` (written as `^X`), then confirm saving changes with `y`, and finally press `Enter` to return to the terminal.
 Assuming that you've entered everything correctly, we can now execute this script by simply entering
 
 ```
@@ -336,6 +335,9 @@ cp wellDone.sh wellDone2.sh
 nano wellDone2.sh
 ```
 
+Once you've finished editing, you can save and exit `nano` as before.
+
+
 We may need to set the execute permissions again.
 
 ```
@@ -343,7 +345,7 @@ chmod +x wellDone2.sh
 ls -lh *sh
 ```
 
-This time we have set the script to *receive input from stdin* (i.e. the terminal), and we will need to supply a value, (as we have done when passing an argument to a command) which will then be placed in the variable `${ME}`.
+This time we have set the script to *receive input from stdin* (i.e. the terminal), and we will need to supply a value (as we have done when passing an argument to a command), which will then be placed in the variable `${ME}`.
 Choose whichever random name you want (or just use "Boris" as in the example) and enter the following
 ```
 ./wellDone2.sh Boris
@@ -381,8 +383,7 @@ for f in ${FILES};
 Save this as a script in the `Practical_1` folder called `lineCount.sh`.
 **Add comments** where you think you need them to make sure you understand what's happening.
 
-#### 
-For this particular task, do you really need the `/g` in the `sed` command?
+*For this particular task, do you really need the `/g` in the `sed` command?*
 
 ## A More Advanced Script
 
