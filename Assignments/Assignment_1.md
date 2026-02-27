@@ -75,3 +75,97 @@ SRR5882797_10M_2.fastq.gz https://adelaideuniversity.box.com/shared/static/g2ly4
 8. In protein residue sequence alignment we use a substitution matrix to score mismatches. Why can't all amino acid substitutions be considered equal? [2 marks]  
 9. What does the bitwise SAM FLAG 83 indicate? [1 mark] 
 
+
+## Species For Question 1
+
+*If your student number is not listed, please contact Anna/Alex to ensure you are added to the list*
+
+You can download your assigned species here: 'http://ftp.ensembl.org/pub/release-100/gff3/' of course you will have to add the relevant additional information to specify your species and the '.100.gff3.gz' file. 
+
+| Student Number | Species                         | Taxonomy ID | Common Name                    |
+|:---------|:--------------------------------|------------:|:-------------------------------|
+|1608942|Geospiza fortis|48883|Medium Ground-Finch|
+|1662634|Pan paniscus|9597|Pygmy Chimpanzee|
+|1752480|Hippocampus comes|109280|Tiger Tail Seahorse|
+|1774160|Equus asinus asinus|9793|Wild Ass|
+|1774364|Xiphophorus maculatus|8083|Southern Platyfish|
+|1822446|Stachyris ruficeps|181631|Rufous-Capped Babbler|
+|1822872|Equus caballus|9796|Horse|
+|1823474|Clupea harengus|7950|Atlantic Herring|
+|1825565|Ovis aries|9940|Sheep|
+|1828996|Gambusia affinis|33528|Western Mosquitofish|
+|1851925|Gasterosteus aculeatus|69293|Three-Spined Stickleback|
+|1852976|Zonotrichia albicollis|44394|White-Throated Sparrow|
+|1860873|Sarcophilus harrisii|9305|Tasmanian Devil|
+|1868666|Macaca fascicularis|9541|Crab-Eating Macaque|
+|1871005|Gorilla gorilla|9593|Western Gorilla|
+|1872208|Poecilia formosa|48698|Amazon Molly|
+|1876844|Mustela putorius furo|9668|Domestic Ferret|
+|1888122|Astyanax mexicanus pachon|7994|Blind Cave Fish|
+|1889991|Bison bison bison|9901|Bison|
+|1895247|Ictidomys tridecemlineatus|43179|Thirteen-Lined Ground Squirrel|
+|1897275|Chinchilla lanigera|34839|Long-Tailed Chinchilla|
+|1897522|Otolemur garnettii|30611|Small-Eared Galago|
+|1899225|Cebus capucinus|9516|White-Faced Sapajou|
+|1901867|Terrapene carolina triunguis|158814|Three-Toed Box Turtle|
+|1902444|Mus pahari|10093|Shrew Mouse|
+|1902999|Neovison vison|452646|American Mink|
+|1903474|Serinus canaria|9135|Common Canary|
+|1903493|Canis lupus familiaris|9612|Dog|
+|1907116|Seriola dumerili|41447|Greater Amberjack|
+|1914323|mus musculus c57bl6nj|10090|Mouse|
+|1915786|Electrophorus electricus|8005|Electric Eel|
+|1916630|Monopterus albus|43700|Swamp Eel|
+|1918737|Pogona vitticeps|103695|Central Bearded Dragon|
+|1921723|Anas platyrhynchos|8839|Mallard|
+|1921893|Sus scrofa usmarc|9823|Pig|
+|1923348|Mola mola|94237|Ocean Sunfish|
+|1923580|Mus musculus lpj|10090|Mouse|
+|1923733|Rattus norvegicus|10116|Norway Rat|
+|1925587|Poecilia reticulata|8081|Guppy|
+|1926036|Oryzias javanicus|123683|Javanese Ricefish|
+|1926397|Salmo salar|8030|Atlantic Salmon|
+|1934359|Anabas testudineus|64144|Climbing Perch|
+|1940801|Vulpes vulpes|9627|Red Fox|
+|1943794|Notechis scutatus|8663|Mainland Tiger Snake|
+|1953052|Rhinolophus ferrumequinum|59479|Greater Horseshoe Bat|
+|1961590|Chrysemys picta bellii|8479|Western Painted Turtle|
+|1963206|Neolamprologus brichardi|32507|Cichlid|
+|1963286|Castor canadensis|51338|American Beaver|
+|1964213|Lepidothrix coronata|321398|Blue-Crowned Manakin|
+|1976953|panthera tigris altaica|9694|Amur Tiger|
+|1980273|Pelodiscus sinensis|13735|Chinese Soft-Shelled Turtle|
+|1980973|Sphenodon punctatus|8508|Tuatara|
+|1981829|Strigops habroptila|2489341|Kakapo|
+|1983032|Vombatus ursinus|29139|Common Wombat|
+|1983057|Aotus nancymaae|37293|Mas Night Monkey|
+|1983060|Parambassis ranga|210632|Indian Glassy Fish|
+|1983069|sus scrofa berkshire|9823|Pig|
+|1983083|sus scrofa bamei|9823|Pig|
+|1983089|heterocephalus glaber male|10181|African Mole-Rat|
+|1983093|Callithrix jacchus|9483|White-Tufted-Ear Marmoset|
+|1983110|Panthera pardus|9691|Leopard|
+|1983157|sus scrofa pietrain|9823|Pig|
+|1983613|Ictalurus punctatus|7998|Channel Catfish|
+|1984281|Pygocentrus nattereri|42514|Red-Bellied Piranha|
+|1985604|Myripristis murdjan|586833|Pinecone Soldierfish|
+|1986119|Erinaceus europaeus|9365|Western European Hedgehog|
+|1987833|Mus musculus akrj|10090|Mouse|
+|1987856|Spermophilus dauricus|99837|Daurian Ground Squirrel|
+|1988768|Monodelphis domestica|13616|Gray Short-Tailed Opossum|
+|1989620|canis lupus dingo|9612|Dingo|
+|1989666|Fukomys damarensis|885580|Damara Mole-Rat|
+|1991177|Fundulus heteroclitus|8078|Mummichog|
+|1991610|Larimichthys crocea|215358|Large Yellow Croaker|
+|1991642|Poecilia mexicana|48701|Shortfin Molly|
+|1992287|Gadus morhua|8049|Atlantic Cod|
+|1992421|Physeter catodon|9755|Sperm Whale|
+|3188346|Xiphophorus couchianus|32473|Platyfish|
+|3188465|Tetraodon nigroviridis|99883|Pufferfish  |
+|3191299|Tupaia belangeri|37347|Northern Treeshrew|
+|3192119|Varanus komodoensis|61221|Komodo Dragon|
+|3192385|Takifugu rubripes|31033|Pufferfish (fugu)|
+|3198641|Taeniopygia guttata|59729|Zebra Finch|
+|3198989|Pongo abelii|9601|Orangutan|
+|3204028|Petromyzon marinus|7757|Lamprey|
+|1983788|Junco hyemalis|40217|Dark-eyed Junco|
