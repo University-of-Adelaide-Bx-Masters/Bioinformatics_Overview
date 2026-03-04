@@ -46,7 +46,7 @@ https://ftp.ebi.ac.uk/ensemblgenomes/pub/release-51/plants/fasta/arabidopsis_tha
 SRR5882797_10M_1.fastq.gz https://adelaideuniversity.box.com/shared/static/egl3n16r0ziaxlvbs9074xqd1liktnuz.gz
 
 SRR5882797_10M_2.fastq.gz https://adelaideuniversity.box.com/shared/static/g2ly4kzz1blus5juy426i37zl45o38pu.gz
-### 2.1. Variant Calling Script [18 marks]
+### 2.A Variant Calling Script [18 marks]
 
  Write a bash script to perform the variant calling analysis tasks listed below. **This script should use tools and techniques that were covered in the module.** 
  
@@ -85,7 +85,6 @@ You can download your assigned species here: 'http://ftp.ensembl.org/pub/release
 | Student Number | Species                         | Taxonomy ID | Common Name                    |
 |:---------|:--------------------------------|------------:|:-------------------------------|
 |1608942|Geospiza fortis|48883|Medium Ground-Finch|
-|1662634|Pan paniscus|9597|Pygmy Chimpanzee|
 |1752480|Hippocampus comes|109280|Tiger Tail Seahorse|
 |1774160|Equus asinus asinus|9793|Wild Ass|
 |1774364|Xiphophorus maculatus|8083|Southern Platyfish|
@@ -99,9 +98,9 @@ You can download your assigned species here: 'http://ftp.ensembl.org/pub/release
 |1860873|Sarcophilus harrisii|9305|Tasmanian Devil|
 |1868666|Macaca fascicularis|9541|Crab-Eating Macaque|
 |1871005|Gorilla gorilla|9593|Western Gorilla|
-|1872208|Poecilia formosa|48698|Amazon Molly|
 |1876844|Mustela putorius furo|9668|Domestic Ferret|
 |1888122|Astyanax mexicanus pachon|7994|Blind Cave Fish|
+|1888434|Pan paniscus|9597|Pygmy Chimpanzee|
 |1889991|Bison bison bison|9901|Bison|
 |1895247|Ictidomys tridecemlineatus|43179|Thirteen-Lined Ground Squirrel|
 |1897275|Chinchilla lanigera|34839|Long-Tailed Chinchilla|
@@ -128,6 +127,7 @@ You can download your assigned species here: 'http://ftp.ensembl.org/pub/release
 |1934359|Anabas testudineus|64144|Climbing Perch|
 |1940801|Vulpes vulpes|9627|Red Fox|
 |1943794|Notechis scutatus|8663|Mainland Tiger Snake|
+|1947402|Poecilia formosa|48698|Amazon Molly|
 |1953052|Rhinolophus ferrumequinum|59479|Greater Horseshoe Bat|
 |1961590|Chrysemys picta bellii|8479|Western Painted Turtle|
 |1963206|Neolamprologus brichardi|32507|Cichlid|
@@ -147,6 +147,7 @@ You can download your assigned species here: 'http://ftp.ensembl.org/pub/release
 |1983110|Panthera pardus|9691|Leopard|
 |1983157|sus scrofa pietrain|9823|Pig|
 |1983613|Ictalurus punctatus|7998|Channel Catfish|
+|1983788|Junco hyemalis|40217|Dark-eyed Junco|
 |1984281|Pygocentrus nattereri|42514|Red-Bellied Piranha|
 |1985604|Myripristis murdjan|586833|Pinecone Soldierfish|
 |1986119|Erinaceus europaeus|9365|Western European Hedgehog|
@@ -168,4 +169,3 @@ You can download your assigned species here: 'http://ftp.ensembl.org/pub/release
 |3198641|Taeniopygia guttata|59729|Zebra Finch|
 |3198989|Pongo abelii|9601|Orangutan|
 |3204028|Petromyzon marinus|7757|Lamprey|
-|1983788|Junco hyemalis|40217|Dark-eyed Junco|
