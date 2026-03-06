@@ -176,7 +176,7 @@ Let's look at the basic `bwa` command for read alignment to see how it works. Th
 
 First, BWA mem aligns reads to the reference genome. 
 Its default is to write alignment data to `stdout`, not to a file. 
-The pipe `|` to captures this stdout (which is in SAM format) to send it to SAMtools instead of just printing it all to the terminal. 
+The pipe `|` captures this stdout (which is in SAM format) and sends it to SAMtools instead of just printing it all to the terminal. 
 The SAMtools `view` command converts the SAM alignment data to BAM format (a compressed binary version of SAM format) and also throws out any reads with the FLAG 4 set (these are reads that didn't align but we talk about FLAGs a bit later). Finally, the binary output from SAMtools is directed to the new file `aln.bam`.  
 
 Here is the command for you to cut and paste with the appropriate paths. This command also includes the `-R` option to add read group information to the BAM file which is necessary for variant calling.  
@@ -231,7 +231,7 @@ This just means that the columns in the file are separated by \<TAB> characters,
 | 11    | QUAL          | Query quality (The PHRED scores from the fastq file). If SEQ is `*`, QUAL must also be `*`                      |
 | 12    | OPT           | variable optional fields in the format `TAG:TYPE:VALUE`                                                         |
 
-**Note:** "Mate" is referring to a reads pair. ie. The mate of Read1 is Read 2. 
+**Note:** "Mate" is referring to a read's pair, i.e. the mate of Read1 is Read2. 
 
 After the header, the first read in your alignment file should look something like this: 
 
@@ -262,7 +262,7 @@ This means that we can specify any combination of descriptions by simply adding 
 
 **Example:** for a read with a FLAG value of 163, this is the sum of 128, 32, 2, and 1, which means that: 
 - `128` the read is the second in the pair
-- `32 `  the reads mate is on the reverse strand
+- `32 `  the read's mate is on the reverse strand
 - `2  ` the read mapped in a proper pair
 - `1  ` it is a paired read
 
@@ -294,7 +294,7 @@ CIGAR strings describe how the individual bases of a read align to the reference
 - `M` - alignment match (can be either a match or mismatch)
 - `I` - Insertion to the reference
 - `D` - Deletion from the reference
--  = - Sequence match 
+- `=` - Sequence match 
 - `X`- Sequence mismatch
 - `S` - Soft clipping
 
@@ -311,7 +311,7 @@ SAM files contain a lot of information and are often many Gb in size.
 To reduce storage requirements, storage formats such as BAM and CRAM are often favoured over SAM as they represent the alignment information in a compressed form.
 
 BAM (for Binary Alignment Map) is a lossless compression while CRAM can range from lossless to lossy depending on how much compression you want to achieve (up to very much indeed).
-Lossless means that we can completely recover all the data when converting between compression levels, while lossy removes a part of the data that cannot be recovered when converting back to its uncompressed state . Binning quality scores in `fastq` files to reduce storage requirements is lossy as we permanently lose the original data.
+Lossless means that we can completely recover all the data when converting between compression levels, while lossy removes a part of the data that cannot be recovered when converting back to its uncompressed state. Binning quality scores in `fastq` files to reduce storage requirements is lossy as we permanently lose the original data.
 BAMs and CRAMs hold the same information as their SAM equivalent, structured in the same way but the way the files are encoded differs. 
 
 
@@ -336,7 +336,7 @@ It tells us that all of the lines beginning with SN are summary information so l
 Make sure you quit `less` first with `q`.
 
 ```bash
-cat 2_align/log/ERR3241917.stats | grep "^SN"
+grep "^SN" 2_align/log/ERR3241917.stats
 ```
 
 When it finishes, you will see all the summarised information from the file, including aligned reads, how many sequences are found in the header etc...
