@@ -181,7 +181,7 @@ As a quick overview:
 
 ## 3.3 Calling variants
 
-We are using the haplotype-based caller `freebayes`, which is a [Bayesian genetic variant detector designed to find small polymorphisms, specifically SNPs (single-nucleotide polymorphisms), indels (insertions and deletions), MNPs (multi-nucleotide polymorphisms), and complex events (composite insertion and substitution events) smaller than the length of a short-read sequencing alignment](https://github.com/ekg/freebayes). 
+We are using the haplotype-based caller `freebayes`, which is a [Bayesian genetic variant detector](https://github.com/ekg/freebayes) designed to find small polymorphisms, specifically SNPs (single-nucleotide polymorphisms), indels (insertions and deletions), MNPs (multi-nucleotide polymorphisms), and complex events (composite insertion and substitution events) smaller than the length of a short-read sequencing alignment. 
 
 Time to run the variant calling. 
 All we need is a reference genome sequence (fasta file), a index of the reference genome (which we did in the last practical), and our BAM files. 
@@ -247,9 +247,6 @@ NC_000002.12	187	.	T	C	581.643	.	AB=0.485714;ABP=3.13438;AC=3;AF=0.5;AN=6;AO=34;
 
 The QUAL column contains a phred-scaled quality score for the assertion made in the ALT column and high QUAL scores indicate high confidence calls. For example, a QUAL of 30 indicates  a 1 in 1000 chance of this variant not really existing, or 99.9% confidence that the variant does exist.
 
-```bash
-grep -v "^#" chr2_vars.vcf | awk -F"\t" ' $6<x {print}' | wc -l
-```
 
 # **4. VCF filtering**
 Just because a variant is called doesn't mean that it is a true positive! We filter variants to try and remove false positives without removing any true variants. 
@@ -361,7 +358,7 @@ Let's take a look at the Eurasian lactase persistence SNP in the IGV browser but
 
 First, copy the GFF to your project directory. 
 ```bash
-cp ~/data/intro_ngs/chr2_sub.gff ~/Practical_alignment/ref/.
+cp ~/data/intro_ngs/chr2_sub.gff ~/Practical_alignment/ref/
 ```
 
 To download the GFF to your local computer, find the file in the Rstudio File browser, check the `chr2_sub.gff` checkbox and click "More" >> "Export...". Click the "Download" button and save it.
@@ -416,4 +413,4 @@ Over the last four practicals you used a variant calling workflow to genotype th
 
 To do this, you started with raw sequencing data in FASTQ format, you first assessed read quality and removed low-quality bases and adapters through quality control and trimming. The cleaned reads were then aligned to a reference genome, producing SAM/BAM files that record where each read maps and how confidently it aligns. After filtering these alignments to remove low-quality and duplicate reads, you performed **variant calling**, generating VCF files that list genetic differences between each sample and the reference genome.
 
-While our final interpretation of this analysis focused on a single, well-known variant for teaching purposes, this workflow detected thousands of genetic variants. These variants contain far more information than can be examined manually, including data relevant to health, ancestry, and biological function. Analysing this data is complex and outside the scope of this module but is explored further in other parts of 
+While our final interpretation of this analysis focused on a single, well-known variant for teaching purposes, this workflow detected thousands of genetic variants. These variants contain far more information than can be examined manually, including data relevant to health, ancestry, and biological function. Analysing this data is complex and outside the scope of this module but is explored further in other modules. 
