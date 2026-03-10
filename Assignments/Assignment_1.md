@@ -169,3 +169,4 @@ You can download your assigned species here: 'http://ftp.ensembl.org/pub/release
 |3198641|Taeniopygia guttata|59729|Zebra Finch|
 |3198989|Pongo abelii|9601|Orangutan|
 |3204028|Petromyzon marinus|7757|Lamprey|
+|1908229|Oncorhynchus tshawytscha|74940|Chinook Salmon|
