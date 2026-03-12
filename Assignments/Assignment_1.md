@@ -112,6 +112,7 @@ You can download your assigned species here: 'http://ftp.ensembl.org/pub/release
 |1903474|Serinus canaria|9135|Common Canary|
 |1903493|Canis lupus familiaris|9612|Dog|
 |1907116|Seriola dumerili|41447|Greater Amberjack|
+|1908229|Varanus komodoensis|61221|Komodo Dragon|
 |1914323|mus musculus c57bl6nj|10090|Mouse|
 |1915786|Electrophorus electricus|8005|Electric Eel|
 |1916630|Monopterus albus|43700|Swamp Eel|
@@ -146,6 +147,7 @@ You can download your assigned species here: 'http://ftp.ensembl.org/pub/release
 |1983093|Callithrix jacchus|9483|White-Tufted-Ear Marmoset|
 |1983110|Panthera pardus|9691|Leopard|
 |1983157|sus scrofa pietrain|9823|Pig|
+|1983610|Fundulus heteroclitus|8078|Mummichog|
 |1983613|Ictalurus punctatus|7998|Channel Catfish|
 |1983788|Junco hyemalis|40217|Dark-eyed Junco|
 |1984281|Pygocentrus nattereri|42514|Red-Bellied Piranha|
@@ -156,7 +158,6 @@ You can download your assigned species here: 'http://ftp.ensembl.org/pub/release
 |1988768|Monodelphis domestica|13616|Gray Short-Tailed Opossum|
 |1989620|canis lupus dingo|9612|Dingo|
 |1989666|Fukomys damarensis|885580|Damara Mole-Rat|
-|1991177|Fundulus heteroclitus|8078|Mummichog|
 |1991610|Larimichthys crocea|215358|Large Yellow Croaker|
 |1991642|Poecilia mexicana|48701|Shortfin Molly|
 |1992287|Gadus morhua|8049|Atlantic Cod|
@@ -164,9 +165,9 @@ You can download your assigned species here: 'http://ftp.ensembl.org/pub/release
 |3188346|Xiphophorus couchianus|32473|Platyfish|
 |3188465|Tetraodon nigroviridis|99883|Pufferfish  |
 |3191299|Tupaia belangeri|37347|Northern Treeshrew|
-|3192119|Varanus komodoensis|61221|Komodo Dragon|
 |3192385|Takifugu rubripes|31033|Pufferfish (fugu)|
 |3198641|Taeniopygia guttata|59729|Zebra Finch|
 |3198989|Pongo abelii|9601|Orangutan|
 |3204028|Petromyzon marinus|7757|Lamprey|
 |1908229|Oncorhynchus tshawytscha|74940|Chinook Salmon|
+
