@@ -131,7 +131,7 @@ In order to generate a core genome phylogeny from our WGS data, we need to perfo
 - Generate core SNP alignment
 - Build phylogeny
 
-# 4.1 Read Mapping and Variant Calling
+## 4.1 Read Mapping and Variant Calling
 You previously learned how to perform read mapping and variant calling in the Fundamentals of Bioinformatics module.
 Today we'll use [snippy](https://github.com/tseemann/snippy) to perform these steps. `snippy` uses `bwa mem` for mapping and `Freebayes` for variant calling (like we did in the Fundamentals of Bioinformatics module), however it offers a number of advantages over performing the steps individually. This is because `snippy` is simpler to run, includes important filtering, and produces output in a format that is convenient for generating phylogenies. Because of these advantages, `snippy` is very widely used in pathogen genomics.
 
@@ -167,7 +167,7 @@ Once you've finished editing, save the file and close `nano` by holding down `Ct
 
 You can then run your script by typing `bash run_snippy.sh`. This should take around 15 minutes and you will see a lot of output printed to your terminal while it runs. Once this is finished, it's a good idea to check that the expected output files are present.
 
-# 4.2 Generate Core Genome Alignment
+## 4.2 Generate Core Genome Alignment
 Now that we've generated variant calls for each of our samples, the next step is to combine that information to work out which SNPs are "core" and generate an alignment file that can be used as input for tree building. "Core sites" are those positions in the reference genome that are present in *all* the samples. This step will be achieved using `snippy-core`:
 
 ```bash
@@ -205,7 +205,7 @@ Therefore, we can generate a modified fasta file with no reference sequence by s
 tail -n +89797 2_align/core.full.aln > 3_phylogeny/core_noref.aln
 ```
 
-# 4.3 Generate Phylogeny
+## 4.3 Generate Phylogeny
 In order to generate a phylogeny from the core genome alignment, we will use IQ-TREE:
 
 ```bash
@@ -225,7 +225,7 @@ You should see something like this:
 This file is in [Newick format](https://en.wikipedia.org/wiki/Newick_format), which uses parentheses and commas to represent the structure of the tree. This is great for computers, but not easy for humans to understand.
 Therefore, we need a visual tool for interpreting our phylogeny.
 
-# 4.4 Visualise Phylogeny
+## 4.4 Visualise Phylogeny
 To visualise our phylogeny, we will use the Interactive Tree of Life (iTOL), which is an online tool for tree visualisation.
 
 First, we need to download our tree file. Navigate to the files pane in RStudio and download `core_noref.aln.treefile` to your local machine.
