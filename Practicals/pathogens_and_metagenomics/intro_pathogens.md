@@ -260,17 +260,25 @@ Here is the command for running one of the samples:
 kraken2 --threads 2 --db db/std_8g --output - --report 4_species/SRR1582858.kreport --paired 1_trim/SRR1582858_1.fastq.gz 1_trim/SRR1582858_2.fastq.gz
 ```
 
-Let's break this down:
+Here is the same command with the options shown on different lines for clarity:
 ```bash
 kraken2 \
-    --threads 2 \                           # Use 2 threads
-    --db db/std_8g \                        # Specify the kraken database
-    --output - \                            # Don't produce standard kraken output
-    --report 4_species/SRR1582858.kreport \ # File for kraken report
-    --paired \                              # Specify that the input reads are paired
-    1_trim/SRR1582858_1.fastq.gz \          # File containing forward reads
-    1_trim/SRR1582858_2.fastq.gz            # File containing reverse reads
+    --threads 2 \
+    --db db/std_8g \
+    --output - \
+    --report 4_species/SRR1582858.kreport \
+    --paired \
+    1_trim/SRR1582858_1.fastq.gz \
+    1_trim/SRR1582858_2.fastq.gz
 ```
+This command:
+- Uses 2 threads
+- Specifies the kraken database as db/std_8g
+- Suppresses standard kraken output
+- Specifies the file name for the kraken report as 4_species/SRR1582858.kreport
+- Specifies that the input reads are paired
+- Specifies the file containing the forward reads as 1_trim/SRR1582858_1.fastq.gz
+- Specifies the file containing the reverse reads as 1_trim/SRR1582858_2.fastq.gz
 
 The output from running this command is the `kraken2` report, which summarises the number of reads with different taxonomic classifications. We won't look at this directly today, but do feel free to inspect the contents of the file if you're interested.
 
@@ -281,14 +289,11 @@ We can run `bracken` as follows:
 ```bash
 bracken -d db/std_8g -r 150 -i 4_species/SRR1582858.kreport -o 4_species/SRR1582858.bracken
 ```
-Once again, let's break down the command:
-```bash
-bracken \
-    -d db/std_8g \                      # Specify the kraken2 database that was used
-    -r 150 \                            # Length of sequencing reads
-    -i 4_species/SRR1582858.kreport \   # The input for bracken is the kraken2 report
-    -o 4_species/SRR1582858.bracken     # Specify the bracken output location
-```
+This command:
+- Specifies the kraken2 database that was used as db/std_8g
+- Specifies the length of the sequencing reads as 150 bp
+- Specifies the input for bracken as the kraken2 report 4_species/SRR1582858.kreport
+- Specifies the bracken output location as 4_species/SRR1582858.bracken
 
 Now let's take a look at the `bracken` output:
 ```bash
