@@ -62,7 +62,7 @@ Accessing `spades` help:
 spades --help
 ```
 
-# 4.1 Running our first assembly
+## 4.1 Running our first assembly
 Here is a template for the command we will use to run `spades`. You will need to replace TRIM_1.FASTQ.GZ and TRIM_2.FASTQ.GZ with the actual paths to your trimmed reads from the Read Quality Control section above.
 ```bash
 spades -t 2 -m 16 -1 TRIM_1.FASTQ.GZ -2 TRIM_2.FASTQ.GZ -o 2_assembly/SRR36298124
