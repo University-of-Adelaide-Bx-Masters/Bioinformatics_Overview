@@ -10,7 +10,6 @@ In this practical, you will be performing a *de novo* genome assembly for a sing
 ## 1.1 Learning Outcomes
 1. Learn how to perform a *de novo* bacterial genome assembly
 2. Learn about assembly metrics and how to assess the quality of an assembly
-3. Investigate the impact of sequencing depth on assembly quality
 
 
 # **2. Setup**
@@ -135,3 +134,4 @@ Each coloured line represents a node in the assembly graph, with thin black line
 You can also add node labels to display more information. E.g. the following view shows length and depth labels.
 ![Assembly graph with labels](images/SRR36298124_bandage_labelled.png)
 
+You can see that the assembly graph is quite complicated! In the next practical you will have the opportunity to compare this with a long-read assembly graph.
