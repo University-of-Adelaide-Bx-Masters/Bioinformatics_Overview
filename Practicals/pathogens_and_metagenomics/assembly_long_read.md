@@ -79,6 +79,7 @@ Questions:
 - How many contigs are there in the assembly?
 - What is the length of the longest contig?
 - Is the chromosome complete (i.e. assembled into a single circular contig)?
+- Does this isolate have any plasmids?
 
 ## 5.1 Summarising assembly metrics using QUAST
 Run `quast` as in the previous practical and view the QUAST report.
