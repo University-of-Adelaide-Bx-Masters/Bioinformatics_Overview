@@ -115,7 +115,7 @@ The file names should be self-explanatory. If you are confused, please ask for h
 Write and execute a script to run a `flye` assembly for each of the subsampled read sets. Don't forget to give each assembly a different output directory so you don't overwrite previous files.
 
 ## 6.2 Investigating assembly metrics
-We will run `quast` to investigate the assembly metrics for the different subsampled read sets. We can run them all together in a single command as follows:
+We will run `quast` to investigate the assembly metrics for the different subsampled read sets. We can run them all together in a single command. You may need to edit the paths in the command below to match your `flye` output directories.
 ```bash
 quast -t 2 -o 1_assembly/quast/SRR36505805_coverage 1_assembly/SRR36505805_1x/assembly.fasta 1_assembly/SRR36505805_2x/assembly.fasta 1_assembly/SRR36505805_5x/assembly.fasta 1_assembly/SRR36505805_10x/assembly.fasta 1_assembly/SRR36505805/assembly.fasta
 ```
