@@ -77,7 +77,7 @@ You will use the following command.
 makeblastdb -in ~/Practical_blast_intro/dbs/uniprot_sprot.fasta -dbtype 'prot' -parse_seqids -out ~/Practical_blast_intro/dbs/sprot
 ```
 
-This will generate six files that BLAST uses.
+This will generate ten files that BLAST uses.
 
 You will then need to index/format the human hg38 chromosome sequences so that BLAST can search them.
 
