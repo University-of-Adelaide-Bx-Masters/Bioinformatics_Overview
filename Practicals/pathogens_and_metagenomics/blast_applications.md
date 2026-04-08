@@ -33,9 +33,8 @@ The other data you will need is located in `~/data/blast`. As in previous practi
 ```bash
 # navigate to working directory
 cd ~/Practical_blast
-# create symlinks for query sequences
+# create symlink for query sequences
 ln -s ~/data/blast/AMR_genes.fasta queries/
-ln -s ~/data/blast/blaKPC-2.fasta queries/
 # create symlinks for complete genomes
 ln -s ~/data/blast/CAV*.fasta genomes/
 # create symlinks for E. coli assemblies. Note you may need to modify the paths depending on where you saved your assemblies.
