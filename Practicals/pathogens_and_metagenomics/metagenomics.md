@@ -105,7 +105,7 @@ quast -t 2 -o 2_assembly/quast/ERR11269302 2_assembly/ERR11269302_metaspades_con
 ```
 
 Questions:
-- In the metagenomic assembly, what is the total number of contigs, and what is the number of contigs $\ge$ 500 bp? What does this tell you about the size of most of the contigs in the assembly?
+- In the metagenomic assembly, what is the total number of contigs, and what is the number of contigs >= 500 bp? What does this tell you about the size of most of the contigs in the assembly?
 - Ignoring contigs <500 bp, what is the total length of the metagenomic assembly? How does this compare to the total length of the *E. coli* isolate assembly?
 - What is the N50 of the metagenomic assembly? How does this compare to the N50 of the *E. coli* isolate assembly?
 - Why are the assembly metrics so different between the metagenomic assembly and the isolate assembly?
