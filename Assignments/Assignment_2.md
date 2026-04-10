@@ -1,33 +1,34 @@
 # **Practical Assignment 2 - Pathogens and Metagenomics**
 
 The data you need for this assignment can be found in `~/data/Assignment2`. This includes:
-- Illumina data for 7 *Citrobacter freundi* isolates (Part A)
+- Illumina data for 7 *Citrobacter freundii* isolates (Part A)
 - A reference *C. freundii* genome, `CP011612.fasta` (Part B)
 - A file containing several AMR gene sequences as used in the practicals, `AMR_genes.fasta` (Parts B and C)
-- Complete long-read assemblies for two of the *C. freindii* isolates, `isolate1_assembly.fasta` and `isolate4_assembly.fasta` (Part C)
+- Complete long-read assemblies for two of the *C. freundii* isolates, `isolate1_assembly.fasta` and `isolate4_assembly.fasta` (Part C)
 
-**You must use tools and approaches covered during the practicals. All analysis must be performed on your allocated VM in a directory named `~/Assignment2`.**
+### **You must use tools and approaches covered during the practicals. All analysis must be performed on your allocated VM in a directory named `~/Assignment2`.**
 
 Your submission should include the following files:
-- Bash scripts named `cfre_qc.sh` and `cfre_phylo.sh` for Parts A and B, respectively
-- A single pdf file containing answers to all other questions and screenshots as specified below
+- Bash scripts named `axxxxxxx_cfre_qc.sh` and `axxxxxxx_cfre_phylo.sh` for Parts A and B, respectively (replacing axxxxxxx with your student number)
+- A single pdf file containing answers to all other questions and screenshots as specified below, named `axxxxxxx_Assignment2.pdf` (replacing axxxxxxx with your student number). **All screenshots must be clearly legible.** Please ensure that this pdf file also includes your name and student number within the file.
+
 
 ## Part A - 26 marks
 You have been provided with paired-end Illumina whole-genome sequencing (WGS) data for 7 isolates that have been classified as *Citrobacter freundi*. Your task for Part A is to perform quality control on the WGS data to determine which samples are suitable for downstream analysis. The expected genome size for *C. freundii* is 4.5-5.5 Mb.
 
-1. Write a bash script called `cfre_qc.sh` **[14 marks]** that:
-    - Creates a suitable directory structure and creates symlinks for required data files
-    - Performs read QC and trimming for each sample
-    - Performs taxonomic classification of reads for each sample
-    - Generates a genome assembly for each sample
-    - Summarises assembly statistics across all samples
-    - Includes informative comments
-    - Is clear, concise and easy to understand
+1. Write a bash script called `axxxxxxx_cfre_qc.sh` (replacing axxxxxx with your student number) **[14 marks]** that:
+    - a. Creates a suitable directory structure and creates symlinks for required data files
+    - b. Performs read QC and trimming for each sample
+    - c. Performs taxonomic classification of reads for each sample
+    - d. Generates a genome assembly for each sample
+    - e. Summarises assembly statistics across all samples
+    - f. Includes informative comments
+    - g. Is clear, concise and easy to understand
 
 2. Briefly summarise the main findings from your read QC analysis **[5 marks]**. Make sure you include the following information:
-    - What is the read length (or range of read lengths) before and after trimming?
-    - What is the expected depth of coverage for each sample after trimming? How did you calculate this value?
-    - Are there any concerning quality issues that mean one or more samples should be excluded from downstream analysis, or are all samples suitable to proceed?
+    - a. What is the read length (or range of read lengths) before and after trimming?
+    - b. What is the expected depth of coverage for each sample after trimming? How did you calculate this value?
+    - c. Are there any concerning quality issues that mean one or more samples should be excluded from downstream analysis, or are all samples suitable to proceed?
 
 3. Based on the results of your taxonomic classification, which samples are NOT consistent with the expectation of a *Citrobacter freundii* isolate? Why? **[3 marks]**
 
@@ -37,9 +38,9 @@ You have been provided with paired-end Illumina whole-genome sequencing (WGS) da
 ## Part B - 14 marks
 For Part B, you should EXCLUDE any samples that failed your quality control checks from part A.
 
-1. Write a bash script called `cfre_phylo.sh` to generate a phylogeny using all samples that passed your quality control checks from part A, using `CP011612.fasta` as a reference genome. **[5 marks]**
+1. Write a bash script called `axxxxxxx_cfre_phylo.sh` (replacing axxxxxxx with your student number) to generate a phylogeny using all samples that passed your quality control checks from part A, using `CP011612.fasta` as a reference genome. **[5 marks]**
 
-2. Visualise your phylogeny using iTOL. Midpoint root your tree and include a screenshot of your midpoint rooted tree. Answer the following questions: **[4 marks]**
+2. Visualise your phylogeny using iTOL. Midpoint root your tree and include a screenshot of your midpoint rooted tree. Ensure the resolution of your screenshot is sufficient such that labels are clearly readable. Answer the following questions: **[4 marks]**
     - a. Which isolates are clonally related?
     - b. What is the length of the branch leading to isolate1? 
     - c. Assuming a genome size of 5 Mb, How many SNPs does this correspond to?
