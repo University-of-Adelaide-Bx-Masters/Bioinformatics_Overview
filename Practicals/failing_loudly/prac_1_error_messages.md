@@ -1,13 +1,13 @@
-# Prac CHANGEME - Reproducibility and Failing loudly - handling error messages
+# Reproducibility and Failing loudly - handling error messages
 
-{:.no_toc}
+
 
 #### By Evelyn Collen
-{:.no_toc}
 
-# **1. Introduction**
 
-## Why do we need to fail (and loudly)?
+## **1. Introduction**
+
+### Why do we need to fail (and loudly)?
 
 If ever you feel a little out of your depth in bioinformatics, and that the commands you run don't seem to always work, I have good news for you! A lot of code works on the basis of 'trial and error' quite literally, since, it is difficult even for the best programmers to Nostradamus their code and know absolutely all possible conditions to account for. Programs that run smoothly are usually thanks to countless developers having dealt with and handled various unexpected bugs previously, and tried to set up their code as robustly as possible.
 
@@ -20,7 +20,7 @@ In summary, the important thing is take a mindset of embracing failure because i
 
 **"If at first you don't succeed, print(error), try, try again" (definitely a word-for-word quote from Edward Hickson 1857)**
 
-## 1.1 Reminder about virtual Machines
+### 1.1 Reminder about virtual Machines
 By now, you would be used to connecting to your virtual machines (VMs) to complete previous practicals. We are going to be logging in to them and purposefully **crashing some code and "failing" as badly (and loudly!) as possible.**
 
 Just a reminder of info for your [virtual machine](https://en.wikipedia.org/wiki/System_virtual_machine) (VM).
@@ -29,7 +29,7 @@ Remember the VM is essentially a program that is running on a server but which b
 
 **Please [go here](../../Course_materials/vm_login_instructions.md) for instructions on connecting to your VM.**
 
-## 1.2 Learning Outcomes
+### 1.2 Learning Outcomes
 
 1. Learn about failure and why it's important to handle
 2. Write some error messages and make them loud and understandable
@@ -38,7 +38,7 @@ Remember the VM is essentially a program that is running on a server but which b
 5. Learn the basics of the vim text editor
 6. Review vcf format
 
-## 1.3 About our dataset
+### 1.3 About our dataset
 
 For this practical, we have some human patient vcfs generated from Rhampseq Amplicon sequencing for targeted, 'hot-spot' variant screening. It's called 'hot-spot' as this type of assay is used to cheaply (and quickly!) determine very specific sites in the human genome for screening purposes. 
 
@@ -47,18 +47,18 @@ The vcfs and bams you will be looking at are fully anonymised, and changed a lit
 As always, it is always very important to understand your dataset very well, to properly do some good bioinformatics to it. 
 
 
-## 1.4 Follow the breadcrumb trail of errors 
+### 1.4 Follow the breadcrumb trail of errors 
 
 Today we are working on a mini bash pipeline, that runs 3 pipeline scripts for us to help perform fast and reliable DPYD screening. 
 
 
 The first script, "vcf_validator.py", checks the following cases: 
 
-    1. Does the input exist?
+1. Does the input exist?
 
-    2. Is the input a vcf?
+2. Is the input a vcf?
 
-    3. Is the format of the vcf correct?
+3. Is the format of the vcf correct?
 
 The second script, "run_various_qc_checks.py", checks that the variants of interest in the vcfs have passed certain quality control (qc) metrics. 
 
@@ -74,7 +74,7 @@ When a program or bioinformatics tool breaks, similarly, you will need to carefu
 
 We are going to start by focussing on one script at a time to keep it simple, and then string the 3 scripts together in the next practical. 
 
-## 1.5 Getting ready to look into scripts with vim
+### 1.5 Getting ready to look into scripts with vim
 
 First, let's get into debug mode! We're going to be staring at scripts, so let's make sure our text editor (in this case vim) gives us line numbers. You can also use nano if you prefer, but vim is a bit easier for viewing line numbers.
 
@@ -85,28 +85,30 @@ vim ~/.vim
 Press ESC, then "i" key, then type "set number" (note don't type in any of the quotation marks here! They are just to denote what keys to press). Then to exit and save, press ESC, then type ":wq" (which should appear in the bottom left hand corner) then enter. 
 
 
-###### CHANGEME
-# load software
+CHANGEME
+load software
+```
 source activate bioinf
+```
+create all directories and move into project directory
 
-# create all directories and move into project directory
-
+```
 cd ~/Practical_Failing_Loudly
 mkdir -p ~/Practical_alignment/{0_scripts,1_vcfs,2_bam,3_reports,4_refs}
+```
 
-
-## copy vcfs and also make symlinks
-#copy scripts???? CHANGEME
+copy vcfs and also make symlinks
+copy scripts???? CHANGEME
+```
 cp ~/data/failing_loudly/patient_1_dodgy.vcfs 1_vcfs/
 ln -s ~/data/failing_loudly/*.vcf 1_vcfs/
 ln -s ~/data/failing_loudly/*.bam 2_bam/
+ln -s ~/data/failing_loudly/4_refs/* 4_refs/*
+```
 
+## **2. Validating input requirements
 
-######## CHANGEME above
-
-# **2. Validating input requirements
-
-## 2.2 Checking if an input is existing
+### 2.2 Checking if an input is existing
 
 Let's now run just the validator script on one of our vcfs:
 
@@ -154,6 +156,7 @@ python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dody.vcfs
 ```
 Now your error message should say this: 
 
+```
 Traceback (most recent call last):
   File "/Users/evelyn/Practicals/failing_loudly/./vcf_validator.py", line 67, in <module>
     main(args.input_vcf)
@@ -161,13 +164,13 @@ Traceback (most recent call last):
   File "/Users/evelyn/Practicals/failing_loudly/./vcf_validator.py", line 11, in main
     raise Exception("Error: Could not find any existing vcf file")
 Exception: Error: Could not find any existing vcf file
-
+```
 That is a much nicer message and something that is easy to fix. Let's check the names of our vcfs:
 
 ```bash
 ls 1_vcfs/*vcf*
 ```
-
+Should result in:
 ```
 patient_1_dodgy.vcf		
 Patient_A.vcf		
@@ -186,6 +189,7 @@ Now we should have a different error. Yay! A new error! Bioinformaticians often 
 
 Let's go ahead and tackle this new error:
 
+```
 Traceback (most recent call last):
   File "/Users/evelyn/failing_loudly/Practicals/./vcf_validator.py", line 67, in <module>
     main(args.input_vcf)
@@ -193,7 +197,7 @@ Traceback (most recent call last):
   File "/Users/evelyn/failing_loudly/Practicals/failing_loudly/./vcf_validator.py", line 19, in main
     raise ValueError("Unknown Error number 2")
 ValueError: Unknown Error number 2
-
+```
 Again, another unhelpful error message. Working our way from the bottom, the error is "ValueError: Unknown Error number 2", and again you can see in the traceback this occurs in the script at line 19. 
 
 
@@ -208,7 +212,7 @@ Again, another unhelpful error message. Working our way from the bottom, the err
 </details>
 
 
-## 2.3 Checking if the input is a vcf
+### 2.3 Checking if the input is a vcf
 
 Most input formats are denoted by their extensions, eg .fastq, .bam, .csv. A good sanity check in your scripts is to check if the extension matches what you expect. Let's open the script again with vim: 
 
@@ -228,7 +232,7 @@ When you're done, press ESC, then ":wq" to save your changes, then enter. Run th
 ```bash
 python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcfs
 ```
-
+```
 Traceback (most recent call last):
   File "/Users/evelyn/failing_loudly/Practicals/./vcf_validator.py", line 67, in <module>
     main(args.input_vcf)
@@ -236,7 +240,7 @@ Traceback (most recent call last):
   File "/Users/evelyn/failing_loudly/Practicals/failing_loudly/./vcf_validator.py", line 19, in main
     raise ValueError("Error: Input vcf does not have the correct file extension (.vcf)")
 ValueError: Error: Input vcf does not have the correct file extension (.vcf)
-
+```
 Now that the error reads much nicer, let's name the vcf properly to actually fix the issue:
 
 ```bash
@@ -245,19 +249,20 @@ python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf
 ```
 Woo-hoo! Now onwards to the next error!
 
+```
 Traceback (most recent call last):
   File "/Users/evelyn/failing_loudly/Practicals/failing_loudly/./vcf_validator.py", line 79, in <module>
     main(args.input_vcf)
     ~~~~^^^^^^^^^^^^^^^^
   File "/Users/evelyn/failing_loudly/Practicals/failing_loudly/./vcf_validator.py", line 69, in main
     raise Exception("Cannot have data lines preceding header")
-
+```
 Ah, this is now interesting. If you look at the bottom of the traceback again, you can see the main Exception causing the new problem. It seems our vcf may have some formatting issues.
 
 
-# **3. Validating the formatting of the input itself
+## **3. Validating the formatting of the input itself
 
-## 3.3 Checking if the vcf is correctly formatted
+### 3.3 Checking if the vcf is correctly formatted
 
 As you know, the VCF format has some key specifications that must be adhered to, and that will crash various bioinformatics tools if not. The 'patient_1_dodgy.vcf' has some key issues that will crash our validator script, so we are going to go ahead and modify this vcf file directly with vim and awk to satisfy the validator. In the real world, you would usually never do this, you would probably just go back to the source of your dodgy vcf and find out what corrupted it in the first instance.
 
@@ -274,7 +279,7 @@ vim 1_vcfs/patient_1_dodgy.vcf
 
 Lines 20-26  look like this:
 
-------------------------------------------------------------------------------------------
+```
 20 ##bcftools_viewVersion=1.10.2+htslib-1.17
  21 chr1    43349345        .       T       A       278     SAMPLE=Patient_A;TYPE=SNV;DP=4197;VD=171;AF=0.0407;BIAS=2:2;REFBIAS=2012:2002;VARBIAS=86:85;PMEAN=20;PSTD=1;QUAL=37.5;QS    TD=1;SBF=1;ODDRATIO=1.00674;MQ=60;SN=27.5;HIAF=0.0399;ADJAF=0;SHIFT3=1;MSI=2;MSILEN=1;NM=1.3;HICNT=165;HICOV=4136;LSEQ=CTGCTGCTGAGGTGGCAGTT;RSEQ=CCTGCACACTACAGGTACCG;GDAMP=1;TL    AMP=1;NCAMP=0;AMPFLAG=0 PASS    GT:DP:VD:AD:AF:RD:ALD:FT        0/1:4197:171:4014,171:0.0407:2012,2002:86,85:PASS
  22 #CHROM
@@ -282,7 +287,7 @@ Lines 20-26  look like this:
  24 #CHROM  POS     ID      REF     ALT     QUAL    INFO    FILTER  FORMAT  Patient_A
  25 ##bcftools_viewCommand=view -O z; Date=Fri May 30 11:19:15 2025
  26 chr1    43349345        .       T       A       278     SAMPLE=Patient_A;TYPE=SNV;DP=4197;VD=171;AF=0.0407;BIAS=2:2;REFBIAS=2012:2002;VARBIAS=86:85;PMEAN=20;PSTD=1;QUAL=37.5;QS    TD=1;SBF=1;ODDRATIO=1.00674;MQ=60;SN=27.5;HIAF=0.0399;ADJAF=0;SHIFT3=1;MSI=2;MSILEN=1;NM=1.3;HICNT=165;HICOV=4136;LSEQ=CTGCTGCTGAGGTGGCAGTT;RSEQ=CCTGCACACTACAGGTACCG;GDAMP=1;TL    AMP=1;NCAMP=0;AMPFLAG=0 PASS    GT:DP:VD:AD:AF:RD:ALD:FT        0/1:4197:171:4014,171:0.0407:2012,2002:86,85:PASS
- ------------------------------------------------------------------------------------------
+ ```
 
 You can see line 21 is an erroneous copy of line 26. Let's go ahead and delete line 21. After deleting it, the new line 21 should now be "#CHROM'. 
  
@@ -293,7 +298,7 @@ Close and save vim (ESC, then type "wq", then enter), run the validator again, a
 python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf
 ```
 
-## 3.3 Fixing the vcf format one error at a time
+### 3.3 Fixing the vcf format one error at a time
 
 There are a series of more problems with the vcf. I have given you some instuctions below on how to fix each error, but the errors may not appear in the same order as the order of these solutions, so you will have to go through this list until you find the solution that matches each error. Keep 'fixing' the vcf and matching solutions to the errors, then rerunning the validator script, until no more exceptions are raised. 
 
@@ -301,69 +306,56 @@ There are a series of more problems with the vcf. I have given you some instucti
 *Fix*:
 The offending line is at line 22 of the vcf, as you can see below.
 
---------------------------------------------------------------------------------------------
+```
 20 ##bcftools_viewVersion=1.10.2+htslib-1.17
  21 #CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT  Patient_A
  22 ##bcftools_viewCommand=view -O z; Date=Fri May 30 11:19:15 2025
- --------------------------------------------------------------------------------------------
+```
 
 Metadata should never come after the main header. Move this line up so that it comes just after line 20, so that all the metadata lines go together. After your edit, lines 20-22 should look like this:
 
---------------------------------------------------------------------------------------------
+```
 20 ##bcftools_viewVersion=1.10.2+htslib-1.17
  21 ##bcftools_viewCommand=view -O z; Date=Fri May 30 11:19:15 2025
  22 #CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT  Patient_A
- --------------------------------------------------------------------------------------------
-
-||||||||||||||||||||||
+```
 
 **Exception("Too many main headers are present in vcf file")
 *Fix*:
 We can't have two headers, so go ahead and open the vcf and remove the first header, at line 21. After your edit, your vcf should look like this:
 
---------------------------------------------------------------------------------------------
+```
 20  ##bcftools_viewVersion=1.10.2+htslib-1.17
 21 #CHROM  POS     ID      REF     ALT     QUAL    INFO    FILTER  FORMAT  Patient_A
 22 ##bcftools_viewCommand=view -O z; Date=Fri May 30 11:19:15 2025
- --------------------------------------------------------------------------------------------
+```
 
-
-||||||||||||||||||||||
 
 *Exception("A column is missing from the vcf main header")
 *Fix*:
 Use vim or nano to open the vcf file and go to line 21, which just has "CHROM". That's not right as a vcf header need to have at least 8 columns in the main header. Remove this line entirely. After your edits, lines 20-24 should now look like this:
-
---------------------------------------------------------------------------------------------
+```
 20 ##bcftools_viewVersion=1.10.2+htslib-1.17
  21 #CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT  Patient_A
  22 #CHROM  POS     ID      REF     ALT     QUAL    INFO    FILTER  FORMAT  Patient_A
  23 ##bcftools_viewCommand=view -O z; Date=Fri May 30 11:19:15 2025
  24 chr1    43349345        .       T       A       278     SAMPLE=Patient_A;TYPE=SNV;DP=4197;VD=171;AF=0.0407;BIAS=2:2;REFBIAS=2012:2002;VARBIAS=86:85;PMEAN=20;PSTD=1;QUAL=37.5;QS        TD=1;SBF=1;ODDRATIO=1.00674;MQ=60;SN=27.5;HIAF=0.0399;ADJAF=0;SHIFT3=1;MSI=2;MSILEN=1;NM=1.3;HICNT=165;HICOV=4136;LSEQ=CTGCTGCTGAGGTGGCAGTT;RSEQ=CCTGCACACTACAGGTACCG;GDAMP=    1;TL    AMP=1;NCAMP=0;AMPFLAG=0 PASS    GT:DP:VD:AD:AF:RD:ALD:FT        0/1:4197:171:4014,171:0.0407:2012,2002:86,85:PASS
- -------------------------------------------------------------------------------------------
-
-|||||||||||||||||||||||
+ ```
 
 Exception("The order of columns in the vcf is not correct")
-
 *Fix*: 
-
 The "FILTER" and "INFO" column have gotten swapped somehow. Run this awk command to switch them back:
 
 ```bash
 awk 'BEGIN{FS=OFS="\t"} /^##/ {print; next} /^#CHROM/ {tmp=$7; $7=$8; $8=tmp; print; next} {tmp=$7; $7=$8; $8=tmp; print}' 1_vcfs/patient_1_dodgy.vcf > 1_vcfs/patient_1_dodgy_fixedcols.vcf && mv 1_vcfs/patient_1_dodgy_fixedcols.vcf 1_vcfs/patient_1_dodgy.vcf
 ```
 Now the order of both the header and the columns of the data section should be switched back in the right order to meet vcf specs. Lines 20-23 should look like this:
-
--------------------------------------------------------------------------------------------
+```
 20 ##bcftools_viewVersion=1.10.2+htslib-1.17
  21 ##bcftools_viewCommand=view -O z; Date=Fri May 30 11:19:15 2025
  22 #CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT  Patient_A
  23 chr1    43349345        .       T       A       278     PASS    SAMPLE=Patient_A;TYPE=SNV;DP=4197;VD=171;AF=0.0407;BIAS=2:2;REFBIAS=2012:2002;VARBIAS=86:85;PMEAN=20;PSTD=1;QUAL    =37.5;QSTD=1;SBF=1;ODDRATIO=1.00674;MQ=60;SN=27.5;HIAF=0.0399;ADJAF=0;SHIFT3=1;MSI=2;MSILEN=1;NM=1.3;HICNT=165;HICOV=4136;LSEQ=CTGCTGCTGAGGTGGCAGTT;RSEQ=CCTGCACACTACAGGTACCG;GD    AMP=1;TLAMP=1;NCAMP=0;AMPFLAG=0 GT:DP:VD:AD:AF:RD:ALD:FT        0/1:4197:171:4014,171:0.0407:2012,2002:86,85:PASS
- -------------------------------------------------------------------------------------------
- 
-|||||||||||||||||||||||||||||||
-
+```
 
 **Question:**
 1. Why did we need to use the awk command, instead of just going in with vim or nano and swapping only the column names?
@@ -374,7 +366,7 @@ Now the order of both the header and the columns of the data section should be s
 </details>
 
 
-# **4. Pull out some QC information about the variants
+## **4. Pull out some QC information about the variants
 
 In preparation for next week's prac, we are going to run a script that will go through the patient vcfs and pull out information about them. This will be important to ascertain that the variant that has been called isn't just an artefact, and has enough enough depth, the allele frequency we would expect, and passes all filters. All this information is ripe for the plucking straight from the vcf.
 
@@ -429,7 +421,7 @@ Note the HGVS nomenclature follows the cdna transcript, and here it is in revers
 </details>
 
 
-# Bonus tasks if time permitting 
+### Bonus tasks if time permitting 
 
 1. The validator script checks a bunch of conditions and raises an error if they are not satisfied. In the first part of the script, if you look at the lines immediately following where these errors are raised, you can see extra 'else - print' statements have been commented out (lines 12 and 20). What do you think these else statements would do? Try removing the comments on the 'elses'/'prints' and also the series of 'prints' at the bottom of the script, and running the script again on the dodgy vcf: 
 ```bash
@@ -443,7 +435,7 @@ python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf > 5_logs/vcf_v
 ```
 
 
-## Concluding remarks
+### Concluding remarks
 
-Hopefully through doing this prac, you can see that through the process of failing loud and proud, we have in the end achieved success! 
+Hopefully through doing this prac, you can see that through the process of failing loud and proud, we have in the end achieved success! Until next time, when we are going to fail even harder!
 
