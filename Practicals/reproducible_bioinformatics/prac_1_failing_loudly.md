@@ -366,7 +366,7 @@ Now the order of both the header and the columns of the data section should be s
 </details>
 
 
-## **4. Pull out some QC information about the variants
+## **4. Pull out some QC information about the variants**
 
 In preparation for next week's prac, we are going to run a script that will go through the patient vcfs and pull out information about them. This will be important to ascertain that the variant that has been called isn't just an artefact, and has enough enough depth, the allele frequency we would expect, and passes all filters. All this information is ripe for the plucking straight from the vcf.
 
