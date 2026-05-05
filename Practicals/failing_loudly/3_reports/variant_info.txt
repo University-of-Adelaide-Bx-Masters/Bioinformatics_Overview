@@ -1,5 +1,0 @@
-Sample	Variant	ChrPos	Ref	Alt	GT	FILTER	FT	AF	DP
-Patient_A.vcf	c.1236G>A	chr1:97573863	C	T	1/1	PASS		0.9883	8387
-Patient_B.vcf	c.1905+1G>A	chr1:97450058	C	T	0/1	PASS		0.4922	8813
-Patient_B.vcf	c.1236G>A	chr1:97573863	C	T	1/0	PASS		0.5012	21628
-Patient_C.vcf	c.2846A>T	chr1:97082391	T	A	0/1	PASS		0.4949	9117
