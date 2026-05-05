@@ -60,11 +60,11 @@ def main(input_vcf):
             if not main_vcf_header:
                 raise Exception("Cannot have data lines preceding header")
             break
-    print("Checked header with columns comes after metadata - passed")
-    print("Checked correct number of headers - passed")
-    print("Checked all columns present - passed")
-    print("Checked order of columns meets vcfs specs - passed")
-    print("Checked data lines come after headers - passed")
+    #print("Checked header with columns comes after metadata - passed")
+    #print("Checked correct number of headers - passed")
+    #print("Checked all columns present - passed")
+    #print("Checked order of columns meets vcfs specs - passed")
+    #print("Checked data lines come after headers - passed")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

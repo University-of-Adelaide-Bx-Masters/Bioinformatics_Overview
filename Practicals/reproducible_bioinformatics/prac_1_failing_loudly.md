@@ -1,4 +1,4 @@
-# Reproducibility and Failing loudly - handling error messages
+# Prac #1 Failing loudly - handling error messages
 
 
 
@@ -11,11 +11,11 @@
 
 If ever you feel a little out of your depth in bioinformatics, and that the commands you run don't seem to always work, I have good news for you! A lot of code works on the basis of 'trial and error' quite literally, since, it is difficult even for the best programmers to Nostradamus their code and know absolutely all possible conditions to account for. Programs that run smoothly are usually thanks to countless developers having dealt with and handled various unexpected bugs previously, and tried to set up their code as robustly as possible.
 
-In diagnostic genetics, every part of bioinformatics needs to be fully stable so that each time we run a patient sample, we are sure all the correct steps have been applied and we can expect the most "correctly called" genetic result as has been observed during the validation stage. Prior to running patient samples, we validate the test conditions so we know exactly what error rate we can expect from the whole process. Especially in a cancer setting, where we are in an arms-race with finding the best treatment for a cancer vs the cancer's development, we must do this reliably, reproducibly, and quickly so the patient can get their result asap. 
+In diagnostics, every part of the bioinformatics needs to be fully stable so that each time we run a patient sample, we are sure all the correct steps have been applied and we can expect the most "correctly called" genetic result as has been observed during the validation stage. Prior to running patient samples, we validate the test conditions so we know exactly what error rate we can expect from the whole process. Especially in a cancer setting, where we are in an arms-race with finding the best treatment for a cancer vs the cancer's development, we must do this reliably, reproducibly, and quickly so the patient can get their result asap. The best way to achieve this is make sure if any step goes wrong, it is immediately obvious.
 
-In research, reproducibility is also a very important concept which the wonderful Dave will teach you more about. Suffice to say for now, if you contribute some code to research and nobody can run it, and can't understand why, this makes science quite difficult! But if you've put some informative error messaging, perhaps they will be able to understand where it went wrong.
+In research, reproducibility is also a very important concept which the wonderful Dave will teach you more about. Suffice to say for now, if you contribute some code to research and nobody can run it, and can't understand why, this makes doing science quite difficult. But if you've put some informative error messaging, perhaps they will be able to understand where it went wrong.
 
-In summary, the important thing is take a mindset of embracing failure because it is inevitable - what we need to know is why and when it happens, make our errors loud and obvious, and give a crack at tackling them!
+In summary, the important thing is take a mindset of embracing failure because it is inevitable - what we need to know is why and when it happens, make our errors loud and obvious, and give a crack at tackling them.
 
 
 **"If at first you don't succeed, print(error), try, try again" (definitely a word-for-word quote from Edward Hickson 1857)**
@@ -44,12 +44,12 @@ For this practical, we have some human patient vcfs generated from Rhampseq Ampl
 
 The vcfs and bams you will be looking at are fully anonymised, and changed a little, but are derived from real life cancer patients who have undergone DPYD pharmacogenetic screening. I will explain more about this in the next prac, but DPYD variants control the amount of DPD enzyme available to metabolise toxic drugs. In some individuals with certain variants, if they are given a 'standard' dose of chemotherapy (usually a fluropyrimidine), this can prove fatal, as they don't have the necessary enzyme to break it down. On the other hand, these chemotherapies are very effective treatments for certain aggressive cancers, and a patient's prognosis may rely on getting the right drug dosage tailored for their personal genetic makeup. 
 
-As always, it is always very important to understand your dataset very well, to properly do some good bioinformatics to it. 
+As always, it is very important to understand your dataset well, to properly do some good bioinformatics to it. Our dataset has been created from rhampseq amplicon data, where reads are amplified across very specific targets and highly duplicated.
 
 
 ### 1.4 Follow the breadcrumb trail of errors 
 
-Today we are working on a mini bash pipeline, that runs 3 pipeline scripts for us to help perform fast and reliable DPYD screening. 
+In this week's (and next week's) practical, we are working on a mini bash pipeline, that runs 3 pipeline scripts for us to help perform fast and reliable DPYD screening. 
 
 
 The first script, "vcf_validator.py", checks the following cases: 
@@ -60,7 +60,7 @@ The first script, "vcf_validator.py", checks the following cases:
 
 3. Is the format of the vcf correct?
 
-The second script, "run_various_qc_checks.py", checks that the variants of interest in the vcfs have passed certain quality control (qc) metrics. 
+The second script, "extract_variants.awk", pulls out some key diagnostic variants for each patient and puts them in a table. It also grabs some key information about each variant that we can use later for some filtering. 
 
 The third script, "generate_DPYD_report.py", generates a nice report that will summarize our screening results for the oncologist. We'll take a look at that in the next prac.
 
@@ -70,13 +70,13 @@ Often when presented with a complex error output, it's a good strategy to work y
 
 In the case of Python scripts, and extending pretty well generally to other scripting languages - often, the traceback will be presented at the top and the actual error itself (causing both its own and other scripts to break) will be near the bottom of the output. This isn't a hard-and-fast rule, but it can help. If you have a particularly wordy and obfuscated traceback or output, try to find exactly the point where the word 'Error' or 'Exception' is. Another helpful hint is to try and look for the name of the particular script you are executing, and what the error message is associated with it. Often, the line number will be given too, so you can open up the script and work out exactly what broke.
 
-When a program or bioinformatics tool breaks, similarly, you will need to carefully check the output, and filter through the error message to find the issue. More often than not, if the script has been written well, it is a simple issue with your inputs/parameters. 
+When a program or bioinformatics tool breaks, similarly, you will need to carefully check the output, and filter through the error message to find the issue. More often than not, if the script has been written well, it is a simple issue with the inputs/parameters that you are feeding to the script. 
 
 We are going to start by focussing on one script at a time to keep it simple, and then string the 3 scripts together in the next practical. 
 
 ### 1.5 Getting ready to look into scripts with vim
 
-First, let's get into debug mode! We're going to be staring at scripts, so let's make sure our text editor (in this case vim) gives us line numbers. You can also use nano if you prefer, but vim is a bit easier for viewing line numbers.
+First, let's get into debug mode! We're going to be staring at scripts, so let's make sure our text editor (in this case vim) gives us line numbers. You can also use nano if you prefer, but vim can be a bit easier for viewing line numbers.
 
 
 ```bash
@@ -85,45 +85,45 @@ vim ~/.vim
 Press ESC, then "i" key, then type "set number" (note don't type in any of the quotation marks here! They are just to denote what keys to press). Then to exit and save, press ESC, then type ":wq" (which should appear in the bottom left hand corner) then enter. 
 
 
-CHANGEME
 load software
-```
+```bash
 source activate bioinf
 ```
+
 create all directories and move into project directory
-
-```
+```bash
+mkdir -p ~/Practical_Failing_Loudly/{0_scripts,1_vcfs,2_bam,3_reports,4_refs}
 cd ~/Practical_Failing_Loudly
-mkdir -p ~/Practical_alignment/{0_scripts,1_vcfs,2_bam,3_reports,4_refs}
 ```
 
-copy vcfs and also make symlinks
-copy scripts???? CHANGEME
-```
+copy scripts and data and also make symlinks
+
+```bash
+cp ~/data/failing_loudly/0_scripts/* 0_scripts/
 cp ~/data/failing_loudly/patient_1_dodgy.vcfs 1_vcfs/
 ln -s ~/data/failing_loudly/*.vcf 1_vcfs/
 ln -s ~/data/failing_loudly/*.bam 2_bam/
 ln -s ~/data/failing_loudly/4_refs/* 4_refs/*
 ```
 
-## **2. Validating input requirements
+## **2. Validating input requirements**
 
-### 2.2 Checking if an input is existing
+### 2.1 Checking if an input is existing
 
 Let's now run just the validator script on one of our vcfs:
 
 ```bash
 conda activate CHANGEME
-python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dody.vcfs
+python3 ./0_scripts/vcf_validator.py --input_vcf 1_vcfs/patient_1_dody.vcfs
 ```
 You should get something like this:
 
 ```
 Traceback (most recent call last):
-  File "/Users/evelyn/Practicals/failing_loudly/./vcf_validator.py", line 67, in <module>
+  File "/Users/evelyn/Practicals/failing_loudly/vcf_validator.py", line 67, in <module>
     main(args.input_vcf)
     ~~~~^^^^^^^^^^^^^^^^
-  File "/Users/evelyn/Practicals/failing_loudly/./vcf_validator.py", line 11, in main
+  File "/Users/evelyn/Practicals/failing_loudly/vcf_validator.py", line 11, in main
     raise Exception("Unknown Error")
 Exception: Unknown Error
 ```
@@ -135,7 +135,7 @@ Working our way bottom to top through the traceback, you can see the script that
 Now that we've pinpointed our error, let's open the script and look at lines 9-11:
 
 ```bash
-vim ./vcf_validator.py
+vim ./0_scripts/vcf_validator.py
 ```
 You should see something like this in your script:
 
@@ -145,23 +145,23 @@ You should see something like this in your script:
 11    raise Exception("Unknown Error")
 ```
 
-From the code, we can see it seems the path to the file is missing. We are developing this script, so let's go ahead and improve the error message. While you are still in the vim session, press ESC, then "i" key, then use the arrows to get the cursor to line 9. Change "Unknown Error" to "Error: Could not find any existing vcf file". Press ESC, then ":wq", then enter.
+From the code, we can see it seems the path to the file is missing. We are developing this script, so let's go ahead and improve the error message. While you are still in the vim session, press ESC, then "i" key, then use the arrows to get the cursor to line 9. Change "Unknown Error" to "Error: Could not find any existing vcf file". Press ESC, then ":wq" to save, then enter.
 
 (if you make a mistake in vim and need to exit without saving, just press ESC, then type ":q!", then enter. This will get you out of the file without modifying any content)
 
 Now let's run it again!
 
 ```bash
-python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dody.vcfs
+python3 ./0_scripts/vcf_validator.py --input_vcf 1_vcfs/patient_1_dody.vcfs
 ```
 Now your error message should say this: 
 
 ```
 Traceback (most recent call last):
-  File "/Users/evelyn/Practicals/failing_loudly/./vcf_validator.py", line 67, in <module>
+  File "/Users/evelyn/Practicals/failing_loudly/vcf_validator.py", line 67, in <module>
     main(args.input_vcf)
     ~~~~^^^^^^^^^^^^^^^^
-  File "/Users/evelyn/Practicals/failing_loudly/./vcf_validator.py", line 11, in main
+  File "/Users/evelyn/Practicals/failing_loudly/vcf_validator.py", line 11, in main
     raise Exception("Error: Could not find any existing vcf file")
 Exception: Error: Could not find any existing vcf file
 ```
@@ -172,7 +172,7 @@ ls 1_vcfs/*vcf*
 ```
 Should result in:
 ```
-patient_1_dodgy.vcf		
+patient_1_dodgy.vcfs	
 Patient_A.vcf		
 Patient_B.vcf		
 Patient_C.vcf		
@@ -182,7 +182,7 @@ Patient_D.vcf
 Ah, it looks like I did not spell the vcf correctly - it's patient_1_dod*g*y.vcf, not patient_1_dody.vcf. Let's run it again with the right name:
 
 ```bash
-python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcfs
+python3 ./0_scripts/vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcfs
 ```
 
 Now we should have a different error. Yay! A new error! Bioinformaticians often will celebrate when they've been debugging a long time and trying to fix an error - if the message changes, it means we've likely fixed one problem, and can move on to the next one.
@@ -212,12 +212,12 @@ Again, another unhelpful error message. Working our way from the bottom, the err
 </details>
 
 
-### 2.3 Checking if the input is a vcf
+### 2.2 Checking if the input is a vcf
 
 Most input formats are denoted by their extensions, eg .fastq, .bam, .csv. A good sanity check in your scripts is to check if the extension matches what you expect. Let's open the script again with vim: 
 
 ```bash
-vim ./vcf_validator.py
+vim ./0_scripts/vcf_validator.py
 ```
 Our previous error message told us to go to line 19, so let's quickly go there and have a look. You should see this: 
 
@@ -230,7 +230,7 @@ Again, this is not very useful information. Press ESC, then "i", then use the ar
 When you're done, press ESC, then ":wq" to save your changes, then enter. Run the script again and enjoy a much better articulated error message:
 
 ```bash
-python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcfs
+python3 ./0_scripts/vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcfs
 ```
 ```
 Traceback (most recent call last):
@@ -257,12 +257,12 @@ Traceback (most recent call last):
   File "/Users/evelyn/failing_loudly/Practicals/failing_loudly/./vcf_validator.py", line 69, in main
     raise Exception("Cannot have data lines preceding header")
 ```
-Ah, this is now interesting. If you look at the bottom of the traceback again, you can see the main Exception causing the new problem. It seems our vcf may have some formatting issues.
+Ah, this is now interesting. If you look at the bottom of the traceback again, you can see the  Exception causing the new problem. It seems our vcf may have some formatting issues.
 
 
-## **3. Validating the formatting of the input itself
+## **3. Validating the formatting of the input itself**
 
-### 3.3 Checking if the vcf is correctly formatted
+### 3.1 Checking if the vcf is correctly formatted
 
 As you know, the VCF format has some key specifications that must be adhered to, and that will crash various bioinformatics tools if not. The 'patient_1_dodgy.vcf' has some key issues that will crash our validator script, so we are going to go ahead and modify this vcf file directly with vim and awk to satisfy the validator. In the real world, you would usually never do this, you would probably just go back to the source of your dodgy vcf and find out what corrupted it in the first instance.
 
@@ -298,7 +298,7 @@ Close and save vim (ESC, then type "wq", then enter), run the validator again, a
 python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf
 ```
 
-### 3.3 Fixing the vcf format one error at a time
+### 3.2 Fixing the vcf format one error at a time
 
 There are a series of more problems with the vcf. I have given you some instuctions below on how to fix each error, but the errors may not appear in the same order as the order of these solutions, so you will have to go through this list until you find the solution that matches each error. Keep 'fixing' the vcf and matching solutions to the errors, then rerunning the validator script, until no more exceptions are raised. 
 
@@ -372,7 +372,7 @@ In preparation for next week's prac, we are going to run a script that will go t
 
 Take a look at these four variants commonly screened for in DPYD screening. 
 
-[DPYD variants genomic positions](4_refs/DPYD_variants_genome_location.csv)
+[DPYD variants genomic positions](images_and_refs/DPYD_variants_genome_location.csv)
 
 The name of each variant in the left hand column here is denoted by its HGVS CDNA nomenclature, which describes variants in the context of their effect on the coding region of the transcript. This is commonly used in clinical reports. For example, c.1236G>A is read as cdna, position 1236 of the transcript, sequence change from G to A. 
 
@@ -385,6 +385,7 @@ Run the following command:
 cd 0_scripts
 awk -f extract_variants.awk ../4_refs/DPYD_variants_genome_location.csv ../1_vcfs/Patient*.vcf > ../3_reports/variant_info.txt
 cat ../3_reports/variant_info.txt
+cd ..
 ```
 
 Your output is saved at 3_reports/variant_info.txt and also should be printed to screen. Notice for each of the four diagnostic variants, we have pulled out some information from the vcfs of 3 patients. 
@@ -402,7 +403,7 @@ GT: Genotype called. 0/0=ref/ref; 0/1=ref/alt; 1/1=alt/alt (assuming we don't ha
 FILTER: PASS if this position has passed all filters, i.e., a call is made at this position
 AF: allele frequency for each ALT allele in the same order as listed
 
-Note the HGVS nomenclature follows the cdna transcript, and here it is in reverse-complement to the genotypes you see in the vcf because HGVS will always go with the strand direction of the transcript, while the vcf goes in the strand direction of the reference genome (forward strand)
+Note the HGVS nomenclature follows the cdna transcript, and here it is in reverse-complement to the genotypes you see in the vcf because HGVS will always go with the strand direction of the transcript, while the vcf goes in the strand direction of the reference genome (forward strand).
 
 **Questions:**
 1. If you list the files in the vcf directory, there is another vcf there, Patient_D.vcf. Why is that vcf missing from variant_info.txt? Why does Patient_B.vcf appear twice?
@@ -413,7 +414,7 @@ Note the HGVS nomenclature follows the cdna transcript, and here it is in revers
 
 <details>
 <summary>Answers</summary>
-<ul><li>1. Patient_D.vcf does not carry a diagnostic variant - that, the patient has two reference alleles at each of the four sites we tested. </li>
+<ul><li>1. Patient_D.vcf does not carry a diagnostic variant - that is, the patient has two reference alleles at each of the four sites we tested. </li>
 <li>2. FT is the *genotype call* filter, specific for that sample, and indicates the quality of the genotype call. The FILTER column is across all samples in the vcf, and denotes whether the site itself is quality across all present samples (here we only have a single-sample vcf, so more tricky to determine that).</li>
 <li>3. Patient A </li>
 <li>3. The transcript would be on the foward strand </li>
@@ -423,14 +424,14 @@ Note the HGVS nomenclature follows the cdna transcript, and here it is in revers
 
 ### Bonus tasks if time permitting 
 
-1. The validator script checks a bunch of conditions and raises an error if they are not satisfied. In the first part of the script, if you look at the lines immediately following where these errors are raised, you can see extra 'else - print' statements have been commented out (lines 12 and 20). What do you think these else statements would do? Try removing the comments on the 'elses'/'prints' and also the series of 'prints' at the bottom of the script, and running the script again on the dodgy vcf: 
+1. The validator script checks a bunch of conditions and raises an error if they are not satisfied. In the first part of the script, if you look at the lines immediately following where these errors are raised, you can see extra 'else - print' statements have been commented out (lines 12 and 20). What do you think these else statements would do? Try removing the comments on the 'elses'/'prints' on lines 12 and 20 and also the series of 'prints' at the bottom of the script, and running the script again on the dodgy vcf: 
 ```bash
 python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf
 ```
 
 2. What output did you get? Do you think it is useful to know what checks have been put in place, and that they have passed? Make another directory and write this information to a log. Detailed logs are very useful when debugging as then we can pinpoint what worked and which checks passed before the error. 
 ```bash
-mkdir -p ~/Practical_alignment/4_logs
+mkdir -p ~/Practical_Failing_Loudly/5_logs
 python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf > 5_logs/vcf_validation.log
 ```
 
