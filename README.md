@@ -24,6 +24,9 @@ Delivered in Semester 1
 
 
 ## Module 3: Reproducible Bioinformatics
+**Failing Loudly**
+- Practical 1 - [Failing loudly 1](Practicals/reproducible_bioinformatics/prac_1_failing_loudly.md)
+- Practical 2 - [Failing loudly 2](Practicals/reproducible_bioinformatics/prac_2_failing_loudly.md)
 
 
 ## Other Course Materials
