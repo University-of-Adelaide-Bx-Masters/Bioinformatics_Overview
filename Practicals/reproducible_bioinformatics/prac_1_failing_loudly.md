@@ -100,9 +100,9 @@ copy scripts and data and also make symlinks
 
 ```bash
 cp ~/data/failing_loudly/0_scripts/* 0_scripts/
-cp ~/data/failing_loudly/patient_1_dodgy.vcfs 1_vcfs/
-ln -s ~/data/failing_loudly/*.vcf 1_vcfs/
-ln -s ~/data/failing_loudly/*.bam 2_bam/
+cp ~/data/failing_loudly/1_vcfs/patient_1_dodgy.vcfs 1_vcfs/
+ln -s ~/data/failing_loudly/*.vcf 1_vcfs/ # FIXME: Not sure this one, do you mean ln -s ~/data/failing_loudly/1_vcfs/*.vcf 1_vcfs/ ?
+ln -s ~/data/failing_loudly/2_bam/*.bam 2_bam/
 ln -s ~/data/failing_loudly/4_refs/* 4_refs/*
 ```
 
@@ -119,7 +119,7 @@ You should get something like this:
 
 ```
 Traceback (most recent call last):
-  File "/Users/evelyn/Practicals/failing_loudly/vcf_validator.py", line 67, in <module>
+  File "/Users/evelyn/Practicals/failing_loudly/vcf_validator.py", line 72, in <module>
     main(args.input_vcf)
     ~~~~^^^^^^^^^^^^^^^^
   File "/Users/evelyn/Practicals/failing_loudly/vcf_validator.py", line 11, in main
@@ -129,7 +129,7 @@ Exception: Unknown Error
 
 Oops! There is an error! No worries, let's stare at it. Luckily for us, this is quite a straightforward error message and traceback. You can see here right at the bottom is our error: 'Exception: Unknown Error'. Wow, this is not a helpful error message at all! Who wrote this? We can definitely do better. 
 
-Working our way bottom to top through the traceback, you can see the script that has broken is the one we are running, "vcf_validator.py", at line 11. Going further up, the message then tells us the function the error occured in, function main(), which is called at line 67. 
+Working our way bottom to top through the traceback, you can see the script that has broken is the one we are running, "vcf_validator.py", at line 11. Going further up, the message then tells us the function the error occured in, function main(), which is called at line 72. 
 
 Now that we've pinpointed our error, let's open the script and look at lines 9-11:
 
@@ -157,7 +157,7 @@ Now your error message should say this:
 
 ```
 Traceback (most recent call last):
-  File "/Users/evelyn/Practicals/failing_loudly/vcf_validator.py", line 67, in <module>
+  File "/Users/evelyn/Practicals/failing_loudly/vcf_validator.py", line 72, in <module>
     main(args.input_vcf)
     ~~~~^^^^^^^^^^^^^^^^
   File "/Users/evelyn/Practicals/failing_loudly/vcf_validator.py", line 11, in main
@@ -178,7 +178,7 @@ Patient_C.vcf
 Patient_D.vcf
 ```
 
-Ah, it looks like I did not spell the vcf correctly - it's patient_1_dod*g*y.vcf, not patient_1_dody.vcf. Let's run it again with the right name:
+Ah, it looks like I did not spell the vcf correctly - it's patient_1_dod*g*y.vcfs, not patient_1_dody.vcfs. Let's run it again with the right name:
 
 ```bash
 python3 ./0_scripts/vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcfs
@@ -190,7 +190,7 @@ Let's go ahead and tackle this new error:
 
 ```
 Traceback (most recent call last):
-  File "/Users/evelyn/failing_loudly/Practicals/./vcf_validator.py", line 67, in <module>
+  File "/Users/evelyn/failing_loudly/Practicals/./vcf_validator.py", line 72, in <module>
     main(args.input_vcf)
     ~~~~^^^^^^^^^^^^^^^^
   File "/Users/evelyn/failing_loudly/Practicals/failing_loudly/./vcf_validator.py", line 19, in main
@@ -206,7 +206,7 @@ Again, another unhelpful error message. Working our way from the bottom, the err
  
 <details>
 <summary>Answers</summary>
-<ul><li>1. Line 67, as can be seen near the top of the traceback</li>
+<ul><li>1. Line 72, as can be seen near the top of the traceback</li>
 <li>2. The error message would likely get longer because script#2 would also throw an error, which would be added to the overall traceback </li> </ul>
 </details>
 
@@ -244,16 +244,16 @@ Now that the error reads much nicer, let's name the vcf properly to actually fix
 
 ```bash
 mv 1_vcfs/patient_1_dodgy.vcfs 1_vcfs/patient_1_dodgy.vcf
-python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf
+python3 ./0_scripts/vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf
 ```
 Woo-hoo! Now onwards to the next error!
 
 ```
 Traceback (most recent call last):
-  File "/Users/evelyn/failing_loudly/Practicals/failing_loudly/./vcf_validator.py", line 79, in <module>
+  File "/Users/evelyn/failing_loudly/Practicals/failing_loudly/./vcf_validator.py", line 72, in <module>
     main(args.input_vcf)
     ~~~~^^^^^^^^^^^^^^^^
-  File "/Users/evelyn/failing_loudly/Practicals/failing_loudly/./vcf_validator.py", line 69, in main
+  File "/Users/evelyn/failing_loudly/Practicals/failing_loudly/./vcf_validator.py", line 60, in main
     raise Exception("Cannot have data lines preceding header")
 ```
 Ah, this is now interesting. If you look at the bottom of the traceback again, you can see the  Exception causing the new problem. It seems our vcf may have some formatting issues.
@@ -294,7 +294,7 @@ You can see line 21 is an erroneous copy of line 26. Let's go ahead and delete l
 Close and save vim (ESC, then type "wq", then enter), run the validator again, and await the next error message:
 
 ```bash
-python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf
+python3 ./0_scripts/vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf
 ```
 
 ### 3.2 Fixing the vcf format one error at a time
@@ -333,6 +333,7 @@ We can't have two headers, so go ahead and open the vcf and remove the first hea
 *Exception("A column is missing from the vcf main header")
 *Fix*:
 Use vim or nano to open the vcf file and go to line 21, which just has "CHROM". That's not right as a vcf header need to have at least 8 columns in the main header. Remove this line entirely. After your edits, lines 20-24 should now look like this:
+
 ```
 20 ##bcftools_viewVersion=1.10.2+htslib-1.17
  21 #CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT  Patient_A
@@ -349,6 +350,13 @@ The "FILTER" and "INFO" column have gotten swapped somehow. Run this awk command
 awk 'BEGIN{FS=OFS="\t"} /^##/ {print; next} /^#CHROM/ {tmp=$7; $7=$8; $8=tmp; print; next} {tmp=$7; $7=$8; $8=tmp; print}' 1_vcfs/patient_1_dodgy.vcf > 1_vcfs/patient_1_dodgy_fixedcols.vcf && mv 1_vcfs/patient_1_dodgy_fixedcols.vcf 1_vcfs/patient_1_dodgy.vcf
 ```
 Now the order of both the header and the columns of the data section should be switched back in the right order to meet vcf specs. Lines 20-23 should look like this:
+
+// FIXME: the line 20-23 looks like this
+##bcftools_viewVersion=1.10.2+htslib-1.17
+#CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT  Patient_A							
+#CHROM  POS     ID      REF     ALT     QUAL    INFO    FILTER  FORMAT  Patient_A							
+##bcftools_viewCommand=view -O z; Date=Fri May 30 11:19:15 2025
+
 ```
 20 ##bcftools_viewVersion=1.10.2+htslib-1.17
  21 ##bcftools_viewCommand=view -O z; Date=Fri May 30 11:19:15 2025
@@ -379,7 +387,7 @@ The right hand column of the file is each diagnostic variant's genomic location.
 
 
 Run the following command: 
-
+// FIXME: /4_refs/DPYD_variants_genome_location.csv does not exist
 ```bash
 cd 0_scripts
 awk -f extract_variants.awk ../4_refs/DPYD_variants_genome_location.csv ../1_vcfs/Patient*.vcf > ../3_reports/variant_info.txt
@@ -425,13 +433,13 @@ Note the HGVS nomenclature follows the cdna transcript, and here it is in revers
 
 1. The validator script checks a bunch of conditions and raises an error if they are not satisfied. In the first part of the script, if you look at the lines immediately following where these errors are raised, you can see extra 'else - print' statements have been commented out (lines 12 and 20). What do you think these else statements would do? Try removing the comments on the 'elses'/'prints' on lines 12 and 20 and also the series of 'prints' at the bottom of the script, and running the script again on the dodgy vcf: 
 ```bash
-python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf
+python3 ./0_scripts/vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf
 ```
 
 2. What output did you get? Do you think it is useful to know what checks have been put in place, and that they have passed? Make another directory and write this information to a log. Detailed logs are very useful when debugging as then we can pinpoint what worked and which checks passed before the error. 
 ```bash
 mkdir -p ~/Practical_Failing_Loudly/5_logs
-python3 ./vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf > 5_logs/vcf_validation.log
+python3 ./0_scripts/vcf_validator.py --input_vcf 1_vcfs/patient_1_dodgy.vcf > 5_logs/vcf_validation.log
 ```
 
 
