@@ -1,15 +1,3 @@
----
-title: "Code comments"
-author: "David Lawrence"
-date: "2022-09-05"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-
 **"Programs must be written for people to read, and only incidentally for machines to execute."**
 
 ― Harold Abelson, Structure and Interpretation of Computer Programs 
@@ -72,7 +60,7 @@ Comments need to 'pull their weight' to be worth their costs in space and mainte
 
 Here's some R code. What does it do?
 
-```{r}
+```r
 
 a = "GATTACA"
 b = toupper(strsplit(a, '')[[1L]])
@@ -98,7 +86,7 @@ The code is correct, but not very clear. Perhaps the biggest problem is it's not
 
 Perhaps we can make it more clear, by adding some comments. The more the better!
 
-```{r}
+```r
 # this section takes a DNA sequence 'a', obtains the reverse complement and stores in 'd'
 a = "GATTACA"  # DNA sequence
 b = toupper(strsplit(a, '')[[1L]])  # split sequence into individual bases
@@ -120,7 +108,7 @@ It looks like we are trying to fix bad names and structure with comments.
 * The "section" could be made into a function - and given a name.
 * The variable names could be made more descriptive
 
-```{r}
+```r
 
 # Code taken from https://stackoverflow.com/a/69991965
 reverse_complement <- function (dna) {
@@ -154,7 +142,7 @@ Since you're using source control (right!) - don't be afraid you can always get 
 
 A common example is where you may be tempted to comment a formula due to its complexity.
 
-```{r}
+```r
 cars[cars$speed > 20 | cars$dist > 70, ]  # Find cars going too far or fast
 ```
 
@@ -164,7 +152,7 @@ This increases the number of lines, but makes each line simpler. You can then ad
 
 It is incredibly important to document "magic numbers" - where did they come from? How did you choose them?
 
-```{r}
+```r
 SPEED_LIMIT = 20  # town limit mph
 INSURANCE_MAX_DISTANCE = 70  # standard cover
 too_fast = cars$speed > SPEED_LIMIT
