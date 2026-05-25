@@ -126,10 +126,12 @@ Go to your forked repo page.
 
 ## Fix the UPPERCASE issue
 
+Another type of bug has been introduced, where some lower case words were changed to UPPERCASE
+
+* Raise a new issue referencing the UPPERCASE problems in your file
 * Edit your data/ file, and remove the UPPERCASE issue.
 * ```git add``` then ``git commit --message "fix issue upper case issue"`` (referencing the issue in the original repo you raised)
 * ``git push`` back to your repo
-
 
 # Extras
 
