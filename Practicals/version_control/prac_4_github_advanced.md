@@ -32,7 +32,7 @@ You can split off branches, and merge branches into each other.
 
 ## Raising an issue
 
-Raise an issue in the [GitHub repository Practical project](https://github.com/davmlaw/2025_practical_github_repositories) for the XXXXXXX bug
+Raise an issue in the [GitHub repository Practical project](https://github.com/davmlaw/2026_prac_4_github_advanced) for the XXXXXXX bug
 
 Make sure the title includes your filename and what's wrong with it, ie "file data/a1059391.txt contains 'XXXXXXX'"
 
@@ -77,8 +77,8 @@ Common Use Cases:
 
 
 ```
-git clone https://github.com/YOUR_USERNAME/2025_practical_github_repositories
-cd 2025_practical_github_repositories
+git clone https://github.com/YOUR_USERNAME/2026_prac_4_github_advanced
+cd 2026_prac_4_github_advanced
 ```
 
 
@@ -123,6 +123,13 @@ Go to your forked repo page.
 * Comments should link to both issues and give a brief description of the change. You don't need to repeat everything in the issue, just link to it
 * after creating the pull request you'll be taken to the original repo (not your fork) - notice that the "pull request" tab now shows some numbers. Notice how the pull request comment can be hovered over to see the issue
 * Go to your issue - you should be able to see the linked pull request
+
+## Fix the UPPERCASE issue
+
+* Edit your data/ file, and remove the UPPERCASE issue.
+* ```git add``` then ``git commit --message "fix issue upper case issue"`` (referencing the issue in the original repo you raised)
+* ``git push`` back to your repo
+
 
 # Extras
 
