@@ -10,10 +10,11 @@ https://github.com - It's possible you may keep this GitHub account, use it for 
 
 There's a [GitHub repository Practical project](https://github.com/davmlaw/2025_practical_github_repositories) which is a simulation of an open source project with bugs.
 
+# FIXME: This will be assignment3 this semester
 It has randomly generated data, so has the same structure (but different data) as [Assignment 6](https://university-of-adelaide-bx-masters.github.io/BIOTECH-7005-BIOINF-3000/Assignments/Assignment6.html)
 
 ## File history
-
+# FIXME: Generate the student number for this semester students
 From the project page, click on "data" then click on your student number .txt file. You can see the latest content, and the last commit.
 
 * Click "history" in the top right hand corner to see all the commits.
