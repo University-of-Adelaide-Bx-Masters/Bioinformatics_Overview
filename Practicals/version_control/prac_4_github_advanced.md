@@ -8,9 +8,9 @@ https://github.com - It's possible you may keep this GitHub account, use it for 
 
 ## Practical - simulated open source repo
 
-There's a [GitHub repository Practical project](https://github.com/davmlaw/2025_practical_github_repositories) which is a simulation of an open source project with bugs.
+There's a [Prac 4 - Github Advanced Repo](https://github.com/davmlaw/2026_prac_4_github_advanced) which is a simulation of an open source project with bugs.
 
-It has randomly generated data, so has the same structure (but different data) as [Assignment 6](https://university-of-adelaide-bx-masters.github.io/BIOTECH-7005-BIOINF-3000/Assignments/Assignment6.html)
+It has randomly generated data, so has the same structure (but different data) as [Assignment 3](../../Assignments/Assignment_3.md)
 
 ## File history
 
@@ -109,7 +109,6 @@ You can store your token (as plaintext on the VM) via:
 git config --global credential.helper store
 git push # Enter username and tokens and enter
 ```
-
 
 ## Your forked repo
 
