@@ -1,6 +1,6 @@
 # Assignment 3 [*60 marks*]
 
-## Note that failure to include a coversheet will incur a 5 mark penalty.
+Submit theory answers (at bottom) in normal way. The majority of marks are for Github repo, so it is critical that you work against your student number data (as that is how I will know who is who)
 
 ## Assignment overview [*8 marks for general format*]
 
