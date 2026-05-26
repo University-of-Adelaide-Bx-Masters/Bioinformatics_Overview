@@ -19,7 +19,7 @@ This assignment involves performing actions on GitHub [*8 marks total for genera
 
 These have timestamps on them, and these will be checked against the submission date.
 
-Answers to theory questions should be submitted to MyUni as a file (plain text or PDF)
+Answers to theory questions should be submitted to MyLearning as a PDF file
 
 ## Practical questions [*42 marks*] 
 
