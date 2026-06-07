@@ -121,6 +121,9 @@ Why did we have to do add and then commit? Ie why have a staging area instead of
 
 ![](https://openclipart.org/image/400px/332045)
 
+
+
+
 It allows you to carefully add/remove individual files to build a commit - ie you can change a lot of files, then commit a few together, then others in a separate commit.
 
 Think of it as a draft area where you can carefully build exactly what you want to commit.
@@ -307,7 +310,7 @@ It is worth thinking of the "normal files" in the directory as temporary - "work
 
 ![](https://openclipart.org/image/400px/332045)
 
-Cat the first log file from your pipeline.sh runs above, and find the commit hash
+
 
 To move the working files back to the state of this commit, you can run:
 
@@ -435,6 +438,9 @@ git merge blue_monkey_new_feature # Merge branch back into master
 
 Because there were no conflicts - the merge was done automatically.
 
+<img width="1549" height="870" alt="git_merg drawio" src="https://github.com/user-attachments/assets/cedf40fb-46b7-4143-8540-e1daf079a143" />
+
+
 But imagine that the blue and cyan monkeys went off and did separate work. Find the commit before the merge, and create a branch from that, eg:
 
 
@@ -496,6 +502,9 @@ git log --graph
 ```
 
 Notice the branch and how it was merged back
+
+<img width="1559" height="634" alt="git_conflict" src="https://github.com/user-attachments/assets/a03fe4de-ddf8-4c1d-8172-ff22c053b4f4" />
+
 
 ## Commit size
 
@@ -577,6 +586,7 @@ Now, run the standard stuff to get your bearings:
 git log
 cat README.md
 ```
+<img width="1568" height="780" alt="git_cherry_pick" src="https://github.com/user-attachments/assets/f63c28ec-dfd4-49d5-940c-68a89cc98649" />
 
 
 ## Pull / Push
@@ -592,6 +602,11 @@ and also track where you got it from (remote origin) - so it is easy to keep the
 **Pull** - runs fetch, then applies the commits, in effect "syncing" your local repo to the remote
 
 **Push** - send your changes to the remote server (we will cover this in either the bonus section below, and GitHub prac in Week 9)
+
+<img width="911" height="441" alt="git_workflow explain" src="https://github.com/user-attachments/assets/08fd0697-f0a7-4b06-931b-04a7608533f9" />
+
+
+Cat the first log file from your pipeline.sh runs above, and find the commit hash
 
 ## Bonus: Workflows
 
